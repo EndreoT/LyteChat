@@ -10,6 +10,6 @@ namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
     {
         public Task<IEnumerable<ChatMessage>> ListMessagesForGroupAsync(string group);
 
-        public Task CreateMessageAsync(ChatMessage chatMessage);
+        public Task AddMessageAsync(ChatMessage chatMessage);
     }
 }

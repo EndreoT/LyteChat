@@ -27,7 +27,7 @@ namespace LearnBlazor.Server.Persistence.Repositories
             }
         }
 
-        public async Task CreateMessageAsync(ChatMessage chatMessage)
+        public async Task AddMessageAsync(ChatMessage chatMessage)
         {
             await _context.ChatMessages.AddAsync(chatMessage);
         }

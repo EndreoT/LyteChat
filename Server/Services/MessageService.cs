@@ -17,22 +17,25 @@ using LearnBlazor.Shared.DataTransferObject;
 
 namespace LearnBlazor.Server.Services
 {
-    public class ChatMessageService : IChatMessageService
+    public class ChatMessageService : ServiceBase, IChatMessageService
     {
         private readonly IChatMessageRepository _chatMessageRepository;
         private readonly IUserRepository _userRepository;
+        IChatGroupRepository _chatGroupRepository;
         private readonly IUnitOfWork _unitOfWork;
         //private readonly IMapper _mapper;
 
         public ChatMessageService(
             IChatMessageRepository chatMessageRepository,
             IUserRepository userRepository,
+            IChatGroupRepository chatGroupRepository,
             IUnitOfWork unitOfWork
             //IMapper mapper,
             )
         {
             _chatMessageRepository = chatMessageRepository;
             _userRepository = userRepository;
+            _chatGroupRepository = chatGroupRepository;
             _unitOfWork = unitOfWork;
             //_mapper = mapper;
         }
@@ -63,56 +66,53 @@ namespace LearnBlazor.Server.Services
         //    return resource;
         //}
 
-        //private string DeviceNotFoundMessage(string deviceAddr)
-        //{
-        //    return $"Device with address {deviceAddr} does not exist";
-        //}
+        
 
-        //public async Task<ChatMessageResponse> CreateChatMessageAsync(ChatMessageDTO chatMessageDTO)
-        //{
-        //    try
-        //    {
-        //        Guid userUuid = chatMessageDTO.UserUuid;
-        //        Guid chatGroupUuid = chatMessageDTO.ChatGroupUuid;
-        //        User user = await _userRepository.GetByUuid(sourceAddr);
-        //        Device destDevice = await _deviceRepository.GetByAddrAsync(destAddr);
-        //        if (sourceDevice == null || destDevice == null)
-        //        {
-        //            string messageStr;
-        //            if (sourceDevice == null)
-        //            {
-        //                messageStr = DeviceNotFoundMessage(sourceAddr);
-        //            }
-        //            else
-        //            {
-        //                messageStr = DeviceNotFoundMessage(destAddr);
-        //            }
-        //            return new MessageResponse(messageStr);
-        //        }
-        //        Message message = new Message()
-        //        {
-        //            Content = messageDTO.Content,
-        //            SourceAddr = sourceDevice,
-        //            SourceAddrDeviceId = sourceDevice.DeviceId,
-        //            DestinationAddr = destDevice,
-        //            DestinationAddrDeviceId = destDevice.DeviceId
-        //        };
-        //        //Save the message
-        //        await _messageRepository.CreateMessageAsync(message);
-        //        await _unitOfWork.CompleteAsync();
+        public async Task<ChatMessageResponse> CreateChatMessageAsync(ChatMessageDTO chatMessageDTO)
+        {
+            try
+            {
+                Guid userUuid = chatMessageDTO.UserUuid;
+                Guid chatGroupUuid = chatMessageDTO.ChatGroupUuid;
+                User user = await _userRepository.GetByUuid(chatMessageDTO.UserUuid);
+                ChatGroup chatGroup = await _chatGroupRepository.GetByUuid(chatMessageDTO.ChatGroupUuid);
+                if (user == null || chatGroup == null)
+                {
+                    string messageStr;
+                    if (user == null)
+                    {
+                        messageStr = ResourceNotFoundMessage("User", userUuid);
+                    }
+                    else
+                    {
+                        messageStr = ResourceNotFoundMessage("ChatGroup", chatGroupUuid);
+                    }
+                    return new ChatMessageResponse(messageStr);
+                }
+                ChatMessage chatMessage = new ChatMessage()
+                {
+                    Uuid = chatMessageDTO.Uuid,
+                    UserId = user.UserId,
+                    User = user,
+                    Message = chatMessageDTO.Message,
+                    ChatGroupId = chatGroup.ChatGroupId,
+                    ChatGroup = chatGroup
+                };
+                //Save the message
+                await _chatMessageRepository.AddMessageAsync(chatMessage);
+                await _unitOfWork.CompleteAsync();
 
-        //        _inMemoryMessageService.AddMessage(destAddr, message);
+                chatMessageDTO.Uuid = chatMessage.Uuid;
+                //ChatMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
 
-        //        FromMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
-
-        //        return new MessageResponse(messageResource);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Do some logging stuff
-        //        return new MessageResponse($"An error occurred when saving the message: {ex.Message}");
-        //    }
-        //}
+                return new ChatMessageResponse(chatMessageDTO);
+            }
+            catch (Exception ex)
+            {
+                // Do some logging stuff
+                return new ChatMessageResponse($"An error occurred when saving the message: {ex.Message}");
+            }
+        }
 
         //public async Task<MessageResponse> UpdateMessageAsync(long id, SaveMessageDTO messageDTO)
         //{

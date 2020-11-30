@@ -39,9 +39,9 @@
             .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
             .Build();
 
-        hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        hubConnection.On<ChatMessageDTO>("ReceiveMessage", (ChatMessageDTO chatMessage) =>
         {
-            var encodedMsg = $"{user}: {message}";
+            var encodedMsg = $"{chatMessage.UserName}: {chatMessage.Message}";
             messages.Add(encodedMsg);
             StateHasChanged();
         });
@@ -52,7 +52,7 @@
             {
                 messages.Add(message.Message);
             }
-            
+
             StateHasChanged();
         });
 
@@ -67,8 +67,16 @@
         await hubConnection.StartAsync();
     }
 
-    Task Send() =>
-        hubConnection.SendAsync("SendMessage", userInput, messageInput);
+    public async Task Send()
+    {
+        ChatMessageDTO chatMessage = new ChatMessageDTO
+        {
+            //UserUuid =
+            Message = messageInput
+        };
+        await hubConnection.SendAsync("CreateMessage", chatMessage);
+    }
+
 
     public bool IsConnected =>
         hubConnection.State == HubConnectionState.Connected;
