@@ -6,7 +6,7 @@ using LearnBlazor.Server.Data.Models;
 
 namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
 {
-    public interface IChatMessageRepository
+    public interface IChatMessageRepository: IBaseRepository<ChatMessage>
     {
         public Task<IEnumerable<ChatMessage>> ListMessagesForGroupAsync(string group);
 

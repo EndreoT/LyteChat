@@ -6,7 +6,7 @@ using LearnBlazor.Server.Data.Models;
 
 namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
 {
-    interface IChatGroupRepository
+    public interface IChatGroupRepository: IBaseRepository<ChatGroup>
     {
         public Task<ChatGroup> GetByUUIdAsync(Guid uuid);
 

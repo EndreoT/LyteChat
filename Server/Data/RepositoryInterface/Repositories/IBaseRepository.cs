@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Server.Data.Models;
 
 namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
 {
-    public interface IUserRepository: IBaseRepository<User>
+    public interface IBaseRepository<T>
     {
-        public Task<User> GetAnonymousUserAsync();
+        public Task<T> GetByUuid(Guid uuid);
     }
 }

@@ -38,5 +38,20 @@ namespace LearnBlazor.Server.Persistence.Repositories
                 return null;
             }
         }
+
+        public async Task<ChatGroup> GetByUuid(Guid uuid)
+        {
+            try
+            {
+                return await _context
+                    .ChatGroups
+                    .Where(chatGroup => chatGroup.Uuid.Equals(uuid)).SingleAsync();
+                
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
     }
 }

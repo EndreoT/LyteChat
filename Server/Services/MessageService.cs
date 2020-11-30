@@ -20,16 +20,19 @@ namespace LearnBlazor.Server.Services
     public class ChatMessageService : IChatMessageService
     {
         private readonly IChatMessageRepository _chatMessageRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
         //private readonly IMapper _mapper;
 
         public ChatMessageService(
             IChatMessageRepository chatMessageRepository,
+            IUserRepository userRepository,
             IUnitOfWork unitOfWork
             //IMapper mapper,
             )
         {
             _chatMessageRepository = chatMessageRepository;
+            _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             //_mapper = mapper;
         }
@@ -71,7 +74,7 @@ namespace LearnBlazor.Server.Services
         //    {
         //        Guid userUuid = chatMessageDTO.UserUuid;
         //        Guid chatGroupUuid = chatMessageDTO.ChatGroupUuid;
-        //        Device sourceDevice = await _deviceRepository.GetByAddrAsync(sourceAddr);
+        //        User user = await _userRepository.GetByUuid(sourceAddr);
         //        Device destDevice = await _deviceRepository.GetByAddrAsync(destAddr);
         //        if (sourceDevice == null || destDevice == null)
         //        {

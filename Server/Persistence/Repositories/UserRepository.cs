@@ -26,5 +26,20 @@ namespace LearnBlazor.Server.Persistence.Repositories
                 return null;
             }
         }
+
+        public async Task<User> GetByUuid(Guid uuid)
+        {
+            try
+            {
+                return await _context
+                    .Users
+                    .Where(user => user.Uuid.Equals(uuid)).SingleAsync();
+
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
     }
 }

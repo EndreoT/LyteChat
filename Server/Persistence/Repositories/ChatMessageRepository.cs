@@ -31,5 +31,20 @@ namespace LearnBlazor.Server.Persistence.Repositories
         {
             await _context.ChatMessages.AddAsync(chatMessage);
         }
+
+        public async Task<ChatMessage> GetByUuid(Guid uuid)
+        {
+            try
+            {
+                return await _context
+                    .ChatMessages
+                    .Where(chatMessage => chatMessage.Uuid.Equals(uuid)).SingleAsync();
+
+            }
+            catch (InvalidOperationException)
+            {
+                return null;
+            }
+        }
     }
 }
