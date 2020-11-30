@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using LearnBlazor.Data.RepositoryInterface;
-using LearnBlazor.Persistence.Context;
+using LearnBlazor.Server.Data.RepositoryInterface;
+using LearnBlazor.Server.Persistence.Context;
 
-namespace LearnBlazor.Persistence.Repositories
+namespace LearnBlazor.Server.Persistence.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {

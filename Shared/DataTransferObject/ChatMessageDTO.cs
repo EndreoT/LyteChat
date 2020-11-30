@@ -6,17 +6,12 @@ using System.Threading.Tasks;
 
 namespace LearnBlazor.Shared.DataTransferObject
 {
-    public class ChatMessageDTO
+    public class ChatMessageDTO: BaseDTO
     {
-        public long ChatMessageId { get; set; }
-
         public string Message { get; set; }
-
-        public long UserId { get; set; }
+        public Guid UserUuid { get; set; }
         public string UserName { get; set; }
-
-        public long ChatGroupId { get; set; }
-
+        public Guid ChatGroupUuid { get; set; }
         public string ChatGroupName { get; set; }
     }
 }

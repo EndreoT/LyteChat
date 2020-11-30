@@ -8,10 +8,12 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using LearnBlazor.Server.Hubs;
-using LearnBlazor.Persistence.Context;
-using LearnBlazor.Data.RepositoryInterface.Repositories;
-using LearnBlazor.Persistence.Repositories;
-
+using LearnBlazor.Server.Persistence.Context;
+using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
+using LearnBlazor.Server.Persistence.Repositories;
+using LearnBlazor.Server.Data.ServiceInterface;
+using LearnBlazor.Server.Services;
+using LearnBlazor.Server.Data.RepositoryInterface;
 
 namespace LearnBlazor.Server
 {
@@ -40,8 +42,11 @@ namespace LearnBlazor.Server
                     new[] { "application/octet-stream" });
             });
 
+            // Custom services
             services.AddScoped<IChatGroupRepository, ChatGroupRepository>();
             services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
+            services.AddScoped<IChatMessageService, ChatMessageService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

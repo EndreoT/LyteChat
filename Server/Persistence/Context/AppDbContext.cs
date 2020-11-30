@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-using LearnBlazor.Data.Models;
+using LearnBlazor.Server.Data.Models;
 
-namespace LearnBlazor.Persistence.Context
+namespace LearnBlazor.Server.Persistence.Context
 {
     public class AppDbContext : DbContext
     {

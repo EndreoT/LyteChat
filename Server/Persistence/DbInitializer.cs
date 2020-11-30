@@ -1,9 +1,9 @@
-﻿using LearnBlazor.Data.Models;
-using LearnBlazor.Persistence.Context;
-using System;
+﻿using System;
 using System.Linq;
+using LearnBlazor.Server.Data.Models;
+using LearnBlazor.Server.Persistence.Context;
 
-namespace LearnBlazor.Persistence
+namespace LearnBlazor.Server.Persistence
 {
     public static class DbInitializer
     {
@@ -19,7 +19,8 @@ namespace LearnBlazor.Persistence
             var users = new User[]
             {
             new User{Name="Carson" },
-            new User{Name="me" },
+            new User{Name="Another User :)" },
+            new User {Name="Anonymous"}
             };
             foreach (User user in users)
             {
@@ -29,7 +30,7 @@ namespace LearnBlazor.Persistence
 
             var chatGroups = new ChatGroup[]
             {
-            new ChatGroup{ChatGroupName="first chat group"},
+            new ChatGroup{ChatGroupName="ALL_CHAT"},
             new ChatGroup{ChatGroupName="second chat group"},
             };
             foreach (ChatGroup c in chatGroups)
@@ -41,14 +42,14 @@ namespace LearnBlazor.Persistence
             var chatMessages = new ChatMessage[]
             {
             new ChatMessage{
-                Message="first",
+                Message="first message",
                 UserId = users.Single(u => u.Name == "Carson").UserId,
-                ChatGroupId = chatGroups.Single(c => c.ChatGroupName == "first chat group").ChatGroupId
+                ChatGroupId = chatGroups.Single(c => c.ChatGroupName == "ALL_CHAT").ChatGroupId
             },
             new ChatMessage{
-                Message="second", 
-                UserId = users.Single(u => u.Name == "me").UserId,
-                ChatGroupId = chatGroups.Single(c => c.ChatGroupName == "first chat group").ChatGroupId
+                Message="second message", 
+                UserId = users.Single(u => u.Name == "Another User :)").UserId,
+                ChatGroupId = chatGroups.Single(c => c.ChatGroupName == "second chat group").ChatGroupId
             },
            };
             foreach (ChatMessage c in chatMessages)

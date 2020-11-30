@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace LearnBlazor.Data.RepositoryInterface
+namespace LearnBlazor.Server.Data.RepositoryInterface
 {
     public interface IUnitOfWork
     {

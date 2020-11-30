@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LearnBlazor.Data.Models
+namespace LearnBlazor.Server.Data.Models
 {
-    public class User
+    public class User: BaseModel
     {
+        public User() : base() { }
         public long UserId { get; set; }
         public string Name { get; set; }
 

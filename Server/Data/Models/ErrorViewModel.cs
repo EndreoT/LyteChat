@@ -1,4 +1,4 @@
-namespace LearnBlazor.Data.Models
+namespace LearnBlazor.Server.Data.Models
 {
     public class ErrorViewModel
     {

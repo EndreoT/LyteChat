@@ -7,8 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Persistence;
-using LearnBlazor.Persistence.Context;
+using LearnBlazor.Server.Persistence;
+using LearnBlazor.Server.Persistence.Context;
 
 namespace LearnBlazor.Server
 {
@@ -44,6 +44,7 @@ namespace LearnBlazor.Server
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
                     logger.LogError(ex, "An error occurred creating the DB.");
+                    Environment.Exit(1);
                 }
             }
         }

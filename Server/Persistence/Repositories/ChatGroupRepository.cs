@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Persistence.Context;
-using LearnBlazor.Data.Models;
-using LearnBlazor.Data.RepositoryInterface.Repositories;
+using LearnBlazor.Server.Persistence.Context;
+using LearnBlazor.Server.Data.Models;
+using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
 
-namespace LearnBlazor.Persistence.Repositories
+namespace LearnBlazor.Server.Persistence.Repositories
 {
     public class ChatGroupRepository : BaseRepository, IChatGroupRepository
     {

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LearnBlazor.Data.Models
+namespace LearnBlazor.Server.Data.Models
 {
-    public class ChatMessage
+    public class ChatMessage: BaseModel
     {
+        public ChatMessage() : base() { }
         public long ChatMessageId { get; set; }
 
         public string Message { get; set; }

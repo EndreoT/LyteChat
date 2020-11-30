@@ -6,10 +6,8 @@ using LearnBlazor.Server.Data.Models;
 
 namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
 {
-    public interface IChatMessageRepository
+    public interface IUserRepository
     {
-        public Task<IEnumerable<ChatMessage>> ListMessagesForGroupAsync(string group);
-
-        public Task CreateMessageAsync(ChatMessage chatMessage);
+        public Task<User> GetAnonymousUserAsync();
     }
 }
