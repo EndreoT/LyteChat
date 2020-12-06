@@ -1,4 +1,4 @@
-﻿namespace LearnBlazor.Server.Services.Communication
+﻿namespace LearnBlazor.Shared.Communication
 {
     public abstract class BaseResponse
     {

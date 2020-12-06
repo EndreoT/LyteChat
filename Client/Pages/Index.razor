@@ -1,6 +1,8 @@
 ﻿@page "/"
+@using System.Threading
 @using Microsoft.AspNetCore.SignalR.Client
-@using LearnBlazor.Shared.DataTransferObject;
+@using LearnBlazor.Shared.DataTransferObject
+@using LearnBlazor.Shared.Communication
 @inject NavigationManager NavigationManager
 @implements IAsyncDisposable
 
@@ -39,10 +41,18 @@
             .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
             .Build();
 
-        hubConnection.On<ChatMessageDTO>("ReceiveMessage", (ChatMessageDTO chatMessage) =>
+        hubConnection.On<ChatMessageResponse>("ReceiveMessage", (ChatMessageResponse chatMessageRes) =>
         {
-            messages.Add(chatMessage);
-            StateHasChanged();
+            if (!chatMessageRes.Success)
+            {
+                //TODO
+            }
+            ChatMessageDTO chatMessage = chatMessageRes.ChatMessageDTO;
+            if (chatMessage != null)
+            {
+                messages.Add(chatMessage);
+                StateHasChanged();
+            }
         });
 
         hubConnection.On<IEnumerable<ChatMessageDTO>>("GetMessagesForGroup", (IEnumerable<ChatMessageDTO> messagesRes) =>

@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using LearnBlazor.Shared.DataTransferObject;
 
 
-namespace LearnBlazor.Server.Services.Communication
+namespace LearnBlazor.Shared.Communication
 {
-    public class ChatMessageResponse: BaseResponse
+    public class ChatMessageResponseTest: BaseResponse
     {
         public ChatMessageDTO ChatMessageDTO { get; private set; }
 
-        private ChatMessageResponse(bool success, string message, ChatMessageDTO chatMessageDTO) : base(success, message)
+        private ChatMessageResponseTest(bool success, string message, ChatMessageDTO chatMessageDTO) : base(success, message)
         {
             ChatMessageDTO = chatMessageDTO;
         }
@@ -21,7 +21,7 @@ namespace LearnBlazor.Server.Services.Communication
         /// </summary>
         /// <param name="message">Saved message.</param>
         /// <returns>Response.</returns>
-        public ChatMessageResponse(ChatMessageDTO chatMessageDTO) : this(true, string.Empty, chatMessageDTO)
+        public ChatMessageResponseTest(ChatMessageDTO chatMessageDTO) : this(true, string.Empty, chatMessageDTO)
         { }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace LearnBlazor.Server.Services.Communication
         /// </summary>
         /// <param name="message">Error message.</param>
         /// <returns>Response.</returns>
-        public ChatMessageResponse(string messageString) : this(false, messageString, null)
+        public ChatMessageResponseTest(string messageString) : this(false, messageString, null)
         { }
     }
 }

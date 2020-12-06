@@ -9,11 +9,10 @@ using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
 using LearnBlazor.Server.Data.ServiceInterface;
 using LearnBlazor.Server.Data.RepositoryInterface;
 using LearnBlazor.Shared.DataTransferObject;
-using LearnBlazor.Server.Services.Communication;
+using LearnBlazor.Shared.Communication;
 
 //using Texter.Domain.RepositoryInterface.MessageRepository;
 //using Texter.Domain.Services;
-//using Texter.Domain.Services.Communication;
 
 namespace LearnBlazor.Server.Services
 {

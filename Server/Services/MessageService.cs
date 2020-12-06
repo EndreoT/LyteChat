@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using LearnBlazor.Server.Data.Models;
 using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
 using LearnBlazor.Server.Data.ServiceInterface;
-using LearnBlazor.Server.Services.Communication;
 using LearnBlazor.Server.Data.RepositoryInterface;
+using LearnBlazor.Shared.Communication;
 using LearnBlazor.Shared.DataTransferObject;
 
 //using Texter.Domain.RepositoryInterface.MessageRepository;
@@ -98,7 +98,7 @@ namespace LearnBlazor.Server.Services
                     {
                         messageStr = ResourceNotFoundMessage("ChatGroup", chatGroupUuid);
                     }
-                    return new ChatMessageResponse(messageStr);
+                    return new ChatMessageResponse { Message = messageStr };
                 }
                 ChatMessage saveChatMessage = new ChatMessage()
                 {
@@ -115,12 +115,12 @@ namespace LearnBlazor.Server.Services
                 chatMessageDTO.Uuid = saveChatMessage.Uuid;
                 //ChatMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
 
-                return new ChatMessageResponse(chatMessageDTO);
+                return new ChatMessageResponse { ChatMessageDTO = chatMessageDTO };
             }
             catch (Exception ex)
             {
                 // Do some logging stuff
-                return new ChatMessageResponse($"An error occurred when saving the message: {ex.Message}");
+                return new ChatMessageResponse { Message = $"An error occurred when saving the message: {ex.Message}" };
             }
         }
 

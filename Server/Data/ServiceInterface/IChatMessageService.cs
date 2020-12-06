@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LearnBlazor.Shared.DataTransferObject;
-using LearnBlazor.Server.Services.Communication;
+using LearnBlazor.Shared.Communication;
 
 namespace LearnBlazor.Server.Data.ServiceInterface
 {

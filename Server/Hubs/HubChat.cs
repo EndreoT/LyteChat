@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 using LearnBlazor.Server.Data.ServiceInterface;
 using LearnBlazor.Shared.DataTransferObject;
-using LearnBlazor.Server.Services.Communication;
+using LearnBlazor.Shared.Communication;
 
 namespace LearnBlazor.Server.Hubs
 {
@@ -36,7 +36,7 @@ namespace LearnBlazor.Server.Hubs
         public async Task CreateMessage(ChatMessageDTO chatMessage)
         {
             ChatMessageResponse chatMessageResponse = await _chatMessageService.CreateChatMessageAsync(chatMessage);
-            await Clients.All.SendAsync("ReceiveMessage", chatMessageResponse.ChatMessageDTO);
+            await Clients.All.SendAsync("ReceiveMessage", chatMessageResponse);
         }
 
         public void GetMessagesForGroup(string groupUuid)
