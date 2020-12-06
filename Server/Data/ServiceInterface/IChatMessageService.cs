@@ -9,7 +9,9 @@ namespace LearnBlazor.Server.Data.ServiceInterface
 {
     public interface IChatMessageService
     {
-        public Task<IEnumerable<ChatMessageDTO>> ListMessagesForGroupAsync(string groupUuid);
+        public Task<IEnumerable<ChatMessageDTO>> ListMessagesForGroupAsync(Guid groupUuid);
+
+        public Task<IEnumerable<ChatMessageDTO>> ListMessagesForAllChatGroupAsync();
 
         public Task<ChatMessageResponse> CreateChatMessageAsync(ChatMessageDTO chatMessageDTO);
     }

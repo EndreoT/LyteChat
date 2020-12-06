@@ -8,7 +8,7 @@ namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
 {
     public interface IChatMessageRepository: IBaseRepository<ChatMessage>
     {
-        public Task<IEnumerable<ChatMessage>> ListMessagesForGroupAsync(string group);
+        public Task<IEnumerable<ChatMessage>> ListMessagesForGroupAsync(Guid group);
 
         public Task AddMessageAsync(ChatMessage chatMessage);
     }

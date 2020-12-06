@@ -8,8 +8,8 @@ namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
 {
     public interface IChatGroupRepository: IBaseRepository<ChatGroup>
     {
-        public Task<ChatGroup> GetByUUIdAsync(Guid uuid);
-
         public Task<IEnumerable<ChatGroup>> ListChatGroupsAsync();
+
+        public Task<ChatGroup> GetAllChatAsync();
     }
 }

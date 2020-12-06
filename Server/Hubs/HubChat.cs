@@ -25,8 +25,7 @@ namespace LearnBlazor.Server.Hubs
                 "WelcomeMessage",
                 $"Welcome to all chat, {connectionId}");
 
-            string groupUuid = "66f6cf51-4054-4440-9ebd-135ee0d5f73c";
-            IEnumerable<ChatMessageDTO> messages = await _chatMessageService.ListMessagesForGroupAsync(groupUuid);
+            IEnumerable<ChatMessageDTO> messages = await _chatMessageService.ListMessagesForAllChatGroupAsync();
             await Clients.Client(connectionId).SendAsync(
                 "GetMessagesForGroup",
                 messages);

@@ -12,12 +12,12 @@ namespace LearnBlazor.Server.Persistence.Repositories
     public class ChatMessageRepository: BaseRepository, IChatMessageRepository
     {
         public ChatMessageRepository(AppDbContext context) : base(context) { }
-        public async Task<IEnumerable<ChatMessage>> ListMessagesForGroupAsync(string groupUuid)
+        public async Task<IEnumerable<ChatMessage>> ListMessagesForGroupAsync(Guid groupUuid)
         {
             try
             {
                 return await _context.ChatMessages
-                    .Where(message => message.ChatGroup.Uuid.ToString().Equals(groupUuid))
+                    .Where(message => message.ChatGroup.Uuid.Equals(groupUuid))
                     .Include(message => message.User)
                     .Include(message => message.ChatGroup)
                     .ToListAsync();
@@ -32,7 +32,7 @@ namespace LearnBlazor.Server.Persistence.Repositories
             await _context.ChatMessages.AddAsync(chatMessage);
         }
 
-        public async Task<ChatMessage> GetByUuid(Guid uuid)
+        public async Task<ChatMessage> GetByUuidAsync(Guid uuid)
         {
             try
             {

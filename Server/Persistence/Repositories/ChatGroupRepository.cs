@@ -13,15 +13,16 @@ namespace LearnBlazor.Server.Persistence.Repositories
     {
 
         public ChatGroupRepository(AppDbContext context) : base(context) { }
-        public async Task<ChatGroup> GetByUUIdAsync(Guid uuid)
+
+        public async Task<ChatGroup> GetByUuidAsync(Guid uuid)
         {
             try
             {
-                return await _context.ChatGroups
-                   .Where(chatGroup => chatGroup.Uuid == uuid)
-                   .SingleAsync();
+                return await _context
+                    .ChatGroups
+                    .Where(chatGroup => chatGroup.Uuid.Equals(uuid)).SingleAsync();
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException e)
             {
                 return null;
             }
@@ -33,22 +34,21 @@ namespace LearnBlazor.Server.Persistence.Repositories
             {
                 return await _context.ChatGroups.ToListAsync();
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException e)
             {
                 return null;
             }
         }
 
-        public async Task<ChatGroup> GetByUuid(Guid uuid)
+        public async Task<ChatGroup> GetAllChatAsync()
         {
             try
             {
-                return await _context
-                    .ChatGroups
-                    .Where(chatGroup => chatGroup.Uuid.Equals(uuid)).SingleAsync();
-                
+                return await _context.ChatGroups
+                   .Where(chatGroup => chatGroup.ChatGroupName.Equals("ALL_CHAT"))
+                   .SingleAsync();
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException e)
             {
                 return null;
             }

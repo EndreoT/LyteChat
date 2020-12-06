@@ -27,7 +27,7 @@ namespace LearnBlazor.Server.Persistence.Repositories
             }
         }
 
-        public async Task<User> GetByUuid(Guid uuid)
+        public async Task<User> GetByUuidAsync(Guid uuid)
         {
             try
             {

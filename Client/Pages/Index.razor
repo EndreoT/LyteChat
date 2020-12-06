@@ -23,13 +23,13 @@
 <ul id="messagesList">
     @foreach (var message in messages)
     {
-        <li>@message</li>
+        <li>@message.UserName: @message.Message</li>
     }
 </ul>
 
 @code {
     private HubConnection hubConnection;
-    private List<string> messages = new List<string>();
+    private List<ChatMessageDTO> messages = new List<ChatMessageDTO>();
     private string userInput;
     private string messageInput;
 
@@ -41,8 +41,7 @@
 
         hubConnection.On<ChatMessageDTO>("ReceiveMessage", (ChatMessageDTO chatMessage) =>
         {
-            var encodedMsg = $"{chatMessage.UserName}: {chatMessage.Message}";
-            messages.Add(encodedMsg);
+            messages.Add(chatMessage);
             StateHasChanged();
         });
 
@@ -50,19 +49,17 @@
         {
             foreach (ChatMessageDTO message in messagesRes)
             {
-                messages.Add(message.Message);
+                messages.Add(message);
             }
 
             StateHasChanged();
         });
 
-        hubConnection.On<string>("WelcomeMessage", (string welcomeChat) =>
-        {
-            messages.Add(welcomeChat);
-            StateHasChanged();
-        });
-
-
+        //hubConnection.On<string>("WelcomeMessage", (string welcomeChat) =>
+        //{
+        //    messages.Add(welcomeChat);
+        //    StateHasChanged();
+        //});
 
         await hubConnection.StartAsync();
     }
@@ -76,7 +73,6 @@
         };
         await hubConnection.SendAsync("CreateMessage", chatMessage);
     }
-
 
     public bool IsConnected =>
         hubConnection.State == HubConnectionState.Connected;

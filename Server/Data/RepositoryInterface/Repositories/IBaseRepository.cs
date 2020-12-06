@@ -7,6 +7,6 @@ namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
 {
     public interface IBaseRepository<T>
     {
-        public Task<T> GetByUuid(Guid uuid);
+        public Task<T> GetByUuidAsync(Guid uuid);
     }
 }
