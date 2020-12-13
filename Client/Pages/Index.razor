@@ -1,8 +1,11 @@
 ﻿@page "/"
 @using System.Threading
+@using System.Collections.Generic
 @using Microsoft.AspNetCore.SignalR.Client
 @using LearnBlazor.Shared.DataTransferObject
 @using LearnBlazor.Shared.Communication
+@using LearnBlazor.Shared
+@inject HttpClient Http
 @inject NavigationManager NavigationManager
 @implements IAsyncDisposable
 
@@ -22,16 +25,28 @@
 
 <hr>
 
-<ul id="messagesList">
-    @foreach (var message in messages)
+<ul id="chatGroupsList">
+    @foreach (var chatGroup in _chatGroups)
     {
-        <li>@message.UserName: @message.Message</li>
+    <li>
+        <h1>@chatGroup.ChatGroupName</h1>
+        <ul class="messagesList">
+            @foreach (var message in _messages)
+            {
+                @if (message.ChatGroupUuid.Equals(chatGroup.Uuid))
+                {
+                    <li>@message.UserName: @message.Message</li>
+                }
+            }
+        </ul>
+    </li>
     }
 </ul>
 
 @code {
     private HubConnection hubConnection;
-    private List<ChatMessageDTO> messages = new List<ChatMessageDTO>();
+    private List<ChatMessageDTO> _messages = new List<ChatMessageDTO>();
+    private List<ChatGroupDTO> _chatGroups = new List<ChatGroupDTO>();
     private string userInput;
     private string messageInput;
 
@@ -40,6 +55,13 @@
         hubConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
             .Build();
+
+        _chatGroups = await Http.GetFromJsonAsync<List<ChatGroupDTO>>("/api/ChatGroup");
+        foreach (ChatGroupDTO chatGroup in _chatGroups)
+        {
+            IEnumerable<ChatMessageDTO> messages = await Http.GetFromJsonAsync<ChatMessageDTO[]>($"/api/ChatMessage/{chatGroup.Uuid}");
+            _messages.AddRange(messages);
+        }
 
         hubConnection.On<ChatMessageResponse>("ReceiveMessage", (ChatMessageResponse chatMessageRes) =>
         {
@@ -50,19 +72,9 @@
             ChatMessageDTO chatMessage = chatMessageRes.ChatMessageDTO;
             if (chatMessage != null)
             {
-                messages.Add(chatMessage);
+                _messages.Append(chatMessage);
                 StateHasChanged();
             }
-        });
-
-        hubConnection.On<IEnumerable<ChatMessageDTO>>("GetMessagesForGroup", (IEnumerable<ChatMessageDTO> messagesRes) =>
-        {
-            foreach (ChatMessageDTO message in messagesRes)
-            {
-                messages.Add(message);
-            }
-
-            StateHasChanged();
         });
 
         //hubConnection.On<string>("WelcomeMessage", (string welcomeChat) =>

@@ -40,6 +40,21 @@ namespace LearnBlazor.Server.Services
             //_mapper = mapper;
         }
 
+        public async Task<ChatMessageDTO> GetByUuidAsync(Guid uuid)
+        {
+            ChatMessage message = await _chatMessageRepository.GetByUuidAsync(uuid);
+            ChatMessageDTO messageDTO = new ChatMessageDTO()
+            {
+                Uuid = message.Uuid,
+                UserUuid = message.User.Uuid,
+                UserName = message.User.Name,
+                ChatGroupUuid = message.ChatGroup.Uuid,
+                ChatGroupName = message.ChatGroup.ChatGroupName,
+                Message = message.Message,
+            };
+            return messageDTO;
+        }
+
         public async Task<IEnumerable<ChatMessageDTO>> ListMessagesForGroupAsync(Guid groupUuid)
         {
             IEnumerable<ChatMessage> messageQuery = await _chatMessageRepository
@@ -51,7 +66,7 @@ namespace LearnBlazor.Server.Services
                     UserUuid = message.User.Uuid,
                     UserName = message.User.Name,
                     Message = message.Message,
-                    ChatGroupUuid = message.Uuid,
+                    ChatGroupUuid = message.ChatGroup.Uuid,
                     ChatGroupName = message.ChatGroup.ChatGroupName
                 });
 

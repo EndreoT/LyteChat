@@ -42,12 +42,15 @@ namespace LearnBlazor.Server
                     new[] { "application/octet-stream" });
             });
 
-            // Custom services
+            // Repositories
             services.AddScoped<IChatGroupRepository, ChatGroupRepository>();
             services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
-            services.AddScoped<IChatMessageService, ChatMessageService>();
             services.AddScoped<IUserRepository, UserRepository>();
+            // App services
+            services.AddScoped<IChatMessageService, ChatMessageService>();
+            services.AddScoped<IChatGroupService, ChatGroupService>();
             services.AddScoped<IUserService, UserService>();
+            // DB services
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 

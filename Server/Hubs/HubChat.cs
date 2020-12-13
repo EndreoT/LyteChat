@@ -25,11 +25,6 @@ namespace LearnBlazor.Server.Hubs
                 "WelcomeMessage",
                 $"Welcome to all chat, {connectionId}");
 
-            IEnumerable<ChatMessageDTO> messages = await _chatMessageService.ListMessagesForAllChatGroupAsync();
-            await Clients.Client(connectionId).SendAsync(
-                "GetMessagesForGroup",
-                messages);
-
             await base.OnConnectedAsync();
         }
 

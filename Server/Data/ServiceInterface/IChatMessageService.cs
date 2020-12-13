@@ -7,7 +7,7 @@ using LearnBlazor.Shared.Communication;
 
 namespace LearnBlazor.Server.Data.ServiceInterface
 {
-    public interface IChatMessageService
+    public interface IChatMessageService: IServiceBase<ChatMessageDTO>
     {
         public Task<IEnumerable<ChatMessageDTO>> ListMessagesForGroupAsync(Guid groupUuid);
 
