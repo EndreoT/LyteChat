@@ -21,9 +21,9 @@ namespace LearnBlazor.Server.Hubs
         {
             string connectionId = Context.ConnectionId;
 
-            await Clients.Client(connectionId).SendAsync(
-                "WelcomeMessage",
-                $"Welcome to all chat, {connectionId}");
+            //await Clients.Client(connectionId).SendAsync(
+            //    "WelcomeMessage",
+            //    $"Welcome to all chat, {connectionId}");
 
             await base.OnConnectedAsync();
         }

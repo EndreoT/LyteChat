@@ -9,19 +9,7 @@
 @inject NavigationManager NavigationManager
 @implements IAsyncDisposable
 
-<div class="form-group">
-    <label>
-        User:
-        <input @bind="userInput" />
-    </label>
-</div>
-<div class="form-group">
-    <label>
-        Message:
-        <input @bind="messageInput" size="50" />
-    </label>
-</div>
-<button @onclick="Send" disabled="@(!IsConnected)">Send</button>
+
 
 <hr>
 
@@ -30,6 +18,21 @@
     {
     <li>
         <h1>@chatGroup.ChatGroupName</h1>
+
+        <div class="form-group">
+            <label>
+                User:
+                <input @bind="userInput" />
+            </label>
+        </div>
+        <div class="form-group">
+            <label>
+                Message:
+                <input @bind="messageInput" size="50" />
+            </label>
+        </div>
+        <button @onclick="(() => Send(chatGroup.Uuid))" disabled="@(!IsConnected)">Send</button>
+
         <ul class="messagesList">
             @foreach (var message in _messages)
             {
@@ -68,12 +71,16 @@
             if (!chatMessageRes.Success)
             {
                 //TODO
+                Console.WriteLine(chatMessageRes.Message);
             }
-            ChatMessageDTO chatMessage = chatMessageRes.ChatMessageDTO;
-            if (chatMessage != null)
+            else
             {
-                _messages.Append(chatMessage);
-                StateHasChanged();
+                ChatMessageDTO chatMessage = chatMessageRes.ChatMessageDTO;
+                if (chatMessage != null)
+                {
+                    _messages.Add(chatMessage);
+                    StateHasChanged();
+                }
             }
         });
 
@@ -86,11 +93,12 @@
         await hubConnection.StartAsync();
     }
 
-    public async Task Send()
+    public async Task Send(Guid chatGroupUuid)
     {
         ChatMessageDTO chatMessage = new ChatMessageDTO
         {
-            //UserUuid =
+            UserUuid = Guid.Parse("08336bfa-9c3c-4f2e-a3e4-81073eed83d5"),
+            ChatGroupUuid = chatGroupUuid,
             Message = messageInput
         };
         await hubConnection.SendAsync("CreateMessage", chatMessage);

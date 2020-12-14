@@ -2,8 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 //using AutoMapper;
-//using Texter.DataTransferObject;
 using LearnBlazor.Server.Data.Models;
 using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
 using LearnBlazor.Server.Data.ServiceInterface;
@@ -11,8 +11,6 @@ using LearnBlazor.Server.Data.RepositoryInterface;
 using LearnBlazor.Shared.DataTransferObject;
 using LearnBlazor.Shared.Communication;
 
-//using Texter.Domain.RepositoryInterface.MessageRepository;
-//using Texter.Domain.Services;
 
 namespace LearnBlazor.Server.Services
 {

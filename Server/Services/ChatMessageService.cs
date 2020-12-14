@@ -98,10 +98,8 @@ namespace LearnBlazor.Server.Services
                 Guid userUuid = chatMessageDTO.UserUuid;
                 Guid chatGroupUuid = chatMessageDTO.ChatGroupUuid;
 
-                Task<User> userTask = _userRepository.GetByUuidAsync(userUuid);
-                Task<ChatGroup> chatGroupTask = _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
-                User user = await userTask;
-                ChatGroup chatGroup = await chatGroupTask;
+                User user = await _userRepository.GetByUuidAsync(userUuid);
+                ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
                 if (user == null || chatGroup == null)
                 {
                     string messageStr;
@@ -128,9 +126,14 @@ namespace LearnBlazor.Server.Services
                 await _unitOfWork.CompleteAsync();
 
                 chatMessageDTO.Uuid = saveChatMessage.Uuid;
+                chatMessageDTO.ChatGroupName = saveChatMessage.ChatGroup.ChatGroupName;
+                chatMessageDTO.UserName = saveChatMessage.User.Name;
                 //ChatMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
 
-                return new ChatMessageResponse { ChatMessageDTO = chatMessageDTO };
+                return new ChatMessageResponse {
+                    Success = true,
+                    ChatMessageDTO = chatMessageDTO
+                };
             }
             catch (Exception ex)
             {

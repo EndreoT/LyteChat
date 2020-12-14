@@ -15,7 +15,7 @@ namespace LearnBlazor.Server.Controllers
     [ApiController]
     public class ChatMessageController : ControllerBase
     {
-        private IChatMessageService _chatMessageService;
+        private readonly IChatMessageService _chatMessageService;
         public ChatMessageController(IChatMessageService chatMessageService)
         {
             _chatMessageService = chatMessageService;
