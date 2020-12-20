@@ -46,10 +46,12 @@ namespace LearnBlazor.Server
             services.AddScoped<IChatGroupRepository, ChatGroupRepository>();
             services.AddScoped<IChatMessageRepository, ChatMessageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IChatGroupUserRepository, ChatGroupUserRepository>();
             // App services
             services.AddScoped<IChatMessageService, ChatMessageService>();
             services.AddScoped<IChatGroupService, ChatGroupService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IChatGroupUserService, ChatGroupUserService>();
             // DB services
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }

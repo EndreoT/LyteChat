@@ -13,24 +13,28 @@
 
 <hr>
 
+<div class="form-group">
+    <select @bind="_userUuid">
+        @foreach (var user in _users)
+        {
+            <option value=@user.Uuid>@user.Name; @user.Uuid</option>
+        }
+    </select>
+</div>
+<div class="form-group">
+    <label>
+        Message:
+        <input @bind="messageInput" size="50" />
+    </label>
+</div>
+
 <ul id="chatGroupsList">
     @foreach (var chatGroup in _chatGroups)
     {
     <li>
-        <h1>@chatGroup.ChatGroupName</h1>
-
-        <div class="form-group">
-            <label>
-                User:
-                <input @bind="userInput" />
-            </label>
-        </div>
-        <div class="form-group">
-            <label>
-                Message:
-                <input @bind="messageInput" size="50" />
-            </label>
-        </div>
+        <h1>Chat Group: @chatGroup.ChatGroupName</h1>
+        <h1>Users: </h1>
+        
         <button @onclick="(() => Send(chatGroup.Uuid))" disabled="@(!IsConnected)">Send</button>
 
         <ul class="messagesList">
@@ -50,8 +54,10 @@
     private HubConnection hubConnection;
     private List<ChatMessageDTO> _messages = new List<ChatMessageDTO>();
     private List<ChatGroupDTO> _chatGroups = new List<ChatGroupDTO>();
+    private List<UserDTO> _users = new List<UserDTO>();
     private string userInput;
     private string messageInput;
+    private string _userUuid;
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,8 +66,10 @@
             .Build();
 
         _chatGroups = await Http.GetFromJsonAsync<List<ChatGroupDTO>>("/api/ChatGroup");
+        _users = await Http.GetFromJsonAsync<List<UserDTO>>("/api/User");
         foreach (ChatGroupDTO chatGroup in _chatGroups)
         {
+            // TODO do in parallel
             IEnumerable<ChatMessageDTO> messages = await Http.GetFromJsonAsync<ChatMessageDTO[]>($"/api/ChatMessage/{chatGroup.Uuid}");
             _messages.AddRange(messages);
         }
@@ -95,13 +103,22 @@
 
     public async Task Send(Guid chatGroupUuid)
     {
-        ChatMessageDTO chatMessage = new ChatMessageDTO
+        bool parseSuccess = Guid.TryParse(_userUuid, out Guid userUuid);
+        if (parseSuccess)
         {
-            UserUuid = Guid.Parse("08336bfa-9c3c-4f2e-a3e4-81073eed83d5"),
-            ChatGroupUuid = chatGroupUuid,
-            Message = messageInput
-        };
-        await hubConnection.SendAsync("CreateMessage", chatMessage);
+            ChatMessageDTO chatMessage = new ChatMessageDTO
+            {
+                UserUuid = userUuid,
+                ChatGroupUuid = chatGroupUuid,
+                Message = messageInput
+            };
+            await hubConnection.SendAsync("CreateMessage", chatMessage);
+        }
+        else
+        {
+            //TODO
+        }
+
     }
 
     public bool IsConnected =>

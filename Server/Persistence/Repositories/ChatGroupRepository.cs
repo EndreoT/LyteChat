@@ -11,7 +11,6 @@ namespace LearnBlazor.Server.Persistence.Repositories
 {
     public class ChatGroupRepository : BaseRepository, IChatGroupRepository
     {
-
         public ChatGroupRepository(AppDbContext context) : base(context) { }
 
         public async Task<ChatGroup> GetByUuidAsync(Guid uuid)

@@ -13,6 +13,18 @@ namespace LearnBlazor.Server.Persistence.Repositories
     {
         public UserRepository(AppDbContext context) : base(context) { }
 
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            try
+            {
+                return await _context.Users.ToListAsync();
+            }
+            catch (InvalidOperationException)
+            {
+                return Array.Empty<User>();
+            }
+        }
+
         public async Task<User> GetAnonymousUserAsync()
         {
             try

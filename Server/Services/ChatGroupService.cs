@@ -17,6 +17,7 @@ namespace LearnBlazor.Server.Services
         {
             _chatGroupRepository = chatGroupRepository;
         }
+
         public async Task<ChatGroupDTO> GetByUuidAsync(Guid uuid)
         {
             ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(uuid);

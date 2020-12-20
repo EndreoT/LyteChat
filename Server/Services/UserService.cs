@@ -31,6 +31,21 @@ namespace LearnBlazor.Server.Services
             //_mapper = mapper;
         }
 
+        public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
+        {
+            IEnumerable<User> userQuery = await _userRepository
+                .GetAllUsersAsync();
+            IEnumerable<UserDTO> users = userQuery
+                .Select(user => new UserDTO
+                {
+                    Uuid = user.Uuid,
+                    Name = user.Name
+                });
+
+            //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
+            return users;
+        }
+
         public async Task<UserDTO> GetAnonymousUserAsync()
         {
             User userQuery = await _userRepository

@@ -6,9 +6,8 @@ using LearnBlazor.Server.Data.Models;
 
 namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
 {
-    public interface IUserRepository: IBaseRepository<User>
+    public interface IChatGroupUserRepository: IBaseRepository<ChatGroupUser>
     {
-        public Task<IEnumerable<User>> GetAllUsersAsync();
-        public Task<User> GetAnonymousUserAsync();
+        public Task<IEnumerable<User>> GetUsersFromChatGroup(long chatGroupId);
     }
 }

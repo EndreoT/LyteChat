@@ -13,5 +13,7 @@ namespace LearnBlazor.Server.Data.Models
         public string ChatGroupName { get; set; }
 
         public ICollection<ChatMessage> Messages { get; set; }
+
+        public ICollection<ChatGroupUser> ChatGroupUsers { get; set; }
     }
 }
