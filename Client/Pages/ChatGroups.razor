@@ -1,0 +1,39 @@
+﻿@page "/fetchdata"
+@using System.Threading
+@using System.Collections.Generic
+@using Microsoft.AspNetCore.SignalR.Client
+@using LearnBlazor.Shared.DataTransferObject
+@using LearnBlazor.Shared.Communication
+@using LearnBlazor.Shared
+@inject HttpClient Http
+
+<h1>Chat Groups</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Uuid</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var chatGroup in _chatGroups)
+        {
+            <tr>
+                <td>@chatGroup.ChatGroupName</td>
+                <td>@chatGroup.Uuid</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@code {
+    private List<ChatGroupDTO> _chatGroups = new List<ChatGroupDTO>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _chatGroups = await Http.GetFromJsonAsync<List<ChatGroupDTO>>("api/ChatGroup");
+    }
+
+}
