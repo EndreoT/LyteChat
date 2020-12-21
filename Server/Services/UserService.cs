@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -44,6 +45,17 @@ namespace LearnBlazor.Server.Services
 
             //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
             return users;
+        }
+
+        public async Task<UserDTO> GetByUuidAsync(Guid uuid)
+        {
+            User user = await _userRepository.GetByUuidAsync(uuid);
+            UserDTO userDTO = new UserDTO()
+            {
+                Uuid = user.Uuid,
+                Name = user.Name
+            };
+            return userDTO;
         }
 
         public async Task<UserDTO> GetAnonymousUserAsync()

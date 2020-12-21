@@ -6,7 +6,7 @@ using LearnBlazor.Shared.DataTransferObject;
 
 namespace LearnBlazor.Server.Data.ServiceInterface
 {
-    public interface IUserService
+    public interface IUserService: IServiceBase<UserDTO>
     {
         public Task<IEnumerable<UserDTO>> GetAllUsersAsync();
         public Task<UserDTO> GetAnonymousUserAsync();

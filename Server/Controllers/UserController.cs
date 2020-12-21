@@ -16,42 +16,33 @@ namespace LearnBlazor.Server.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IChatGroupUserService _chatGroupUserService;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IChatGroupUserService chatGroupUserService)
         {
             _userService = userService;
+            _chatGroupUserService = chatGroupUserService;
         }
 
         // GET: api/<UserController>
         [HttpGet]
-        public async Task<IEnumerable<UserDTO>> Get()
+        public async Task<IEnumerable<UserDTO>> GetAllUsers()
         {
             return await _userService.GetAllUsersAsync();
         }
 
-        // GET api/<UserController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        // GET api/<UserController>/fa50df81-0158-4fda-9813-ddff9f70ba9e
+        [HttpGet("{userUuid}")]
+        public async Task<UserDTO> GetUser(Guid userUuid)
         {
-            return "value";
+            return await _userService.GetByUuidAsync(userUuid);
         }
 
-        // POST api/<UserController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        // GET api/<UserController>/fa50df81-0158-4fda-9813-ddff9f70ba9e/chatgroup
+        [HttpGet("{userUuid}/chatgroup")]
+        public async Task<IEnumerable<ChatGroupDTO>> GetChatGroupsForUser(Guid userUuid)
         {
-        }
-
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return await _chatGroupUserService.GetChatGroupsForUserAsync(userUuid);
         }
     }
 }

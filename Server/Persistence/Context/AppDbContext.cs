@@ -32,15 +32,15 @@ namespace LearnBlazor.Server.Persistence.Context
 
             var users = new User[]
             {
-                new User { UserId=1, Name = "Carson" },
+                new User { UserId=1, Name = "Anonymous" },
                 new User { UserId=2, Name = "Bob" },
-                new User { UserId=3, Name = "Anonymous" },
+                new User { UserId=3, Name = "Carson" },
 
             };
 
             var chatGroups = new ChatGroup[]
             {
-                new ChatGroup{ChatGroupId=1, ChatGroupName="ALL_CHAT"},
+                new ChatGroup{ChatGroupId=1, ChatGroupName="All Chat"},
                 new ChatGroup{ChatGroupId=2, ChatGroupName="second chat group"},
                 new ChatGroup{ChatGroupId=3, ChatGroupName="third chat group"},
             };
@@ -50,7 +50,9 @@ namespace LearnBlazor.Server.Persistence.Context
                 new ChatGroupUser{UserId=1, ChatGroupId=1},
                 new ChatGroupUser{UserId=1, ChatGroupId=2},
                 new ChatGroupUser{UserId=1, ChatGroupId=3},
-                new ChatGroupUser{UserId=2, ChatGroupId=1}
+                new ChatGroupUser{UserId=2, ChatGroupId=1},
+                new ChatGroupUser{UserId=2, ChatGroupId=2},
+                new ChatGroupUser{UserId=3, ChatGroupId=1}
             };
 
             modelBuilder.Entity<User>().HasData(users);

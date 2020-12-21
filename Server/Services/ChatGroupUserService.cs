@@ -9,17 +9,20 @@ using LearnBlazor.Shared.DataTransferObject;
 
 namespace LearnBlazor.Server.Services
 {
-    public class ChatGroupUserService: IChatGroupUserService
+    public class ChatGroupUserService : IChatGroupUserService
     {
         private readonly IChatGroupUserRepository _chatGroupUserRepository;
         private readonly IChatGroupRepository _chatGroupRepository;
+        private readonly IUserRepository _userRepository;
 
         public ChatGroupUserService(
             IChatGroupUserRepository chatGroupUserRepository,
-            IChatGroupRepository chatGroupRepository)
+            IChatGroupRepository chatGroupRepository,
+            IUserRepository userRepository)
         {
             _chatGroupUserRepository = chatGroupUserRepository;
             _chatGroupRepository = chatGroupRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<ChatGroupUser> GetByUuidAsync(Guid uuid)
@@ -27,7 +30,7 @@ namespace LearnBlazor.Server.Services
             return await _chatGroupUserRepository.GetByUuidAsync(uuid);
         }
 
-        public async Task<IEnumerable<UserDTO>> GetUsersFromChatGroup(Guid chatGroupUuId)
+        public async Task<IEnumerable<UserDTO>> GetUsersForChatGroupAsync(Guid chatGroupUuId)
         {
             ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuId);
             if (chatGroup == null)
@@ -45,6 +48,26 @@ namespace LearnBlazor.Server.Services
 
             //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
             return users;
+        }
+
+        public async Task<IEnumerable<ChatGroupDTO>> GetChatGroupsForUserAsync(Guid userUuid)
+        {
+            User user = await _userRepository.GetByUuidAsync(userUuid);
+            if (user == null)
+            {
+                return Array.Empty<ChatGroupDTO>();
+            }
+            IEnumerable<ChatGroup> chatGroupQuery = await _chatGroupUserRepository.GetChatGroupsForUser(
+                user.UserId);
+            IEnumerable<ChatGroupDTO> chatGroups = chatGroupQuery
+                .Select(chatGroup => new ChatGroupDTO
+                {
+                    Uuid = chatGroup.Uuid,
+                    ChatGroupName = chatGroup.ChatGroupName
+                });
+
+            //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
+            return chatGroups;
         }
     }
 }

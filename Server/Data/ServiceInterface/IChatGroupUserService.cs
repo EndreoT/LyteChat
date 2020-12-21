@@ -9,6 +9,8 @@ namespace LearnBlazor.Server.Data.ServiceInterface
 {
     public interface IChatGroupUserService: IServiceBase<ChatGroupUser>
     {
-        public Task<IEnumerable<UserDTO>> GetUsersFromChatGroup(Guid chatGroupUuId);
+        public Task<IEnumerable<UserDTO>> GetUsersForChatGroupAsync(Guid chatGroupUuid);
+
+        public Task<IEnumerable<ChatGroupDTO>> GetChatGroupsForUserAsync(Guid UserUuid);
     }
 }

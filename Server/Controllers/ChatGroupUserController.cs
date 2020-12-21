@@ -21,13 +21,22 @@ namespace LearnBlazor.Server.Controllers
             _chatGroupUserService = chatGroupUserService;
         }
 
-        // GET api/<ChatGroupUserController>/5
-        [HttpGet("chatgroup/{uuid}")]
-        public async Task<IEnumerable<UserDTO>> Get(Guid uuid)
+        // GET api/<ChatGroupUserController>?chatGroup=fa50df81-0158-4fda-9813-ddff9f70ba9e
+        [HttpGet]
+        public async Task<IEnumerable<UserDTO>> Get(Guid chatgroup, Guid user)
         {
-            return await _chatGroupUserService.GetUsersFromChatGroup(uuid);
+            //TODO
+            return await _chatGroupUserService.GetUsersForChatGroupAsync(chatgroup);
         }
 
-       
+        // GET api/<ChatGroupUserController>/user/fa50df81-0158-4fda-9813-ddff9f70ba9e
+        [HttpGet("user/{uuid}")]
+        public async Task<IEnumerable<ChatGroupDTO>> GetTest(Guid uuid)
+        {
+            //TODO
+            return await _chatGroupUserService.GetChatGroupsForUserAsync(uuid);
+        }
+
+
     }
 }

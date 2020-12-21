@@ -40,6 +40,22 @@ namespace LearnBlazor.Server.Persistence.Repositories
             {
                 return null;
             }
+        }
+
+        public async Task<IEnumerable<ChatGroup>> GetChatGroupsForUser(long UserId)
+        {
+            try
+            {
+                IEnumerable<ChatGroup> chatGroups = await _context.ChatGroupUsers
+                    .Where(cgu => cgu.UserId == UserId)
+                    .Select(cgu => cgu.ChatGroup).ToListAsync();
+                return chatGroups;
+            }
+            catch (InvalidOperationException e)
+            {
+                return null;
+            }
+
 
         }
     }
