@@ -7,10 +7,10 @@ using LearnBlazor.Shared.DataTransferObject;
 
 namespace LearnBlazor.Shared.Communication
 {
-    public class ChatMessageResponse
+    public class ChatGroupUserResponse
     {
         public bool Success { get; set; }
         public string ErrorMessage { get; set; }
-        public ChatMessageDTO ChatMessageDTO { get; set; }
+        public ChatGroupUserDTO ChatGroupUserDTO { get; set; }
     }
 }

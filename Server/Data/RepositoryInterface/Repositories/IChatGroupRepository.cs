@@ -11,5 +11,6 @@ namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
         public Task<IEnumerable<ChatGroup>> ListChatGroupsAsync();
 
         public Task<ChatGroup> GetAllChatAsync();
+
     }
 }

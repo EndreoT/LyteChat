@@ -19,26 +19,14 @@ namespace LearnBlazor.Server.Services
 {
     public class ChatMessageService : ServiceBase, IChatMessageService
     {
-        private readonly IChatMessageRepository _chatMessageRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IChatGroupRepository _chatGroupRepository;
-        private readonly IUnitOfWork _unitOfWork;
-        //private readonly IMapper _mapper;
-
         public ChatMessageService(
             IChatMessageRepository chatMessageRepository,
             IUserRepository userRepository,
             IChatGroupRepository chatGroupRepository,
+            IChatGroupUserRepository chatGroupUserRepository,
             IUnitOfWork unitOfWork
             //IMapper mapper,
-            )
-        {
-            _chatMessageRepository = chatMessageRepository;
-            _userRepository = userRepository;
-            _chatGroupRepository = chatGroupRepository;
-            _unitOfWork = unitOfWork;
-            //_mapper = mapper;
-        }
+            ) : base(chatMessageRepository, userRepository, chatGroupRepository, chatGroupUserRepository, unitOfWork) { }
 
         public async Task<ChatMessageDTO> GetByUuidAsync(Guid uuid)
         {
@@ -89,30 +77,18 @@ namespace LearnBlazor.Server.Services
         //    return resource;
         //}
 
-
-
         public async Task<ChatMessageResponse> CreateChatMessageAsync(ChatMessageDTO chatMessageDTO)
         {
             try
             {
-                Guid userUuid = chatMessageDTO.UserUuid;
-                Guid chatGroupUuid = chatMessageDTO.ChatGroupUuid;
+                var (user, chatGroup, messageStr) = await VerifyUserAndChatGroupExist(
+                    chatMessageDTO.UserUuid, chatMessageDTO.ChatGroupUuid);
 
-                User user = await _userRepository.GetByUuidAsync(userUuid);
-                ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
-                if (user == null || chatGroup == null)
+                if (messageStr != string.Empty)
                 {
-                    string messageStr;
-                    if (user == null)
-                    {
-                        messageStr = ResourceNotFoundMessage("User", userUuid);
-                    }
-                    else
-                    {
-                        messageStr = ResourceNotFoundMessage("ChatGroup", chatGroupUuid);
-                    }
-                    return new ChatMessageResponse { Message = messageStr };
+                    return new ChatMessageResponse { ErrorMessage = messageStr };
                 }
+
                 ChatMessage saveChatMessage = new ChatMessage()
                 {
                     UserId = user.UserId,
@@ -138,7 +114,7 @@ namespace LearnBlazor.Server.Services
             catch (Exception ex)
             {
                 // Do some logging stuff
-                return new ChatMessageResponse { Message = $"An error occurred when saving the message: {ex.Message}" };
+                return new ChatMessageResponse { ErrorMessage = $"An error occurred when saving the message: {ex.Message}" };
             }
         }
 

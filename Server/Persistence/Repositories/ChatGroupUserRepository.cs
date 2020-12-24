@@ -55,8 +55,47 @@ namespace LearnBlazor.Server.Persistence.Repositories
             {
                 return null;
             }
+        }
+        public async Task<ChatGroupUser> GetByUserAndChatGroupAsync(long userId, long ChatGroupId)
+        {
+            try
+            {
+                return await _context
+                    .ChatGroupUsers
+                    .Where(
+                        chatGroupUser => chatGroupUser.UserId.Equals(userId) && chatGroupUser.ChatGroupId.Equals(ChatGroupId))
+                    .SingleAsync();
+            }
+            catch (InvalidOperationException e)
+            {
+                return null;
+            }
+        }
 
+        public async Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
+        {
+            try
+            {
+                return await _context
+                    .ChatGroupUsers
+                    .Where(
+                        chatGroupUser => chatGroupUser.User.Uuid.Equals(userUuid) && chatGroupUser.ChatGroup.Uuid.Equals(chatGroupUuid))
+                    .SingleAsync();
+            }
+            catch (InvalidOperationException e)
+            {
+                return null;
+            }
+        }
 
+        public async Task RemoveUserFromChatGroupAsync(ChatGroupUser chatGroupUser)
+        {
+            await _context.ChatGroupUsers.AddAsync(chatGroupUser);
+        }
+
+        public async Task AddUserToChatGroupAsync(ChatGroupUser chatGroupUser)
+        {
+            await _context.ChatGroupUsers.AddAsync(chatGroupUser);
         }
     }
 }

@@ -3,27 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LearnBlazor.Server.Data.Models;
+using LearnBlazor.Server.Data.RepositoryInterface;
 using LearnBlazor.Server.Data.ServiceInterface;
 using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
 using LearnBlazor.Shared.DataTransferObject;
+using LearnBlazor.Shared.Communication;
 
 namespace LearnBlazor.Server.Services
 {
-    public class ChatGroupUserService : IChatGroupUserService
+    public class ChatGroupUserService : ServiceBase, IChatGroupUserService
     {
-        private readonly IChatGroupUserRepository _chatGroupUserRepository;
-        private readonly IChatGroupRepository _chatGroupRepository;
-        private readonly IUserRepository _userRepository;
-
         public ChatGroupUserService(
-            IChatGroupUserRepository chatGroupUserRepository,
-            IChatGroupRepository chatGroupRepository,
-            IUserRepository userRepository)
-        {
-            _chatGroupUserRepository = chatGroupUserRepository;
-            _chatGroupRepository = chatGroupRepository;
-            _userRepository = userRepository;
-        }
+           IChatMessageRepository chatMessageRepository,
+           IUserRepository userRepository,
+           IChatGroupRepository chatGroupRepository,
+           IChatGroupUserRepository chatGroupUserRepository,
+           IUnitOfWork unitOfWork
+           //IMapper mapper,
+           ) : base(chatMessageRepository, userRepository, chatGroupRepository, chatGroupUserRepository, unitOfWork) { }
 
         public async Task<ChatGroupUser> GetByUuidAsync(Guid uuid)
         {
@@ -69,5 +66,86 @@ namespace LearnBlazor.Server.Services
             //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
             return chatGroups;
         }
+
+        public async Task<ChatGroupUserResponse> AddUserToChatGroupAsync(ChatGroupUserDTO chatGroupUserDTO)
+        {
+            try
+            {
+                var (user, chatGroup, messageStr) = await VerifyUserAndChatGroupExist(
+                    chatGroupUserDTO.UserUuid, chatGroupUserDTO.ChatGroupUuid);
+
+                if (messageStr != string.Empty)
+                {
+                    return new ChatGroupUserResponse { ErrorMessage = messageStr };
+                }
+
+                // Check if user is already member of chat group
+                ChatGroupUser chatGroupUser = await _chatGroupUserRepository.GetByUserAndChatGroupAsync(
+                    user.UserId, chatGroup.ChatGroupId);
+                if (chatGroupUser != null)
+                {
+                    return new ChatGroupUserResponse { 
+                        ErrorMessage = $"User {user.Uuid} is already a member of chat group {chatGroup.Uuid}"
+                    };
+                }
+
+                ChatGroupUser saveChatGroupUser = new ChatGroupUser
+                {
+                    UserId = user.UserId,
+                    User = user,
+                    ChatGroupId = chatGroup.ChatGroupId,
+                    ChatGroup = chatGroup,
+                };
+                //Save the message
+                await _chatGroupUserRepository.AddUserToChatGroupAsync(saveChatGroupUser);
+                await _unitOfWork.CompleteAsync();
+
+                chatGroupUserDTO.Uuid = saveChatGroupUser.Uuid;
+                //ChatMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
+
+                return new ChatGroupUserResponse
+                {
+                    Success = true,
+                    ChatGroupUserDTO = chatGroupUserDTO
+                };
+            }
+            catch (Exception ex)
+            {
+                // TODO logging
+                return new ChatGroupUserResponse { ErrorMessage = $"An error occurred when saving the ChatGroupUser resource: {ex.Message}" };
+            }
+        }
+
+        public async Task<ChatGroupUserResponse> RemoveUserFromChatGroupAsync(ChatGroupUserDTO chatGroupUserDTO)
+        {
+            try
+            {
+                // Check if user is already member of chat group
+                ChatGroupUser chatGroupUser = await _chatGroupUserRepository.GetByUserAndChatGroupAsync(
+                    chatGroupUserDTO.UserUuid, chatGroupUserDTO.ChatGroupUuid);
+                if (chatGroupUser == null)
+                {
+                    return new ChatGroupUserResponse
+                    {
+                        ErrorMessage = $"User {chatGroupUserDTO.UserUuid} is not a member of chat group {chatGroupUserDTO.ChatGroupUuid}"
+                    };
+                }
+
+                //Save the message
+                await _chatGroupUserRepository.RemoveUserFromChatGroupAsync(chatGroupUser);
+                await _unitOfWork.CompleteAsync();
+
+                return new ChatGroupUserResponse
+                {
+                    Success = true,
+                };
+            }
+            catch (Exception ex)
+            {
+                // TODO logging
+                return new ChatGroupUserResponse { ErrorMessage = $"An error occurred when deleting the ChatGroupUser resource: {ex.Message}" };
+            }
+        }
     }
 }
+

@@ -15,22 +15,16 @@ using LearnBlazor.Shared.Communication;
 
 namespace LearnBlazor.Server.Services
 {
-    public class UserService : IUserService
+    public class UserService : ServiceBase, IUserService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IUnitOfWork _unitOfWork;
-        //private readonly IMapper _mapper;
-
         public UserService(
+            IChatMessageRepository chatMessageRepository,
             IUserRepository userRepository,
+            IChatGroupRepository chatGroupRepository,
+            IChatGroupUserRepository chatGroupUserRepository,
             IUnitOfWork unitOfWork
             //IMapper mapper,
-            )
-        {
-            _userRepository = userRepository;
-            _unitOfWork = unitOfWork;
-            //_mapper = mapper;
-        }
+            ) : base(chatMessageRepository, userRepository, chatGroupRepository, chatGroupUserRepository, unitOfWork) { }
 
         public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
         {
