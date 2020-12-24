@@ -5,6 +5,8 @@
 @using LearnBlazor.Shared.DataTransferObject
 @using LearnBlazor.Shared.Communication
 @using LearnBlazor.Shared
+@using LearnBlazor.Client; 
+@inject StateContainer StateContainer
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @implements IAsyncDisposable
@@ -13,14 +15,7 @@
 
 <hr>
 
-<div class="form-group">
-    <select @onchange="(eventArgs => SelectUser(eventArgs))">
-        @foreach (KeyValuePair<Guid, UserDTO> kv in _allUsers)
-        {
-            <option value=@kv.Value.Uuid>@kv.Value.Name; @kv.Value.Uuid</option>
-        }
-    </select>
-</div>
+
 <div class="form-group">
     <label>
         Message:
@@ -29,31 +24,31 @@
 </div>
 
 <ul id="chatGroupsList">
-    @foreach (KeyValuePair<Guid, ChatGroupData> kv in _chatGroupsForUser)
+    @foreach (KeyValuePair<Guid, ChatGroupData> kv in StateContainer.ChatGroupsForUser)
     {
-    <li>
-        <h2>Chat Group: @kv.Value.ChatGroup.ChatGroupName</h2>
-        <h3>Users: </h3>
-        <ul class="messagesList">
-            @foreach (var userUuid in kv.Value.Users)
-            {
+        <li>
+            <h2>Chat Group: @kv.Value.ChatGroup.ChatGroupName</h2>
+            <h3>Users: </h3>
+            <ul class="messagesList">
+                @foreach (var userUuid in kv.Value.Users)
                 {
-                    <li>@_allUsers[userUuid].Name</li>
+                    {
+                        <li>@StateContainer.AllUsers[userUuid].Name</li>
+                    }
                 }
-            }
-        </ul>
+            </ul>
 
-        <button @onclick="(() => Send(kv.Value.ChatGroup.Uuid))" disabled="@(!IsConnected)">Send</button>
-        <h3>Messages: </h3>
-        <ul class="messagesList">
-            @foreach (var message in kv.Value.Messages)
-            {
+            <button @onclick="(() => Send(kv.Value.ChatGroup.Uuid))" disabled="@(!IsConnected)">Send</button>
+            <h3>Messages: </h3>
+            <ul class="messagesList">
+                @foreach (var message in kv.Value.Messages)
                 {
-                    <li>@message.UserName: @message.Message</li>
+                    {
+                        <li>@message.UserName: @message.Message</li>
+                    }
                 }
-            }
-        </ul>
-    </li>
+            </ul>
+        </li>
     }
 </ul>
 
@@ -61,37 +56,14 @@
     private HubConnection hubConnection;
     private string userInput;
     private string messageInput;
-    private string _userUuid;
-    private UserDTO _currentUser;
-    private Dictionary<Guid, UserDTO> _allUsers = new Dictionary<Guid, UserDTO>();
-    private Dictionary<Guid, ChatGroupData> _chatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
-
-    public class ChatGroupData
-    {
-        public ChatGroupDTO ChatGroup { get; set; }
-        public List<Guid> Users { get; set; }
-        public List<ChatMessageDTO> Messages { get; set; }
-
-        public ChatGroupData(ChatGroupDTO chatGroup)
-        {
-            ChatGroup = chatGroup;
-            Users = new List<Guid>();
-            Messages = new List<ChatMessageDTO>();
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
+        StateContainer.OnChange += StateHasChanged;
+
         hubConnection = new HubConnectionBuilder()
             .WithUrl(NavigationManager.ToAbsoluteUri("/chathub"))
             .Build();
-
-        IEnumerable<UserDTO> users = await Http.GetFromJsonAsync<List<UserDTO>>("/api/User");
-        _allUsers = users.ToDictionary(u => u.Uuid);
-
-        _currentUser = _allUsers.FirstOrDefault().Value;
-
-        await GetChatGroupUsersAndMessages();
 
         hubConnection.On<ChatMessageResponse>("ReceiveMessage", (ChatMessageResponse chatMessageRes) =>
         {
@@ -105,7 +77,7 @@
                 ChatMessageDTO chatMessage = chatMessageRes.ChatMessageDTO;
                 if (chatMessage != null)
                 {
-                    _chatGroupsForUser[chatMessage.ChatGroupUuid].Messages.Add(chatMessage);
+                    StateContainer.ChatGroupsForUser[chatMessage.ChatGroupUuid].Messages.Add(chatMessage);
                     StateHasChanged();
                 }
             }
@@ -120,61 +92,11 @@
         await hubConnection.StartAsync();
     }
 
-    private async Task GetChatGroupUsersAndMessages()
-    {
-        //Clear all chat groups
-        _chatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
-
-        //Get all chat groups for the user
-        List<ChatGroupDTO> chatGroups = await Http.GetFromJsonAsync<List<ChatGroupDTO>>(
-        $"/api/user/{_currentUser.Uuid}/chatgroup");
-        foreach (ChatGroupDTO chatGroup in chatGroups)
-        {
-            _chatGroupsForUser[chatGroup.Uuid] = new ChatGroupData(chatGroup);
-        }
-        //Get the users and messages for each chat group
-        List<Task> tasks = new List<Task>();
-        foreach (Guid chatGroup in _chatGroupsForUser.Keys)
-        {
-            tasks.Add(AddMessagesForChatGroupAsync(chatGroup));
-            tasks.Add(GetUsersForChatGroupAsync(chatGroup));
-        }
-        await Task.WhenAll(tasks);
-        StateHasChanged();
-    }
-
-    private async Task GetUsersForChatGroupAsync(Guid chatGroupUuid)
-    {
-        IEnumerable<UserDTO> users = await Http.GetFromJsonAsync<UserDTO[]>($"/api/ChatGroup/{chatGroupUuid}/user");
-        _chatGroupsForUser[chatGroupUuid].Users = users.Select(u => u.Uuid).ToList();
-    }
-
-    private async Task AddMessagesForChatGroupAsync(Guid chatGroupUuid)
-    {
-        IEnumerable<ChatMessageDTO> messages = await Http.GetFromJsonAsync<ChatMessageDTO[]>(
-            $"/api/ChatGroup/{chatGroupUuid}/message");
-        _chatGroupsForUser[chatGroupUuid].Messages = messages.ToList();
-    }
-
-    private async Task SelectUser(ChangeEventArgs eventArgs)
-    {
-        bool parseSuccess = Guid.TryParse(eventArgs.Value.ToString(), out Guid guid);
-        if (parseSuccess)
-        {
-            _currentUser = _allUsers[guid];
-            await GetChatGroupUsersAndMessages();
-        }
-        else
-        {
-            //TODO
-        }
-    }
-
     public async Task Send(Guid chatGroupUuid)
     {
         ChatMessageDTO chatMessage = new ChatMessageDTO
         {
-            UserUuid = _currentUser.Uuid,
+            UserUuid = StateContainer.CurrentUser.Uuid,
             ChatGroupUuid = chatGroupUuid,
             Message = messageInput
         };
@@ -186,6 +108,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        StateContainer.OnChange -= StateHasChanged;
         await hubConnection.DisposeAsync();
     }
 }
