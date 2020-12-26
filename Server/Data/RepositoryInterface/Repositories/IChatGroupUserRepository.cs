@@ -18,6 +18,6 @@ namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
 
         public Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userUuid, Guid chatGroupUuid);
 
-        public Task RemoveUserFromChatGroupAsync(ChatGroupUser chatGroupUser);
+        public void RemoveUserFromChatGroup(ChatGroupUser chatGroupUser);
     }
 }

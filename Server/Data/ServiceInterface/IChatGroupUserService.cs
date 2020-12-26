@@ -16,6 +16,6 @@ namespace LearnBlazor.Server.Data.ServiceInterface
 
         public Task<ChatGroupUserResponse> AddUserToChatGroupAsync(ChatGroupUserDTO chatGroupUser);
 
-        public Task RemoveUserFromChatGroupAsync(ChatGroupUser chatGroupUser);
+        public Task<ChatGroupUserResponse> RemoveUserFromChatGroupAsync(Guid userUuid, Guid chatGroupUuid);
     }
 }

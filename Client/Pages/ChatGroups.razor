@@ -6,6 +6,8 @@
 @using LearnBlazor.Shared.Communication
 @using LearnBlazor.Shared
 @inject HttpClient Http
+@inject StateContainer StateContainer
+@implements IAsyncDisposable
 
 <h1>Chat Groups</h1>
 
@@ -14,15 +16,25 @@
         <tr>
             <th>Name</th>
             <th>Uuid</th>
+            <th>Membership status</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var chatGroup in _chatGroups)
         {
-            <tr>
-                <td>@chatGroup.ChatGroupName</td>
-                <td>@chatGroup.Uuid</td>
-            </tr>
+        <tr>
+            <td>@chatGroup.ChatGroupName</td>
+            <td>@chatGroup.Uuid</td>
+            @if (StateContainer.ChatGroupsForUser.ContainsKey(chatGroup.Uuid))
+            {
+                <td><button @onclick="(() => ModifyGroupMembership(false, chatGroup.Uuid))">Leave Group</button></td>
+            }
+            else
+            {
+                <td><button @onclick="(() => ModifyGroupMembership(true, chatGroup.Uuid))">Join Group</button></td>
+            }
+
+        </tr>
         }
     </tbody>
 </table>
@@ -33,7 +45,19 @@
 
     protected override async Task OnInitializedAsync()
     {
+        StateContainer.OnChange += StateHasChanged;
         _chatGroups = await Http.GetFromJsonAsync<List<ChatGroupDTO>>("api/ChatGroup");
     }
+
+    private async Task ModifyGroupMembership(bool joinGroup, Guid groupUuid)
+    {
+        await StateContainer.ModifyGroupMembership(joinGroup, groupUuid);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+
 
 }

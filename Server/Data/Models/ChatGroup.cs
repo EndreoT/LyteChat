@@ -8,6 +8,7 @@ namespace LearnBlazor.Server.Data.Models
     public class ChatGroup: BaseModel
     {
         public ChatGroup() : base() { }
+
         public long ChatGroupId { get; set; }
 
         public string ChatGroupName { get; set; }

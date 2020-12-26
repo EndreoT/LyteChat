@@ -116,28 +116,29 @@ namespace LearnBlazor.Server.Services
             }
         }
 
-        public async Task<ChatGroupUserResponse> RemoveUserFromChatGroupAsync(ChatGroupUserDTO chatGroupUserDTO)
+        public async Task<ChatGroupUserResponse> RemoveUserFromChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
         {
             try
             {
                 // Check if user is already member of chat group
                 ChatGroupUser chatGroupUser = await _chatGroupUserRepository.GetByUserAndChatGroupAsync(
-                    chatGroupUserDTO.UserUuid, chatGroupUserDTO.ChatGroupUuid);
+                    userUuid, chatGroupUuid);
                 if (chatGroupUser == null)
                 {
                     return new ChatGroupUserResponse
                     {
-                        ErrorMessage = $"User {chatGroupUserDTO.UserUuid} is not a member of chat group {chatGroupUserDTO.ChatGroupUuid}"
+                        ErrorMessage = $"User {userUuid} is not a member of chat group {chatGroupUuid}"
                     };
                 }
 
-                //Save the message
-                await _chatGroupUserRepository.RemoveUserFromChatGroupAsync(chatGroupUser);
+                // Delete the ChatGroupUser entry
+                _chatGroupUserRepository.RemoveUserFromChatGroup(chatGroupUser);
                 await _unitOfWork.CompleteAsync();
 
                 return new ChatGroupUserResponse
                 {
                     Success = true,
+                    ErrorMessage = string.Empty
                 };
             }
             catch (Exception ex)

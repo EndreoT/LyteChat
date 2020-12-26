@@ -11,7 +11,6 @@ namespace LearnBlazor.Server.Persistence.Context
         {
         }
 
-
         public DbSet<User> Users { get; set; }
         public DbSet<ChatMessage> ChatMessages { get; set; }
         public DbSet<ChatGroup> ChatGroups { get; set; }

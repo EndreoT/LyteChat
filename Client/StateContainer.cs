@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Json;
 using LearnBlazor.Shared.DataTransferObject;
+using LearnBlazor.Shared.Communication;
 
 
 namespace LearnBlazor.Client
@@ -78,6 +79,34 @@ namespace LearnBlazor.Client
             IEnumerable<ChatMessageDTO> messages = await Http.GetFromJsonAsync<ChatMessageDTO[]>(
                 $"/api/ChatGroup/{chatGroupUuid}/message");
             ChatGroupsForUser[chatGroupUuid].Messages = messages.ToList();
+        }
+
+        public async Task <bool> ModifyGroupMembership(bool joinGroup, Guid chatGroupUuid)
+        {
+            ChatGroupUserDTO body = new ChatGroupUserDTO { UserUuid = CurrentUser.Uuid, ChatGroupUuid = chatGroupUuid };
+            HttpResponseMessage response;
+            if (joinGroup)
+            {
+                response = await Http.PostAsJsonAsync(
+                    $"/api/chatGroupUser", body);
+            }
+            else
+            {
+                response = await Http.DeleteAsync(
+                    $"/api/chatGroupUser/user/{CurrentUser.Uuid}/chatgroup/{chatGroupUuid}");
+            }
+                
+            ChatGroupUserResponse content = await response.Content.ReadFromJsonAsync<ChatGroupUserResponse>();
+            if (content.Success == true)
+            {
+                await GetChatGroupUsersAndMessages();
+                return true;
+            }
+            else
+            {
+                //TODO handle issue with server
+                return false;
+            }
         }
 
         private void NotifyStateChanged() => OnChange?.Invoke();

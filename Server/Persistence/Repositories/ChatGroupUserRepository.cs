@@ -64,6 +64,8 @@ namespace LearnBlazor.Server.Persistence.Repositories
                     .ChatGroupUsers
                     .Where(
                         chatGroupUser => chatGroupUser.UserId.Equals(userId) && chatGroupUser.ChatGroupId.Equals(ChatGroupId))
+                    .Include(chatGroupUser => chatGroupUser.User)
+                    .Include(chatGroupUser => chatGroupUser.ChatGroup)
                     .SingleAsync();
             }
             catch (InvalidOperationException e)
@@ -80,6 +82,8 @@ namespace LearnBlazor.Server.Persistence.Repositories
                     .ChatGroupUsers
                     .Where(
                         chatGroupUser => chatGroupUser.User.Uuid.Equals(userUuid) && chatGroupUser.ChatGroup.Uuid.Equals(chatGroupUuid))
+                    .Include(chatGroupUser => chatGroupUser.User)
+                    .Include(chatGroupUser => chatGroupUser.ChatGroup)
                     .SingleAsync();
             }
             catch (InvalidOperationException e)
@@ -88,9 +92,9 @@ namespace LearnBlazor.Server.Persistence.Repositories
             }
         }
 
-        public async Task RemoveUserFromChatGroupAsync(ChatGroupUser chatGroupUser)
+        public void RemoveUserFromChatGroup(ChatGroupUser chatGroupUser)
         {
-            await _context.ChatGroupUsers.AddAsync(chatGroupUser);
+            _context.ChatGroupUsers.Remove(chatGroupUser);
         }
 
         public async Task AddUserToChatGroupAsync(ChatGroupUser chatGroupUser)

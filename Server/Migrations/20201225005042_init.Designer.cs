@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearnBlazor.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201219223947_init")]
+    [Migration("20201225005042_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,20 +42,20 @@ namespace LearnBlazor.Server.Migrations
                         new
                         {
                             ChatGroupId = 1L,
-                            ChatGroupName = "ALL_CHAT",
-                            Uuid = new Guid("9b6c152f-e800-4445-bbb5-351af51761c2")
+                            ChatGroupName = "All Chat",
+                            Uuid = new Guid("68a67d1d-ed19-4271-9792-c1e7277c5c92")
                         },
                         new
                         {
                             ChatGroupId = 2L,
                             ChatGroupName = "second chat group",
-                            Uuid = new Guid("691ff5e7-e22a-4d4b-9e90-bf92c9f68b47")
+                            Uuid = new Guid("f002e119-c38c-4207-9bed-f925d290bcd1")
                         },
                         new
                         {
                             ChatGroupId = 3L,
                             ChatGroupName = "third chat group",
-                            Uuid = new Guid("e92348d3-b2b2-4022-a818-c7d57c167bba")
+                            Uuid = new Guid("e4af9702-30e5-4d2e-acb7-9a3344c9749a")
                         });
                 });
 
@@ -67,6 +67,9 @@ namespace LearnBlazor.Server.Migrations
                     b.Property<long>("ChatGroupId")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid>("Uuid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("UserId", "ChatGroupId");
 
                     b.HasIndex("ChatGroupId");
@@ -77,22 +80,38 @@ namespace LearnBlazor.Server.Migrations
                         new
                         {
                             UserId = 1L,
-                            ChatGroupId = 1L
+                            ChatGroupId = 1L,
+                            Uuid = new Guid("f0fffe13-9e34-4ec6-bf84-7a65698749c9")
                         },
                         new
                         {
                             UserId = 1L,
-                            ChatGroupId = 2L
+                            ChatGroupId = 2L,
+                            Uuid = new Guid("7c825425-cae5-4560-9569-2d1577532aaf")
                         },
                         new
                         {
                             UserId = 1L,
-                            ChatGroupId = 3L
+                            ChatGroupId = 3L,
+                            Uuid = new Guid("2414b5ca-03bb-411a-a898-6fedbe345dab")
                         },
                         new
                         {
                             UserId = 2L,
-                            ChatGroupId = 1L
+                            ChatGroupId = 1L,
+                            Uuid = new Guid("d53d1525-de64-43f0-b07e-a1d195b77f7c")
+                        },
+                        new
+                        {
+                            UserId = 2L,
+                            ChatGroupId = 2L,
+                            Uuid = new Guid("fac28d0f-a990-4c88-9b2b-92f51143cb98")
+                        },
+                        new
+                        {
+                            UserId = 3L,
+                            ChatGroupId = 1L,
+                            Uuid = new Guid("18634c88-c971-449a-8074-d702eb1c1f85")
                         });
                 });
 
@@ -130,7 +149,7 @@ namespace LearnBlazor.Server.Migrations
                             ChatGroupId = 1L,
                             Message = "first message",
                             UserId = 1L,
-                            Uuid = new Guid("ffd811d8-e1cd-4f97-a39a-aba085234f19")
+                            Uuid = new Guid("c86b6173-9f1d-4550-a5cf-e0f56e56d2cb")
                         },
                         new
                         {
@@ -138,7 +157,7 @@ namespace LearnBlazor.Server.Migrations
                             ChatGroupId = 2L,
                             Message = "second message",
                             UserId = 2L,
-                            Uuid = new Guid("8dd16054-f00f-4e3a-8e33-628da3d5f035")
+                            Uuid = new Guid("e3d03677-1c17-4d9c-9146-db01580d7b8c")
                         });
                 });
 
@@ -163,20 +182,20 @@ namespace LearnBlazor.Server.Migrations
                         new
                         {
                             UserId = 1L,
-                            Name = "Carson",
-                            Uuid = new Guid("b1152381-ead4-48dc-be30-09b8d87cdf62")
+                            Name = "Anonymous",
+                            Uuid = new Guid("1e263f3e-3cc0-41c3-88dc-94f334bd8fe9")
                         },
                         new
                         {
                             UserId = 2L,
                             Name = "Bob",
-                            Uuid = new Guid("f4d4b13f-b32c-4742-99d0-605d8b1d26f6")
+                            Uuid = new Guid("dfd6101d-3aa8-402e-bb72-469a8aecd09c")
                         },
                         new
                         {
                             UserId = 3L,
-                            Name = "Anonymous",
-                            Uuid = new Guid("769d1250-f4f3-440d-8888-1c86e8b9d084")
+                            Name = "Carson",
+                            Uuid = new Guid("b6148ca4-201e-4ee8-aa82-bf624abd7f6c")
                         });
                 });
 

@@ -16,7 +16,7 @@ namespace LearnBlazor.Server.Controllers
     {
         private readonly IChatGroupService _chatGroupService;
         private readonly IChatMessageService _chatMessageService;
-        private IChatGroupUserService _chatGroupUserService;
+        private readonly IChatGroupUserService _chatGroupUserService;
 
         public ChatGroupController(
             IChatGroupService chatGroupService,
