@@ -12,7 +12,7 @@ namespace LearnBlazor.Server.Data.Models
 
         public string Message { get; set; }
 
-        public long UserId { get; set; }
+        public Guid UserId { get; set; }
 
         public long ChatGroupId { get; set; }
 

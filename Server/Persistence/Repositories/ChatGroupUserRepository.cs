@@ -42,7 +42,7 @@ namespace LearnBlazor.Server.Persistence.Repositories
             }
         }
 
-        public async Task<IEnumerable<ChatGroup>> GetChatGroupsForUser(long UserId)
+        public async Task<IEnumerable<ChatGroup>> GetChatGroupsForUser(Guid UserId)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace LearnBlazor.Server.Persistence.Repositories
                 return null;
             }
         }
-        public async Task<ChatGroupUser> GetByUserAndChatGroupAsync(long userId, long ChatGroupId)
+        public async Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userId, long ChatGroupId)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace LearnBlazor.Server.Persistence.Repositories
                 return await _context
                     .ChatGroupUsers
                     .Where(
-                        chatGroupUser => chatGroupUser.User.Uuid.Equals(userUuid) && chatGroupUser.ChatGroup.Uuid.Equals(chatGroupUuid))
+                        chatGroupUser => chatGroupUser.User.Id.Equals(userUuid) && chatGroupUser.ChatGroup.Uuid.Equals(chatGroupUuid))
                     .Include(chatGroupUser => chatGroupUser.User)
                     .Include(chatGroupUser => chatGroupUser.ChatGroup)
                     .SingleAsync();

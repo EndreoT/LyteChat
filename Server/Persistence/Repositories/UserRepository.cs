@@ -30,7 +30,7 @@ namespace LearnBlazor.Server.Persistence.Repositories
             try
             {
                 return await _context.Users
-                    .Where(user => user.Name.Equals("Anonymous"))
+                    .Where(user => user.UserName.Equals("Anonymous"))
                     .SingleAsync();
             }
             catch (InvalidOperationException)
@@ -45,7 +45,7 @@ namespace LearnBlazor.Server.Persistence.Repositories
             {
                 return await _context
                     .Users
-                    .Where(user => user.Uuid.Equals(uuid)).SingleAsync();
+                    .Where(user => user.Id.Equals(uuid)).SingleAsync();
 
             }
             catch (InvalidOperationException)

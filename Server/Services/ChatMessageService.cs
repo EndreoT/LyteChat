@@ -34,8 +34,8 @@ namespace LearnBlazor.Server.Services
             ChatMessageDTO messageDTO = new ChatMessageDTO()
             {
                 Uuid = message.Uuid,
-                UserUuid = message.User.Uuid,
-                UserName = message.User.Name,
+                UserUuid = message.User.Id,
+                UserName = message.User.UserName,
                 ChatGroupUuid = message.ChatGroup.Uuid,
                 ChatGroupName = message.ChatGroup.ChatGroupName,
                 Message = message.Message,
@@ -51,8 +51,8 @@ namespace LearnBlazor.Server.Services
                 .Select(message => new ChatMessageDTO
                 {
                     Uuid = message.Uuid,
-                    UserUuid = message.User.Uuid,
-                    UserName = message.User.Name,
+                    UserUuid = message.User.Id,
+                    UserName = message.User.UserName,
                     Message = message.Message,
                     ChatGroupUuid = message.ChatGroup.Uuid,
                     ChatGroupName = message.ChatGroup.ChatGroupName
@@ -91,7 +91,7 @@ namespace LearnBlazor.Server.Services
 
                 ChatMessage saveChatMessage = new ChatMessage()
                 {
-                    UserId = user.UserId,
+                    UserId = user.Id,
                     User = user,
                     ChatGroupId = chatGroup.ChatGroupId,
                     ChatGroup = chatGroup,
@@ -103,7 +103,7 @@ namespace LearnBlazor.Server.Services
 
                 chatMessageDTO.Uuid = saveChatMessage.Uuid;
                 chatMessageDTO.ChatGroupName = saveChatMessage.ChatGroup.ChatGroupName;
-                chatMessageDTO.UserName = saveChatMessage.User.Name;
+                chatMessageDTO.UserName = saveChatMessage.User.UserName;
                 //ChatMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
 
                 return new ChatMessageResponse {

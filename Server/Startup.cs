@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using LearnBlazor.Server.Hubs;
 using LearnBlazor.Server.Persistence.Context;
 using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
@@ -14,6 +15,7 @@ using LearnBlazor.Server.Persistence.Repositories;
 using LearnBlazor.Server.Data.ServiceInterface;
 using LearnBlazor.Server.Services;
 using LearnBlazor.Server.Data.RepositoryInterface;
+using LearnBlazor.Server.Data.Models;
 
 namespace LearnBlazor.Server
 {
@@ -32,6 +34,10 @@ namespace LearnBlazor.Server
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddIdentity<User, Role>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddSignalR();
             services.AddControllersWithViews();

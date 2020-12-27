@@ -39,8 +39,8 @@ namespace LearnBlazor.Server.Services
             IEnumerable<UserDTO> users = userQuery
                 .Select(user => new UserDTO
                 {
-                    Uuid = user.Uuid,
-                    Name = user.Name
+                    Uuid = user.Id,
+                    Name = user.UserName
                 });
 
             //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
@@ -55,7 +55,7 @@ namespace LearnBlazor.Server.Services
                 return Array.Empty<ChatGroupDTO>();
             }
             IEnumerable<ChatGroup> chatGroupQuery = await _chatGroupUserRepository.GetChatGroupsForUser(
-                user.UserId);
+                user.Id);
             IEnumerable<ChatGroupDTO> chatGroups = chatGroupQuery
                 .Select(chatGroup => new ChatGroupDTO
                 {
@@ -81,17 +81,17 @@ namespace LearnBlazor.Server.Services
 
                 // Check if user is already member of chat group
                 ChatGroupUser chatGroupUser = await _chatGroupUserRepository.GetByUserAndChatGroupAsync(
-                    user.UserId, chatGroup.ChatGroupId);
+                    user.Id, chatGroup.ChatGroupId);
                 if (chatGroupUser != null)
                 {
                     return new ChatGroupUserResponse { 
-                        ErrorMessage = $"User {user.Uuid} is already a member of chat group {chatGroup.Uuid}"
+                        ErrorMessage = $"User {user.Id} is already a member of chat group {chatGroup.Uuid}"
                     };
                 }
 
                 ChatGroupUser saveChatGroupUser = new ChatGroupUser
                 {
-                    UserId = user.UserId,
+                    UserId = user.Id,
                     User = user,
                     ChatGroupId = chatGroup.ChatGroupId,
                     ChatGroup = chatGroup,

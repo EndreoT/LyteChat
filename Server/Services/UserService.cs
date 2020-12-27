@@ -33,8 +33,8 @@ namespace LearnBlazor.Server.Services
             IEnumerable<UserDTO> users = userQuery
                 .Select(user => new UserDTO
                 {
-                    Uuid = user.Uuid,
-                    Name = user.Name
+                    Uuid = user.Id,
+                    Name = user.UserName
                 });
 
             //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
@@ -46,8 +46,8 @@ namespace LearnBlazor.Server.Services
             User user = await _userRepository.GetByUuidAsync(uuid);
             UserDTO userDTO = new UserDTO()
             {
-                Uuid = user.Uuid,
-                Name = user.Name
+                Uuid = user.Id,
+                Name = user.UserName
             };
             return userDTO;
         }
@@ -58,8 +58,8 @@ namespace LearnBlazor.Server.Services
                 .GetAnonymousUserAsync();
             UserDTO user = new UserDTO
                 {
-                    Name = userQuery.Name,
-                    Uuid = userQuery.Uuid
+                    Name = userQuery.UserName,
+                    Uuid = userQuery.Id
                 };
 
             //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);

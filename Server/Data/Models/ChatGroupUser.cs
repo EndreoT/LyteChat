@@ -9,7 +9,7 @@ namespace LearnBlazor.Server.Data.Models
     {
         public ChatGroupUser() : base() { }
 
-        public long UserId { get; set; }
+        public Guid UserId { get; set; }
         public User User { get; set; }
 
         public long ChatGroupId { get; set; }
