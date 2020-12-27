@@ -4,13 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.AspNetCore.Components;
 using LearnBlazor.Shared.DataTransferObject;
 using LearnBlazor.Shared.Communication;
 
 
 namespace LearnBlazor.Client
 {
-    public class StateContainer
+    public class StateContainer: IAsyncDisposable
     {
         public UserDTO CurrentUser;
 
@@ -22,13 +24,47 @@ namespace LearnBlazor.Client
 
         private readonly HttpClient Http;
 
-        public StateContainer(HttpClient http)
+        internal HubConnection hubConnection;
+        private NavigationManager NavigationManager { get; set; }
+
+        public StateContainer(HttpClient http, NavigationManager navigationManager)
         {
             Http = http;
+            NavigationManager = navigationManager;
         }
 
-        public async Task Init()
+        public async Task Init(Uri url)
         {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(url)
+                //.WithAutomaticReconnect()
+                .Build();
+
+            hubConnection.On<ChatMessageResponse>("ReceiveMessage", (ChatMessageResponse chatMessageRes) =>
+            {
+                if (!chatMessageRes.Success)
+                {
+                    //TODO
+                    Console.WriteLine(chatMessageRes.ErrorMessage);
+                }
+                else
+                {
+                    ChatMessageDTO chatMessage = chatMessageRes.ChatMessageDTO;
+                    if (chatMessage != null)
+                    {
+                        ChatGroupsForUser[chatMessage.ChatGroupUuid].Messages.Add(chatMessage);
+                        NotifyStateChanged();
+                    }
+                }
+            });
+
+            //hubConnection.On<string>("WelcomeMessage", (string welcomeChat) =>
+            //{
+            //    messages.Add(welcomeChat);
+            //    StateHasChanged();
+            //});
+
+            await hubConnection.StartAsync();
             IEnumerable<UserDTO> users = await Http.GetFromJsonAsync<List<UserDTO>>("/api/User");
             AllUsers = users.ToDictionary(u => u.Uuid);
 
@@ -110,5 +146,13 @@ namespace LearnBlazor.Client
         }
 
         private void NotifyStateChanged() => OnChange?.Invoke();
+
+        public bool IsConnected =>
+            hubConnection.State == HubConnectionState.Connected;
+
+        public async ValueTask DisposeAsync()
+        {
+            await hubConnection.DisposeAsync();
+        }
     }
 }

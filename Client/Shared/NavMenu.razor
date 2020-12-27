@@ -1,4 +1,7 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@implements IDisposable
+@inject StateContainer StateContainer
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">LearnBlazor</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
@@ -8,19 +11,28 @@
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
         <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+            <NavLink class="nav-link" href="">
+                <span class="oi oi-home" aria-hidden="true"></span> Manage Chat Groups
             </NavLink>
         </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="chatgroups">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Chat Groups
-            </NavLink>
-        </li>
+        @foreach (KeyValuePair<Guid, ChatGroupData> kv in StateContainer.ChatGroupsForUser)
+        {
+            string link = $"chatgroup/{kv.Key.ToString()}";
+            <li class="nav-item px-3">
+                <NavLink class="nav-link" href=@link Match="NavLinkMatch.All">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> @kv.Value.ChatGroup.ChatGroupName
+                </NavLink>
+            </li>
+        }
     </ul>
 </div>
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        StateContainer.OnChange += StateHasChanged;
+    }
+
     private bool collapseNavMenu = true;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
@@ -28,5 +40,10 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
     }
 }

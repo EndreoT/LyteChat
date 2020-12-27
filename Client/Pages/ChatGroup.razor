@@ -1,0 +1,93 @@
+﻿@page "/chatgroup/{chatGroupUuidStr}"
+@using System.Threading
+@using Microsoft.AspNetCore.Components
+@using System.Collections.Generic
+@using Microsoft.AspNetCore.SignalR.Client
+@using LearnBlazor.Shared.DataTransferObject
+@using LearnBlazor.Shared.Communication
+@using LearnBlazor.Shared
+@using LearnBlazor.Client;
+@inject StateContainer StateContainer
+@inject HttpClient Http
+@implements IAsyncDisposable
+
+
+<div class="form-group">
+    <label>
+        Message:
+        <input @bind="messageInput" size="50" />
+    </label>
+</div>
+
+@if (ChatGroupDataExists())
+{
+    ChatGroupData ChatGroupData = StateContainer.ChatGroupsForUser[ChatGroupUuid];
+    <h2>Chat Group: @ChatGroupData.ChatGroup.ChatGroupName</h2>
+    <h3>Users: </h3>
+    <ul class="messagesList">
+        @foreach (var userUuid in ChatGroupData.Users)
+        {
+            {
+                <li>@StateContainer.AllUsers[userUuid].Name</li>
+            }
+        }
+    </ul>
+
+    <button @onclick="(() => Send(ChatGroupData.ChatGroup.Uuid))" disabled="@(!StateContainer.IsConnected)">Send</button>
+    <h3>Messages: </h3>
+    <ul class="messagesList">
+        @foreach (var message in ChatGroupData.Messages)
+        {
+            {
+                <li>@message.UserName: @message.Message</li>
+            }
+        }
+    </ul>
+
+    <hr>
+
+}
+else
+{
+    <h2>Chat Group: @ChatGroupUuidStr does not exist</h2>
+}
+
+
+@code {
+    [Parameter]
+    public string ChatGroupUuidStr { get; set; }
+    private Guid ChatGroupUuid { get; set; }
+    private ChatGroupData ChatGroupData;
+
+
+    private string userInput;
+    private string messageInput;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        StateContainer.OnChange += StateHasChanged;
+        bool parseSuccess = Guid.TryParse(ChatGroupUuidStr, out Guid chatGroupUuid);
+        ChatGroupUuid = chatGroupUuid;
+    }
+
+    private bool ChatGroupDataExists()
+    {
+        return StateContainer.ChatGroupsForUser.ContainsKey(ChatGroupUuid);
+    }
+
+    public async Task Send(Guid chatGroupUuid)
+    {
+        ChatMessageDTO chatMessage = new ChatMessageDTO
+        {
+            UserUuid = StateContainer.CurrentUser.Uuid,
+            ChatGroupUuid = chatGroupUuid,
+            Message = messageInput
+        };
+        await StateContainer.hubConnection.SendAsync("CreateMessage", chatMessage);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+}

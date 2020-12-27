@@ -1,3 +1,7 @@
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
+
 <Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
@@ -8,3 +12,17 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        Uri url = NavigationManager.ToAbsoluteUri("/chathub");
+        StateContainer.OnChange += StateHasChanged;
+        await StateContainer.Init(url);
+    }
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+}

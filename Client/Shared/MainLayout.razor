@@ -12,17 +12,15 @@
     </div>
 
     <div class="main">
-        <div class="form-group">
-            <select @onchange="(eventArgs => SelectUser(eventArgs))">
-                @foreach (KeyValuePair<Guid, UserDTO> kv in StateContainer.AllUsers)
-                {
-                    <option value=@kv.Value.Uuid>@kv.Value.Name; @kv.Value.Uuid</option>
-                }
-            </select>
-        </div>
-
         <div class="top-row px-4">
-            <a href="http://blazor.net" target="_blank" class="ml-md-auto">Here</a>
+            <div class="form-group">
+                <select @onchange="(eventArgs => SelectUser(eventArgs))">
+                    @foreach (KeyValuePair<Guid, UserDTO> kv in StateContainer.AllUsers)
+                    {
+                        <option value=@kv.Value.Uuid>@kv.Value.Name; @kv.Value.Uuid</option>
+                    }
+                </select>
+            </div>
         </div>
 
         <div class="content px-4">
@@ -32,11 +30,7 @@
 </div>
 
 @code{
-    protected override async Task OnInitializedAsync()
-    {
-        StateContainer.OnChange += StateHasChanged;
-        await StateContainer.Init();
-    }
+
 
     public async Task SelectUser(ChangeEventArgs eventArgs)
     {

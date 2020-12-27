@@ -29,7 +29,7 @@ namespace LearnBlazor.Server.Controllers
             return await _chatGroupUserService.AddUserToChatGroupAsync(chatgroup);
         }
 
-        // DELETE api/<ChatGroupUserController>
+        // DELETE api/<ChatGroupUserController>/user/{userUuid}/chatgroup/{chatGroupUuid}
         [HttpDelete("user/{userUuid}/chatgroup/{chatGroupUuid}")]
         public async Task<ChatGroupUserResponse> RemoveUserFromChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
         {
