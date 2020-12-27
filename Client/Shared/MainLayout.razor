@@ -21,6 +21,16 @@
                     }
                 </select>
             </div>
+            <div class="content px-4">
+                @if (StateContainer.IsConnected)
+                {
+                    <label>Connected</label>
+                }
+                else
+                {
+                    <label>Not Connected</label>
+                }
+            </div>
         </div>
 
         <div class="content px-4">
@@ -30,8 +40,6 @@
 </div>
 
 @code{
-
-
     public async Task SelectUser(ChangeEventArgs eventArgs)
     {
         bool parseSuccess = Guid.TryParse(eventArgs.Value.ToString(), out Guid guid);
@@ -45,5 +53,4 @@
             //TODO
         }
     }
-
 }

@@ -1,13 +1,9 @@
 ﻿@page "/"
 @using System.Threading
 @using System.Collections.Generic
-@using Microsoft.AspNetCore.SignalR.Client
 @using LearnBlazor.Shared.DataTransferObject
-@using LearnBlazor.Shared.Communication
-@using LearnBlazor.Shared
-@inject HttpClient Http
 @inject StateContainer StateContainer
-@implements IAsyncDisposable
+@implements IDisposable
 
 <h1>Chat Groups</h1>
 
@@ -46,7 +42,7 @@
     protected override async Task OnInitializedAsync()
     {
         StateContainer.OnChange += StateHasChanged;
-        _chatGroups = await Http.GetFromJsonAsync<List<ChatGroupDTO>>("api/ChatGroup");
+        _chatGroups = await StateContainer.GetChatGroups();
     }
 
     private async Task ModifyGroupMembership(bool joinGroup, Guid groupUuid)
@@ -54,7 +50,7 @@
         await StateContainer.ModifyGroupMembership(joinGroup, groupUuid);
     }
 
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
         StateContainer.OnChange -= StateHasChanged;
     }

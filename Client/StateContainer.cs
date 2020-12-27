@@ -145,6 +145,11 @@ namespace LearnBlazor.Client
             }
         }
 
+        public async Task<List<ChatGroupDTO>> GetChatGroups()
+        {
+            return await Http.GetFromJsonAsync<List<ChatGroupDTO>>("api/ChatGroup");
+        }
+
         private void NotifyStateChanged() => OnChange?.Invoke();
 
         public bool IsConnected =>

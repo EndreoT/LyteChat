@@ -9,7 +9,7 @@
 @using LearnBlazor.Client;
 @inject StateContainer StateContainer
 @inject HttpClient Http
-@implements IAsyncDisposable
+@implements IDisposable
 
 
 <div class="form-group">
@@ -22,7 +22,7 @@
 @if (ChatGroupDataExists())
 {
     ChatGroupData ChatGroupData = StateContainer.ChatGroupsForUser[ChatGroupUuid];
-    <h2>Chat Group: @ChatGroupData.ChatGroup.ChatGroupName</h2>
+    <h2>Chat Group Name: @ChatGroupData.ChatGroup.ChatGroupName</h2>
     <h3>Users: </h3>
     <ul class="messagesList">
         @foreach (var userUuid in ChatGroupData.Users)
@@ -59,11 +59,10 @@ else
     private Guid ChatGroupUuid { get; set; }
     private ChatGroupData ChatGroupData;
 
-
     private string userInput;
     private string messageInput;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         StateContainer.OnChange += StateHasChanged;
         bool parseSuccess = Guid.TryParse(ChatGroupUuidStr, out Guid chatGroupUuid);
@@ -86,7 +85,7 @@ else
         await StateContainer.hubConnection.SendAsync("CreateMessage", chatMessage);
     }
 
-    public async ValueTask DisposeAsync()
+    public void Dispose()
     {
         StateContainer.OnChange -= StateHasChanged;
     }
