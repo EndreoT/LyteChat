@@ -9,7 +9,7 @@ using LearnBlazor.Shared.Communication;
 
 namespace LearnBlazor.Server.Hubs
 {
-    public class ChatHub : Hub
+    public class ChatHub : Hub, IChatHub
     {
         private readonly IChatMessageService _chatMessageService;
         public ChatHub(IChatMessageService chatMessageService)
@@ -31,7 +31,26 @@ namespace LearnBlazor.Server.Hubs
         public async Task CreateMessage(ChatMessageDTO chatMessage)
         {
             ChatMessageResponse chatMessageResponse = await _chatMessageService.CreateChatMessageAsync(chatMessage);
+            await SendMessage(chatMessageResponse);
+        }
+
+        public async Task SendMessage(ChatMessageResponse chatMessageResponse)
+        {
             await Clients.All.SendAsync("ReceiveMessage", chatMessageResponse);
+        }
+
+        public async Task AddToGroup(string groupName)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+
+            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has joined the group {groupName}.");
+        }
+
+        public async Task RemoveFromGroup(string groupName)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+
+            await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has left the group {groupName}.");
         }
 
         public void GetMessagesForGroup(string groupUuid)

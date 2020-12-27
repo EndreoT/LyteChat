@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR;
 using LearnBlazor.Server.Data.ServiceInterface;
+using LearnBlazor.Server.Hubs;
 using LearnBlazor.Shared.Communication;
 using LearnBlazor.Shared.DataTransferObject;
 
@@ -16,9 +18,26 @@ namespace LearnBlazor.Server.Controllers
     public class ChatMessageController : ControllerBase
     {
         private readonly IChatMessageService _chatMessageService;
-        public ChatMessageController(IChatMessageService chatMessageService)
+
+        private readonly IHubContext<ChatHub> _chatHubContext;
+
+        public ChatMessageController(IChatMessageService chatMessageService, IHubContext<ChatHub> chatHubContext)
         {
             _chatMessageService = chatMessageService;
+            _chatHubContext = chatHubContext;
+        }
+
+        // POST api/<ChatMessageController>
+        [HttpPost]
+        public async Task<ChatMessageResponse> CreateChat([FromBody] ChatMessageDTO chatMessage)
+        {
+            ChatMessageResponse createRes = await _chatMessageService.CreateChatMessageAsync(chatMessage);
+
+            // Broadcast message to all clients
+            await _chatHubContext.Clients.All.SendAsync("ReceiveMessage", createRes);
+            
+
+            return createRes;
         }
     }
 }

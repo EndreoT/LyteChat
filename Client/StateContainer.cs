@@ -40,7 +40,7 @@ namespace LearnBlazor.Client
                 //.WithAutomaticReconnect()
                 .Build();
 
-            hubConnection.On<ChatMessageResponse>("ReceiveMessage", (ChatMessageResponse chatMessageRes) =>
+            hubConnection.On("ReceiveMessage", (ChatMessageResponse chatMessageRes) =>
             {
                 if (!chatMessageRes.Success)
                 {
@@ -50,7 +50,7 @@ namespace LearnBlazor.Client
                 else
                 {
                     ChatMessageDTO chatMessage = chatMessageRes.ChatMessageDTO;
-                    if (chatMessage != null)
+                    if (chatMessage != null && ChatGroupsForUser.ContainsKey(chatMessage.ChatGroupUuid))
                     {
                         ChatGroupsForUser[chatMessage.ChatGroupUuid].Messages.Add(chatMessage);
                         NotifyStateChanged();
