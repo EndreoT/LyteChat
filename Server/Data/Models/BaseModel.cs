@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace LearnBlazor.Server.Data.Models
+namespace LyteChat.Server.Data.Models
 {
     public abstract class BaseModel
     {

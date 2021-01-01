@@ -1,7 +1,7 @@
-﻿using LearnBlazor.Shared.DataTransferObject;
+﻿using LyteChat.Shared.DataTransferObject;
 
 
-namespace LearnBlazor.Shared.Communication
+namespace LyteChat.Shared.Communication
 {
     public class UserResponse : BaseResponse
     {

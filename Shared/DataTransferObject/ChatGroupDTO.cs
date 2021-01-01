@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LearnBlazor.Shared.DataTransferObject
+namespace LyteChat.Shared.DataTransferObject
 {
     public class ChatGroupDTO: BaseDTO
     {

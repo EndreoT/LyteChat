@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using LearnBlazor.Server.Data.Models;
+using LyteChat.Server.Data.Models;
 
-namespace LearnBlazor.Server.Persistence.Context
+namespace LyteChat.Server.Persistence.Context
 {
     public class AppDbContext : IdentityDbContext<User, Role, Guid>
     {
@@ -76,17 +76,18 @@ namespace LearnBlazor.Server.Persistence.Context
            };
             modelBuilder.Entity<ChatMessage>().HasData(chatMessages);
 
-            modelBuilder.Entity<Role>().HasData(
-                new Role
-                {
-                    Name = "Visitor",
-                    NormalizedName = "VISITOR"
-                },
-                new IdentityRole
-                {
-                    Name = "Administrator",
-                    NormalizedName = "ADMINISTRATOR"
-                });
+            //modelBuilder.Entity<Role>().HasData(
+            //    new Role
+            //    {
+            //        Id = Guid.NewGuid(),
+            //        Name = "Visitor",
+            //        NormalizedName = "VISITOR"
+            //    },
+            //    new IdentityRole
+            //    {
+            //        Name = "Administrator",
+            //        NormalizedName = "ADMINISTRATOR"
+            //    });
 
 
             base.OnModelCreating(modelBuilder);

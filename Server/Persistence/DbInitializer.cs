@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using LearnBlazor.Server.Data.Models;
-using LearnBlazor.Server.Persistence.Context;
+using LyteChat.Server.Data.Models;
+using LyteChat.Server.Persistence.Context;
 
-namespace LearnBlazor.Server.Persistence
+namespace LyteChat.Server.Persistence
 {
     public static class DbInitializer
     {

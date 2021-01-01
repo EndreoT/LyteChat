@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30717.126
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnBlazor.Server", "Server\LearnBlazor.Server.csproj", "{C7B86C9F-E318-4366-A6D7-CA2CFEFEE8B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LyteChat.Server", "Server\LyteChat.Server.csproj", "{C7B86C9F-E318-4366-A6D7-CA2CFEFEE8B3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnBlazor.Client", "Client\LearnBlazor.Client.csproj", "{222D98EB-293F-40BA-AD27-B61833EBA1EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LyteChat.Client", "Client\LyteChat.Client.csproj", "{222D98EB-293F-40BA-AD27-B61833EBA1EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LearnBlazor.Shared", "Shared\LearnBlazor.Shared.csproj", "{499BEEAC-3921-4086-BF00-990A6F063530}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LyteChat.Shared", "Shared\LyteChat.Shared.csproj", "{499BEEAC-3921-4086-BF00-990A6F063530}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

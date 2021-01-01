@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace LearnBlazor.Server.Migrations
+namespace LyteChat.Server.Migrations
 {
     public partial class init : Migration
     {

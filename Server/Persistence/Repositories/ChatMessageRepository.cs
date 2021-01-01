@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Server.Persistence.Context;
-using LearnBlazor.Server.Data.Models;
-using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Persistence.Context;
+using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
 
-namespace LearnBlazor.Server.Persistence.Repositories
+namespace LyteChat.Server.Persistence.Repositories
 {
     public class ChatMessageRepository: BaseRepository, IChatMessageRepository
     {

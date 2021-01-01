@@ -5,15 +5,15 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 //using AutoMapper;
-using LearnBlazor.Server.Data.Models;
-using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
-using LearnBlazor.Server.Data.ServiceInterface;
-using LearnBlazor.Server.Data.RepositoryInterface;
-using LearnBlazor.Shared.DataTransferObject;
-using LearnBlazor.Shared.Communication;
+using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Server.Data.RepositoryInterface;
+using LyteChat.Shared.DataTransferObject;
+using LyteChat.Shared.Communication;
 
 
-namespace LearnBlazor.Server.Services
+namespace LyteChat.Server.Services
 {
     public class UserService : ServiceBase, IUserService
     {

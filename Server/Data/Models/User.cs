@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
-namespace LearnBlazor.Server.Data.Models
+namespace LyteChat.Server.Data.Models
 {
     public class User: IdentityUser<Guid>
     {

@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using LearnBlazor.Server.Data.RepositoryInterface;
-using LearnBlazor.Server.Persistence.Context;
+using LyteChat.Server.Data.RepositoryInterface;
+using LyteChat.Server.Persistence.Context;
 
-namespace LearnBlazor.Server.Persistence.Repositories
+namespace LyteChat.Server.Persistence.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {

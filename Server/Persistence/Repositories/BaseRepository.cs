@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LearnBlazor.Server.Persistence.Context;
+using LyteChat.Server.Persistence.Context;
 
 
-namespace LearnBlazor.Server.Persistence.Repositories
+namespace LyteChat.Server.Persistence.Repositories
 {
     public abstract class BaseRepository
     {

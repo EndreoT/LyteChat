@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using LearnBlazor.Shared.DataTransferObject;
+using LyteChat.Shared.DataTransferObject;
 
-namespace LearnBlazor.Shared.Communication
+namespace LyteChat.Shared.Communication
 {
     public class ChatGroupUserResponse
     {

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Shared.DataTransferObject;
+using LyteChat.Shared.DataTransferObject;
 
-namespace LearnBlazor.Server.Data.ServiceInterface
+namespace LyteChat.Server.Data.ServiceInterface
 {
     public interface IUserService: IServiceBase<UserDTO>
     {

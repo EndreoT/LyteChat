@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Server.Data.Models;
-using LearnBlazor.Server.Data.RepositoryInterface;
-using LearnBlazor.Server.Data.ServiceInterface;
-using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
-using LearnBlazor.Shared.DataTransferObject;
+using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface;
+using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Shared.DataTransferObject;
 
-namespace LearnBlazor.Server.Services
+namespace LyteChat.Server.Services
 {
     public class ChatGroupService: ServiceBase, IChatGroupService
     {

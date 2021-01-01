@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace LearnBlazor.Server.Data.RepositoryInterface
+namespace LyteChat.Server.Data.RepositoryInterface
 {
     public interface IUnitOfWork
     {

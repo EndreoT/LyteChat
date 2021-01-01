@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Shared.Communication;
+using LyteChat.Shared.Communication;
 
-namespace LearnBlazor.Server.Hubs
+namespace LyteChat.Server.Hubs
 {
     public interface IChatHub
     {

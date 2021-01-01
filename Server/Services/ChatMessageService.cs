@@ -5,17 +5,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 //using AutoMapper;
 //using Texter.DataTransferObject;
-using LearnBlazor.Server.Data.Models;
-using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
-using LearnBlazor.Server.Data.ServiceInterface;
-using LearnBlazor.Server.Data.RepositoryInterface;
-using LearnBlazor.Shared.Communication;
-using LearnBlazor.Shared.DataTransferObject;
+using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Server.Data.RepositoryInterface;
+using LyteChat.Shared.Communication;
+using LyteChat.Shared.DataTransferObject;
 
 //using Texter.Domain.RepositoryInterface.MessageRepository;
 //using Texter.Domain.Services;
 
-namespace LearnBlazor.Server.Services
+namespace LyteChat.Server.Services
 {
     public class ChatMessageService : ServiceBase, IChatMessageService
     {

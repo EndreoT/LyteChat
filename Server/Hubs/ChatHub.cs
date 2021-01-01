@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
-using LearnBlazor.Server.Data.ServiceInterface;
-using LearnBlazor.Shared.DataTransferObject;
-using LearnBlazor.Shared.Communication;
+using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Shared.DataTransferObject;
+using LyteChat.Shared.Communication;
 
-namespace LearnBlazor.Server.Hubs
+namespace LyteChat.Server.Hubs
 {
     public class ChatHub : Hub, IChatHub
     {

@@ -1,4 +1,4 @@
-namespace LearnBlazor.Server.Data.Models
+namespace LyteChat.Server.Data.Models
 {
     public class ErrorViewModel
     {

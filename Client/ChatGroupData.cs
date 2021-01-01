@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Shared.DataTransferObject;
+using LyteChat.Shared.DataTransferObject;
 
-namespace LearnBlazor.Client
+namespace LyteChat.Client
 {
     public class ChatGroupData
     {

@@ -2,13 +2,13 @@
 @inject StateContainer StateContainer
 
 <div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">LearnBlazor</a>
+    <a class="navbar-brand" href="">LyteChat</a>
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
 </div>
 
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+<div class="@NavMenuCssClass" >
     <ul class="nav flex-column">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="">
@@ -33,7 +33,7 @@
         StateContainer.OnChange += StateHasChanged;
     }
 
-    private bool collapseNavMenu = true;
+    private bool collapseNavMenu = false;
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 

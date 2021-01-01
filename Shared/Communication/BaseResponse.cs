@@ -1,4 +1,4 @@
-﻿namespace LearnBlazor.Shared.Communication
+﻿namespace LyteChat.Shared.Communication
 {
     public abstract class BaseResponse
     {

@@ -6,11 +6,11 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.Components;
-using LearnBlazor.Shared.DataTransferObject;
-using LearnBlazor.Shared.Communication;
+using LyteChat.Shared.DataTransferObject;
+using LyteChat.Shared.Communication;
 
 
-namespace LearnBlazor.Client
+namespace LyteChat.Client
 {
     public class StateContainer: IAsyncDisposable
     {
