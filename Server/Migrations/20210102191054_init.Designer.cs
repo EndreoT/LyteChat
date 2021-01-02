@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LyteChat.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210102000105_init")]
+    [Migration("20210102191054_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,19 +43,19 @@ namespace LyteChat.Server.Migrations
                         {
                             ChatGroupId = 1L,
                             ChatGroupName = "All Chat",
-                            Uuid = new Guid("122be75e-4a47-4bb6-adbd-febc312ebe8d")
+                            Uuid = new Guid("ba4d18c9-284f-457a-8ac3-aff75e65aaf8")
                         },
                         new
                         {
                             ChatGroupId = 2L,
                             ChatGroupName = "second chat group",
-                            Uuid = new Guid("25324315-9652-4ade-a437-ebaf4701e64d")
+                            Uuid = new Guid("e9b842ce-1cca-467d-8fe6-c4b5a4004c97")
                         },
                         new
                         {
                             ChatGroupId = 3L,
                             ChatGroupName = "third chat group",
-                            Uuid = new Guid("cea5bfb9-1a46-4348-86e7-937a1238d789")
+                            Uuid = new Guid("200ded25-5305-40d0-9df1-34f40ee1e608")
                         });
                 });
 
@@ -79,39 +79,39 @@ namespace LyteChat.Server.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("864da5d1-73d4-4062-b0c5-69553d6dbae6"),
+                            UserId = new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"),
                             ChatGroupId = 1L,
-                            Uuid = new Guid("202acb5b-54a1-41d8-9344-5ba93f8be24b")
+                            Uuid = new Guid("dc7bbc9a-0a7d-4d03-827f-fcc1f0847a74")
                         },
                         new
                         {
-                            UserId = new Guid("864da5d1-73d4-4062-b0c5-69553d6dbae6"),
+                            UserId = new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"),
                             ChatGroupId = 2L,
-                            Uuid = new Guid("a843a20b-b30d-4e9a-9c3e-8fcf85599bc2")
+                            Uuid = new Guid("bf244576-4754-4748-b966-39d8ac49772b")
                         },
                         new
                         {
-                            UserId = new Guid("864da5d1-73d4-4062-b0c5-69553d6dbae6"),
+                            UserId = new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"),
                             ChatGroupId = 3L,
-                            Uuid = new Guid("62e43557-a205-40b4-9268-d9c4a2d10a3c")
+                            Uuid = new Guid("bf5d77fb-b432-4128-b2fd-5d50c10aa67d")
                         },
                         new
                         {
-                            UserId = new Guid("0259eef7-22ad-4342-b318-767cc199ffce"),
+                            UserId = new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"),
                             ChatGroupId = 1L,
-                            Uuid = new Guid("1fe29e06-0901-408a-9dbf-7d3a52aed05e")
+                            Uuid = new Guid("1870efd8-4145-4157-959a-edcb7dd2f2e9")
                         },
                         new
                         {
-                            UserId = new Guid("0259eef7-22ad-4342-b318-767cc199ffce"),
+                            UserId = new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"),
                             ChatGroupId = 2L,
-                            Uuid = new Guid("56f4eda4-8b66-425b-a5ce-7b98831aeb76")
+                            Uuid = new Guid("66811fac-f8e5-4590-a44b-f31a704e7b31")
                         },
                         new
                         {
-                            UserId = new Guid("7eded3c0-2a41-4536-a092-477d74b74576"),
+                            UserId = new Guid("3b4423e5-e0ed-408c-a282-23c0c3ae163b"),
                             ChatGroupId = 1L,
-                            Uuid = new Guid("98b63f0a-081a-4c2f-bfb8-b446e2745262")
+                            Uuid = new Guid("7af2b537-2673-48f3-b52c-3f25565099c8")
                         });
                 });
 
@@ -148,16 +148,16 @@ namespace LyteChat.Server.Migrations
                             ChatMessageId = 1L,
                             ChatGroupId = 1L,
                             Message = "first message",
-                            UserId = new Guid("864da5d1-73d4-4062-b0c5-69553d6dbae6"),
-                            Uuid = new Guid("c6a8e7f3-3cca-4d2f-98bf-4ad196f29b29")
+                            UserId = new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"),
+                            Uuid = new Guid("1269b2a9-2f39-49ea-960c-600e00d4ceb1")
                         },
                         new
                         {
                             ChatMessageId = 2L,
                             ChatGroupId = 2L,
                             Message = "second message",
-                            UserId = new Guid("0259eef7-22ad-4342-b318-767cc199ffce"),
-                            Uuid = new Guid("f7efd295-da01-4bf3-90f1-edd5a22c61f1")
+                            UserId = new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"),
+                            Uuid = new Guid("9c24f4b3-48b2-4b33-b71e-a571e7283ae6")
                         });
                 });
 
@@ -257,9 +257,9 @@ namespace LyteChat.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("864da5d1-73d4-4062-b0c5-69553d6dbae6"),
+                            Id = new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "dfad42d0-2b1d-4d34-af2a-b6b8a3d128da",
+                            ConcurrencyStamp = "68a489e6-ca57-4d6f-a00b-842da419d60f",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
@@ -268,9 +268,9 @@ namespace LyteChat.Server.Migrations
                         },
                         new
                         {
-                            Id = new Guid("0259eef7-22ad-4342-b318-767cc199ffce"),
+                            Id = new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "04c1a103-abaa-49a1-a426-03c70ef8a3ad",
+                            ConcurrencyStamp = "e3ef70b8-ea96-4829-a228-e85d310f5a7f",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
@@ -279,9 +279,9 @@ namespace LyteChat.Server.Migrations
                         },
                         new
                         {
-                            Id = new Guid("7eded3c0-2a41-4536-a092-477d74b74576"),
+                            Id = new Guid("3b4423e5-e0ed-408c-a282-23c0c3ae163b"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "af4c4738-d519-4cef-b20c-9f596804af13",
+                            ConcurrencyStamp = "6221a09e-d27e-4229-9f31-4f8dc57f0c9d",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
