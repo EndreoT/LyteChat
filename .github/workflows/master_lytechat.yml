@@ -31,5 +31,5 @@ jobs:
       with:
         app-name: 'lytechat'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_b6504348df2a464c88b73a074d084737 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_e60cc71c291544f38652f8fc52e453d9 }}
         package: ${{env.DOTNET_ROOT}}/myapp 
