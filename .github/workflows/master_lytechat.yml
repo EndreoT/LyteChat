@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - lytechat20210101145531
+name: Build and deploy ASP.Net Core app to Azure Web App - lytechat
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: 'lytechat20210101145531'
+        app-name: 'lytechat'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_f899e64d81b542918824a22e21719758 }}
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_b6504348df2a464c88b73a074d084737 }}
         package: ${{env.DOTNET_ROOT}}/myapp 
