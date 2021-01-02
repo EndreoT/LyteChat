@@ -19,7 +19,7 @@ namespace LyteChat.Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.1");
 
-            modelBuilder.Entity("LearnBlazor.Server.Data.Models.ChatGroup", b =>
+            modelBuilder.Entity("LyteChat.Server.Data.Models.ChatGroup", b =>
                 {
                     b.Property<long>("ChatGroupId")
                         .ValueGeneratedOnAdd()
@@ -41,23 +41,23 @@ namespace LyteChat.Server.Migrations
                         {
                             ChatGroupId = 1L,
                             ChatGroupName = "All Chat",
-                            Uuid = new Guid("b626e69c-e99e-44a0-9c4d-9ab2c2fb03bb")
+                            Uuid = new Guid("4d9a535f-8747-42f5-a34f-fb1cb21fb6b9")
                         },
                         new
                         {
                             ChatGroupId = 2L,
                             ChatGroupName = "second chat group",
-                            Uuid = new Guid("b08aa272-ac2e-4168-a884-18b440e3fb70")
+                            Uuid = new Guid("447affa2-f970-4a73-8e1a-c8af300a71ca")
                         },
                         new
                         {
                             ChatGroupId = 3L,
                             ChatGroupName = "third chat group",
-                            Uuid = new Guid("185f58ce-8cb7-48c0-835c-bc8025e94539")
+                            Uuid = new Guid("317e7412-acd7-477e-afb6-261efbb46267")
                         });
                 });
 
-            modelBuilder.Entity("LearnBlazor.Server.Data.Models.ChatGroupUser", b =>
+            modelBuilder.Entity("LyteChat.Server.Data.Models.ChatGroupUser", b =>
                 {
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
@@ -77,43 +77,43 @@ namespace LyteChat.Server.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("d37f47df-3a46-421b-b5d2-4f09391e5d1e"),
+                            UserId = new Guid("7006e9cb-b6cb-413a-8b28-28b470e62fef"),
                             ChatGroupId = 1L,
-                            Uuid = new Guid("891b1d73-1ae0-4360-ac49-012de8f029ee")
+                            Uuid = new Guid("b815ebf6-1385-4159-bc38-38e512194afd")
                         },
                         new
                         {
-                            UserId = new Guid("d37f47df-3a46-421b-b5d2-4f09391e5d1e"),
+                            UserId = new Guid("7006e9cb-b6cb-413a-8b28-28b470e62fef"),
                             ChatGroupId = 2L,
-                            Uuid = new Guid("d9ac9fdb-4455-4aeb-a7e6-25b0f406426c")
+                            Uuid = new Guid("19dd8100-a36b-48bd-8619-15dd6227ad9e")
                         },
                         new
                         {
-                            UserId = new Guid("d37f47df-3a46-421b-b5d2-4f09391e5d1e"),
+                            UserId = new Guid("7006e9cb-b6cb-413a-8b28-28b470e62fef"),
                             ChatGroupId = 3L,
-                            Uuid = new Guid("59ce7ddf-e575-4918-8e0b-347d3e148c24")
+                            Uuid = new Guid("47f1a8c2-a40e-44af-b443-f68670f07eee")
                         },
                         new
                         {
-                            UserId = new Guid("a5b62c7f-a04f-483d-a9b2-25b8a589d873"),
+                            UserId = new Guid("52466438-9015-410b-914a-bba113c9bc68"),
                             ChatGroupId = 1L,
-                            Uuid = new Guid("2f6776c9-df49-4516-9fda-bcd2e3ae2dcf")
+                            Uuid = new Guid("1e3e1fd5-fb83-4c96-868e-7fbbf59daecf")
                         },
                         new
                         {
-                            UserId = new Guid("a5b62c7f-a04f-483d-a9b2-25b8a589d873"),
+                            UserId = new Guid("52466438-9015-410b-914a-bba113c9bc68"),
                             ChatGroupId = 2L,
-                            Uuid = new Guid("1c3f9672-d1ce-4394-9462-ba8a858f611c")
+                            Uuid = new Guid("0df968aa-2b43-45f2-bb2f-e8557da0263a")
                         },
                         new
                         {
-                            UserId = new Guid("d0099a4e-8d9a-4519-ad20-e9c072ca1b6e"),
+                            UserId = new Guid("e3fe5fe1-5f2d-456e-a67b-7844eafda7aa"),
                             ChatGroupId = 1L,
-                            Uuid = new Guid("38ff209f-327b-4c3f-9633-5cc0c629e9ca")
+                            Uuid = new Guid("f36b7363-2598-416e-bb57-86d5a6423b8f")
                         });
                 });
 
-            modelBuilder.Entity("LearnBlazor.Server.Data.Models.ChatMessage", b =>
+            modelBuilder.Entity("LyteChat.Server.Data.Models.ChatMessage", b =>
                 {
                     b.Property<long>("ChatMessageId")
                         .ValueGeneratedOnAdd()
@@ -146,20 +146,20 @@ namespace LyteChat.Server.Migrations
                             ChatMessageId = 1L,
                             ChatGroupId = 1L,
                             Message = "first message",
-                            UserId = new Guid("d37f47df-3a46-421b-b5d2-4f09391e5d1e"),
-                            Uuid = new Guid("2a8130e6-9701-4306-a202-a29c21b8235a")
+                            UserId = new Guid("7006e9cb-b6cb-413a-8b28-28b470e62fef"),
+                            Uuid = new Guid("ba4e310e-2adf-41a8-b35b-db2ab30b2171")
                         },
                         new
                         {
                             ChatMessageId = 2L,
                             ChatGroupId = 2L,
                             Message = "second message",
-                            UserId = new Guid("a5b62c7f-a04f-483d-a9b2-25b8a589d873"),
-                            Uuid = new Guid("7760a372-5a47-46e3-97c3-304ab0168df2")
+                            UserId = new Guid("52466438-9015-410b-914a-bba113c9bc68"),
+                            Uuid = new Guid("1273b4a5-2f7d-4fe0-a534-73ec0445caf7")
                         });
                 });
 
-            modelBuilder.Entity("LearnBlazor.Server.Data.Models.Role", b =>
+            modelBuilder.Entity("LyteChat.Server.Data.Models.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -187,7 +187,7 @@ namespace LyteChat.Server.Migrations
                     b.ToTable("AspNetRoles");
                 });
 
-            modelBuilder.Entity("LearnBlazor.Server.Data.Models.User", b =>
+            modelBuilder.Entity("LyteChat.Server.Data.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -255,9 +255,9 @@ namespace LyteChat.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d37f47df-3a46-421b-b5d2-4f09391e5d1e"),
+                            Id = new Guid("7006e9cb-b6cb-413a-8b28-28b470e62fef"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0d7239ef-2e7c-4e2d-ad2c-bf26ca7fb97e",
+                            ConcurrencyStamp = "f3bcbcb9-1db3-4f00-ac04-c3370748c84e",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
@@ -266,9 +266,9 @@ namespace LyteChat.Server.Migrations
                         },
                         new
                         {
-                            Id = new Guid("a5b62c7f-a04f-483d-a9b2-25b8a589d873"),
+                            Id = new Guid("52466438-9015-410b-914a-bba113c9bc68"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1f16af26-3cc6-4092-9748-ccfd2d7fdd3d",
+                            ConcurrencyStamp = "f4ae867f-82a3-4796-a5d3-cf7f4ab7bd41",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
@@ -277,9 +277,9 @@ namespace LyteChat.Server.Migrations
                         },
                         new
                         {
-                            Id = new Guid("d0099a4e-8d9a-4519-ad20-e9c072ca1b6e"),
+                            Id = new Guid("e3fe5fe1-5f2d-456e-a67b-7844eafda7aa"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "90626b54-f882-45a0-b131-437d7b7aec3a",
+                            ConcurrencyStamp = "f4c67393-2d5a-4ed5-b960-cd71e610acc9",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             PhoneNumberConfirmed = false,
@@ -389,15 +389,15 @@ namespace LyteChat.Server.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("LearnBlazor.Server.Data.Models.ChatGroupUser", b =>
+            modelBuilder.Entity("LyteChat.Server.Data.Models.ChatGroupUser", b =>
                 {
-                    b.HasOne("LearnBlazor.Server.Data.Models.ChatGroup", "ChatGroup")
+                    b.HasOne("LyteChat.Server.Data.Models.ChatGroup", "ChatGroup")
                         .WithMany("ChatGroupUsers")
                         .HasForeignKey("ChatGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LearnBlazor.Server.Data.Models.User", "User")
+                    b.HasOne("LyteChat.Server.Data.Models.User", "User")
                         .WithMany("ChatGroupUsers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -408,15 +408,15 @@ namespace LyteChat.Server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LearnBlazor.Server.Data.Models.ChatMessage", b =>
+            modelBuilder.Entity("LyteChat.Server.Data.Models.ChatMessage", b =>
                 {
-                    b.HasOne("LearnBlazor.Server.Data.Models.ChatGroup", "ChatGroup")
+                    b.HasOne("LyteChat.Server.Data.Models.ChatGroup", "ChatGroup")
                         .WithMany("Messages")
                         .HasForeignKey("ChatGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LearnBlazor.Server.Data.Models.User", "User")
+                    b.HasOne("LyteChat.Server.Data.Models.User", "User")
                         .WithMany("Messages")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -429,7 +429,7 @@ namespace LyteChat.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("LearnBlazor.Server.Data.Models.Role", null)
+                    b.HasOne("LyteChat.Server.Data.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -438,7 +438,7 @@ namespace LyteChat.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("LearnBlazor.Server.Data.Models.User", null)
+                    b.HasOne("LyteChat.Server.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -447,7 +447,7 @@ namespace LyteChat.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("LearnBlazor.Server.Data.Models.User", null)
+                    b.HasOne("LyteChat.Server.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -456,13 +456,13 @@ namespace LyteChat.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("LearnBlazor.Server.Data.Models.Role", null)
+                    b.HasOne("LyteChat.Server.Data.Models.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LearnBlazor.Server.Data.Models.User", null)
+                    b.HasOne("LyteChat.Server.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -471,21 +471,21 @@ namespace LyteChat.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("LearnBlazor.Server.Data.Models.User", null)
+                    b.HasOne("LyteChat.Server.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("LearnBlazor.Server.Data.Models.ChatGroup", b =>
+            modelBuilder.Entity("LyteChat.Server.Data.Models.ChatGroup", b =>
                 {
                     b.Navigation("ChatGroupUsers");
 
                     b.Navigation("Messages");
                 });
 
-            modelBuilder.Entity("LearnBlazor.Server.Data.Models.User", b =>
+            modelBuilder.Entity("LyteChat.Server.Data.Models.User", b =>
                 {
                     b.Navigation("ChatGroupUsers");
 
