@@ -31,5 +31,10 @@
     <ProjectReference Include="..\Shared\LyteChat.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+    <Folder Include="Properties\ServiceDependencies\" />
+  </ItemGroup>
+
 
 </Project>

@@ -143,6 +143,13 @@ namespace LyteChat.Server
             app.UseAuthentication();
             app.UseAuthorization();
 
+            //ENABLE CORS
+            //app.UseCors(x => x
+            //   .AllowAnyMethod()
+            //   .AllowAnyHeader()
+            //   .SetIsOriginAllowed(origin => true) // allow any origin  
+            //   .AllowCredentials());               // allow credentials 
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
