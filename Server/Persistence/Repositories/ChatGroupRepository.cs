@@ -33,7 +33,7 @@ namespace LyteChat.Server.Persistence.Repositories
             {
                 return await _context.ChatGroups.ToListAsync();
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
                 return null;
             }
