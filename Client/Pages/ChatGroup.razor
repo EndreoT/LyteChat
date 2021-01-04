@@ -32,7 +32,7 @@
         }
     </ul>
 
-    <button @onclick="(() => Send(ChatGroupData.ChatGroup.Uuid))" disabled="@(!StateContainer.IsConnected)">Send</button>
+    <button @onclick="(() => Send(ChatGroupData.ChatGroup.Uuid))" disabled="@(cannotSendMessage)">Send</button>
     <h3>Messages: </h3>
     <ul class="messagesList">
         @foreach (var message in ChatGroupData.Messages)
@@ -57,8 +57,8 @@ else
     public string ChatGroupUuidStr { get; set; }
     private Guid ChatGroupUuid { get; set; }
 
-    private string userInput;
-    private string messageInput;
+    private string messageInput = "";
+    private bool cannotSendMessage => !(StateContainer.IsConnected && messageInput.Length != 0);
 
     protected override void OnParametersSet()
     {
@@ -72,7 +72,7 @@ else
         return StateContainer.ChatGroupsForUser.ContainsKey(ChatGroupUuid);
     }
 
-    public async Task Send(Guid chatGroupUuid)
+    private async Task Send(Guid chatGroupUuid)
     {
         ChatMessageDTO chatMessage = new ChatMessageDTO
         {
@@ -81,6 +81,7 @@ else
             Message = messageInput
         };
         await StateContainer.hubConnection.SendAsync("CreateMessage", chatMessage);
+        messageInput = "";
     }
 
     public void Dispose()

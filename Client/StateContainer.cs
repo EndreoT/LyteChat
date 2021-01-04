@@ -35,10 +35,16 @@ namespace LyteChat.Client
 
         public async Task Init(Uri url)
         {
+            string accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhbm9ueW1vdXNAZW1haWwuY29tIiwianRpIjoiMzllNjI1NjMtZDJhOS00ZWY5LTlhZmMtNDE0NTcyZGVjNDc0IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQW5vbnltb3VzVXNlciIsImV4cCI6MTYwOTczNDI3NSwiaXNzIjoiaHR0cHM6Ly9seXRlY2hhdC5henVyZXdlYnNpdGVzLm5ldC8iLCJhdWQiOiJodHRwczovL2x5dGVjaGF0LmF6dXJld2Vic2l0ZXMubmV0LyJ9.CUlE1riqrAarAZ5glzV2VMHquxMg-Q7ni-ocbB_HUUw";
             hubConnection = new HubConnectionBuilder()
-                .WithUrl(url)
-                //.WithAutomaticReconnect()
-                .Build();
+            .WithUrl(url, options =>
+            {
+                options.SkipNegotiation = true;
+                options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
+                options.AccessTokenProvider = () => Task.FromResult(accessToken);
+            })
+            .WithAutomaticReconnect()
+            .Build();
 
             hubConnection.On("ReceiveMessage", (ChatMessageResponse chatMessageRes) =>
             {
@@ -64,7 +70,16 @@ namespace LyteChat.Client
             //    StateHasChanged();
             //});
 
-            await hubConnection.StartAsync();
+            try
+            {
+                await hubConnection.StartAsync();
+            }
+            catch (System.Net.WebSockets.WebSocketException e)
+            {
+                Console.WriteLine(e);
+            }
+            
+
             IEnumerable<UserDTO> users = await Http.GetFromJsonAsync<List<UserDTO>>("/api/User");
             AllUsers = users.ToDictionary(u => u.Uuid);
 
@@ -117,7 +132,7 @@ namespace LyteChat.Client
             ChatGroupsForUser[chatGroupUuid].Messages = messages.ToList();
         }
 
-        public async Task <bool> ModifyGroupMembership(bool joinGroup, Guid chatGroupUuid)
+        public async Task<bool> ModifyGroupMembership(bool joinGroup, Guid chatGroupUuid)
         {
             ChatGroupUserDTO body = new ChatGroupUserDTO { UserUuid = CurrentUser.Uuid, ChatGroupUuid = chatGroupUuid };
             HttpResponseMessage response;
@@ -131,7 +146,7 @@ namespace LyteChat.Client
                 response = await Http.DeleteAsync(
                     $"/api/chatGroupUser/user/{CurrentUser.Uuid}/chatgroup/{chatGroupUuid}");
             }
-                
+
             ChatGroupUserResponse content = await response.Content.ReadFromJsonAsync<ChatGroupUserResponse>();
             if (content.Success == true)
             {
@@ -152,8 +167,21 @@ namespace LyteChat.Client
 
         private void NotifyStateChanged() => OnChange?.Invoke();
 
-        public bool IsConnected =>
-            hubConnection.State == HubConnectionState.Connected;
+        public bool IsConnected => hubConnection.State == HubConnectionState.Connected;
+
+        public string ConnectionState()
+        {
+            string connectionState = hubConnection.State switch
+            {
+                HubConnectionState.Connected => "Connected",
+                HubConnectionState.Disconnected => "Disconnected",
+                HubConnectionState.Connecting => "Connecting",
+                HubConnectionState.Reconnecting => "Reconnecting",
+                _ => "",
+            };
+            return connectionState;
+        }
+
 
         public async ValueTask DisposeAsync()
         {

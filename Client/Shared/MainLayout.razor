@@ -22,14 +22,7 @@
                 </select>
             </div>
             <div class="content px-4">
-                @if (StateContainer.IsConnected)
-                {
-                    <label>Connected</label>
-                }
-                else
-                {
-                    <label>Not Connected</label>
-                }
+                <label>@StateContainer.ConnectionState()</label>
             </div>
         </div>
 
