@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LyteChat.Shared.DataTransferObject;
+using LyteChat.Server.Data.Communication;
 using LyteChat.Shared.Communication;
 
 namespace LyteChat.Server.Data.ServiceInterface
@@ -13,6 +14,6 @@ namespace LyteChat.Server.Data.ServiceInterface
 
         public Task<IEnumerable<ChatMessageDTO>> ListMessagesForAllChatGroupAsync();
 
-        public Task<ChatMessageResponse> CreateChatMessageAsync(ChatMessageDTO chatMessageDTO);
+        public Task<ChatMessageResponse> CreateChatMessageAsync(CreateChatMessage chatMessage);
     }
 }

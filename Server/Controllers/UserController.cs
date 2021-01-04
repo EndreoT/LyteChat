@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using LyteChat.Server.Data.Models;
 using LyteChat.Server.Data.ServiceInterface;
 using LyteChat.Shared.DataTransferObject;
 
@@ -11,6 +13,7 @@ using LyteChat.Shared.DataTransferObject;
 
 namespace LyteChat.Server.Controllers
 {
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -25,6 +28,7 @@ namespace LyteChat.Server.Controllers
         }
 
         // GET: api/<UserController>
+        //[Authorize(Roles = Role.AnonymousUser)]
         [HttpGet]
         public async Task<IEnumerable<UserDTO>> GetAllUsers()
         {

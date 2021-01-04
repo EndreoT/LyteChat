@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LyteChat.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210102191054_init")]
+    [Migration("20210103011138_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,19 +43,19 @@ namespace LyteChat.Server.Migrations
                         {
                             ChatGroupId = 1L,
                             ChatGroupName = "All Chat",
-                            Uuid = new Guid("ba4d18c9-284f-457a-8ac3-aff75e65aaf8")
+                            Uuid = new Guid("bf3ea3b2-9156-462d-91b6-6c4073962593")
                         },
                         new
                         {
                             ChatGroupId = 2L,
                             ChatGroupName = "second chat group",
-                            Uuid = new Guid("e9b842ce-1cca-467d-8fe6-c4b5a4004c97")
+                            Uuid = new Guid("9e06cb6b-b425-4824-8864-d6354e4c9ceb")
                         },
                         new
                         {
                             ChatGroupId = 3L,
                             ChatGroupName = "third chat group",
-                            Uuid = new Guid("200ded25-5305-40d0-9df1-34f40ee1e608")
+                            Uuid = new Guid("8a2afda3-6648-47d8-a507-632770b45003")
                         });
                 });
 
@@ -79,39 +79,39 @@ namespace LyteChat.Server.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"),
+                            UserId = new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"),
                             ChatGroupId = 1L,
-                            Uuid = new Guid("dc7bbc9a-0a7d-4d03-827f-fcc1f0847a74")
+                            Uuid = new Guid("412f3376-8d2d-4710-8e4e-d4105bfed06f")
                         },
                         new
                         {
-                            UserId = new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"),
+                            UserId = new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"),
                             ChatGroupId = 2L,
-                            Uuid = new Guid("bf244576-4754-4748-b966-39d8ac49772b")
+                            Uuid = new Guid("d4cf1ce1-d88e-4f1b-901c-e266ca326d76")
                         },
                         new
                         {
-                            UserId = new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"),
+                            UserId = new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"),
                             ChatGroupId = 3L,
-                            Uuid = new Guid("bf5d77fb-b432-4128-b2fd-5d50c10aa67d")
+                            Uuid = new Guid("c5a1bdaa-c712-446c-80a9-4efd01543dbe")
                         },
                         new
                         {
-                            UserId = new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"),
+                            UserId = new Guid("bff5f162-d62a-45dd-94ec-c26395a89d47"),
                             ChatGroupId = 1L,
-                            Uuid = new Guid("1870efd8-4145-4157-959a-edcb7dd2f2e9")
+                            Uuid = new Guid("b200320f-c487-4c0c-9cfe-0ed5915cf538")
                         },
                         new
                         {
-                            UserId = new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"),
+                            UserId = new Guid("bff5f162-d62a-45dd-94ec-c26395a89d47"),
                             ChatGroupId = 2L,
-                            Uuid = new Guid("66811fac-f8e5-4590-a44b-f31a704e7b31")
+                            Uuid = new Guid("66cb1615-ba1a-4f42-879b-22a23c06d470")
                         },
                         new
                         {
-                            UserId = new Guid("3b4423e5-e0ed-408c-a282-23c0c3ae163b"),
+                            UserId = new Guid("f1ad6149-cbb0-4750-821b-d490069fbbaa"),
                             ChatGroupId = 1L,
-                            Uuid = new Guid("7af2b537-2673-48f3-b52c-3f25565099c8")
+                            Uuid = new Guid("1004b1f4-89ac-427f-8c35-629025660e75")
                         });
                 });
 
@@ -148,16 +148,16 @@ namespace LyteChat.Server.Migrations
                             ChatMessageId = 1L,
                             ChatGroupId = 1L,
                             Message = "first message",
-                            UserId = new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"),
-                            Uuid = new Guid("1269b2a9-2f39-49ea-960c-600e00d4ceb1")
+                            UserId = new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"),
+                            Uuid = new Guid("a18df668-0b2f-4d80-8fce-83b090423e2f")
                         },
                         new
                         {
                             ChatMessageId = 2L,
                             ChatGroupId = 2L,
                             Message = "second message",
-                            UserId = new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"),
-                            Uuid = new Guid("9c24f4b3-48b2-4b33-b71e-a571e7283ae6")
+                            UserId = new Guid("bff5f162-d62a-45dd-94ec-c26395a89d47"),
+                            Uuid = new Guid("0776edf0-5740-4cf8-b240-0cdb6aa6198a")
                         });
                 });
 
@@ -187,6 +187,29 @@ namespace LyteChat.Server.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("603ad931-a965-4ae3-be9d-26d124550bb8"),
+                            ConcurrencyStamp = "46063d7d-e6d9-46a1-8f12-7add7655914e",
+                            Name = "Administrator",
+                            NormalizedName = "ADMINISTRATOR"
+                        },
+                        new
+                        {
+                            Id = new Guid("db436d52-d6cf-4c3f-9465-8361698a835c"),
+                            ConcurrencyStamp = "7a157a36-94b4-429c-8b43-8e14a052dbf9",
+                            Name = "Visitor",
+                            NormalizedName = "VISITOR"
+                        },
+                        new
+                        {
+                            Id = new Guid("339fb0e4-a052-4263-84d0-72ffca4c9eff"),
+                            ConcurrencyStamp = "830a8f8b-0b3e-4c2d-b54f-7b3110518c8c",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("LyteChat.Server.Data.Models.User", b =>
@@ -257,33 +280,52 @@ namespace LyteChat.Server.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"),
+                            Id = new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "68a489e6-ca57-4d6f-a00b-842da419d60f",
+                            ConcurrencyStamp = "148c652f-5a51-4b8e-a0e4-9227632618ac",
+                            Email = "admin@email.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
+                            PasswordHash = "AQAAAAEAACcQAAAAEIYdpOUfJMT6wF29bH9WkBXfMwj01PtaHhB16cT6Ko42WnMEXDdJyjH+Wu+D7Ly/bQ==",
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            UserName = "Admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("bff5f162-d62a-45dd-94ec-c26395a89d47"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "3a3fc3e6-0611-4b47-9772-d6c5788b029d",
+                            Email = "anonymous@email.com",
+                            EmailConfirmed = false,
+                            LockoutEnabled = false,
+                            PasswordHash = "AQAAAAEAACcQAAAAEENa1avl84+d4kUBqPSFGNh4oAItEpQHm9jwusg9ezCdyKMZCi0x+iALU7XSPBnkVA==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "Anonymous"
                         },
                         new
                         {
-                            Id = new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"),
+                            Id = new Guid("f1ad6149-cbb0-4750-821b-d490069fbbaa"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e3ef70b8-ea96-4829-a228-e85d310f5a7f",
+                            ConcurrencyStamp = "9efed18f-f73e-40bc-9455-c46349d78cb5",
+                            Email = "bob@email.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
+                            PasswordHash = "AQAAAAEAACcQAAAAEOGaycoc663J4shpIquivCy2FMOsi+LjiA6QUaaBDBkSt8eMbX2YSPGkBT+OcYuiuA==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "Bob"
                         },
                         new
                         {
-                            Id = new Guid("3b4423e5-e0ed-408c-a282-23c0c3ae163b"),
+                            Id = new Guid("c144eb3f-2c8e-41f9-99d4-3bc8c3faf877"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6221a09e-d27e-4229-9f31-4f8dc57f0c9d",
+                            ConcurrencyStamp = "b60e1533-01a9-41d3-9058-a4b45f9e4d7e",
+                            Email = "carson@email.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
+                            PasswordHash = "AQAAAAEAACcQAAAAEKfNewvNkNWBvodDKEBAJfXOJN9O3GusTpogvlSYSiirdGAgXwz7m+Em4v0WzamVXg==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "Carson"
@@ -370,6 +412,18 @@ namespace LyteChat.Server.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"),
+                            RoleId = new Guid("603ad931-a965-4ae3-be9d-26d124550bb8")
+                        },
+                        new
+                        {
+                            UserId = new Guid("f1ad6149-cbb0-4750-821b-d490069fbbaa"),
+                            RoleId = new Guid("339fb0e4-a052-4263-84d0-72ffca4c9eff")
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>

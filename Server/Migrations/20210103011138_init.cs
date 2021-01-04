@@ -220,13 +220,24 @@ namespace LyteChat.Server.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { new Guid("603ad931-a965-4ae3-be9d-26d124550bb8"), "46063d7d-e6d9-46a1-8f12-7add7655914e", "Administrator", "ADMINISTRATOR" },
+                    { new Guid("db436d52-d6cf-4c3f-9465-8361698a835c"), "7a157a36-94b4-429c-8b43-8e14a052dbf9", "Visitor", "VISITOR" },
+                    { new Guid("339fb0e4-a052-4263-84d0-72ffca4c9eff"), "830a8f8b-0b3e-4c2d-b54f-7b3110518c8c", "User", "USER" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"), 0, "68a489e6-ca57-4d6f-a00b-842da419d60f", null, false, false, null, null, null, null, null, false, null, false, "Anonymous" },
-                    { new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"), 0, "e3ef70b8-ea96-4829-a228-e85d310f5a7f", null, false, false, null, null, null, null, null, false, null, false, "Bob" },
-                    { new Guid("3b4423e5-e0ed-408c-a282-23c0c3ae163b"), 0, "6221a09e-d27e-4229-9f31-4f8dc57f0c9d", null, false, false, null, null, null, null, null, false, null, false, "Carson" }
+                    { new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"), 0, "148c652f-5a51-4b8e-a0e4-9227632618ac", "admin@email.com", false, false, null, null, null, "AQAAAAEAACcQAAAAEIYdpOUfJMT6wF29bH9WkBXfMwj01PtaHhB16cT6Ko42WnMEXDdJyjH+Wu+D7Ly/bQ==", null, false, null, false, "Admin" },
+                    { new Guid("bff5f162-d62a-45dd-94ec-c26395a89d47"), 0, "3a3fc3e6-0611-4b47-9772-d6c5788b029d", "anonymous@email.com", false, false, null, null, null, "AQAAAAEAACcQAAAAEENa1avl84+d4kUBqPSFGNh4oAItEpQHm9jwusg9ezCdyKMZCi0x+iALU7XSPBnkVA==", null, false, null, false, "Anonymous" },
+                    { new Guid("f1ad6149-cbb0-4750-821b-d490069fbbaa"), 0, "9efed18f-f73e-40bc-9455-c46349d78cb5", "bob@email.com", false, false, null, null, null, "AQAAAAEAACcQAAAAEOGaycoc663J4shpIquivCy2FMOsi+LjiA6QUaaBDBkSt8eMbX2YSPGkBT+OcYuiuA==", null, false, null, false, "Bob" },
+                    { new Guid("c144eb3f-2c8e-41f9-99d4-3bc8c3faf877"), 0, "b60e1533-01a9-41d3-9058-a4b45f9e4d7e", "carson@email.com", false, false, null, null, null, "AQAAAAEAACcQAAAAEKfNewvNkNWBvodDKEBAJfXOJN9O3GusTpogvlSYSiirdGAgXwz7m+Em4v0WzamVXg==", null, false, null, false, "Carson" }
                 });
 
             migrationBuilder.InsertData(
@@ -234,9 +245,18 @@ namespace LyteChat.Server.Migrations
                 columns: new[] { "ChatGroupId", "ChatGroupName", "Uuid" },
                 values: new object[,]
                 {
-                    { 1L, "All Chat", new Guid("ba4d18c9-284f-457a-8ac3-aff75e65aaf8") },
-                    { 2L, "second chat group", new Guid("e9b842ce-1cca-467d-8fe6-c4b5a4004c97") },
-                    { 3L, "third chat group", new Guid("200ded25-5305-40d0-9df1-34f40ee1e608") }
+                    { 1L, "All Chat", new Guid("bf3ea3b2-9156-462d-91b6-6c4073962593") },
+                    { 2L, "second chat group", new Guid("9e06cb6b-b425-4824-8864-d6354e4c9ceb") },
+                    { 3L, "third chat group", new Guid("8a2afda3-6648-47d8-a507-632770b45003") }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[,]
+                {
+                    { new Guid("603ad931-a965-4ae3-be9d-26d124550bb8"), new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d") },
+                    { new Guid("339fb0e4-a052-4263-84d0-72ffca4c9eff"), new Guid("f1ad6149-cbb0-4750-821b-d490069fbbaa") }
                 });
 
             migrationBuilder.InsertData(
@@ -244,12 +264,12 @@ namespace LyteChat.Server.Migrations
                 columns: new[] { "ChatGroupId", "UserId", "Uuid" },
                 values: new object[,]
                 {
-                    { 1L, new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"), new Guid("dc7bbc9a-0a7d-4d03-827f-fcc1f0847a74") },
-                    { 2L, new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"), new Guid("bf244576-4754-4748-b966-39d8ac49772b") },
-                    { 3L, new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"), new Guid("bf5d77fb-b432-4128-b2fd-5d50c10aa67d") },
-                    { 1L, new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"), new Guid("1870efd8-4145-4157-959a-edcb7dd2f2e9") },
-                    { 2L, new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"), new Guid("66811fac-f8e5-4590-a44b-f31a704e7b31") },
-                    { 1L, new Guid("3b4423e5-e0ed-408c-a282-23c0c3ae163b"), new Guid("7af2b537-2673-48f3-b52c-3f25565099c8") }
+                    { 1L, new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"), new Guid("412f3376-8d2d-4710-8e4e-d4105bfed06f") },
+                    { 2L, new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"), new Guid("d4cf1ce1-d88e-4f1b-901c-e266ca326d76") },
+                    { 3L, new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"), new Guid("c5a1bdaa-c712-446c-80a9-4efd01543dbe") },
+                    { 1L, new Guid("bff5f162-d62a-45dd-94ec-c26395a89d47"), new Guid("b200320f-c487-4c0c-9cfe-0ed5915cf538") },
+                    { 2L, new Guid("bff5f162-d62a-45dd-94ec-c26395a89d47"), new Guid("66cb1615-ba1a-4f42-879b-22a23c06d470") },
+                    { 1L, new Guid("f1ad6149-cbb0-4750-821b-d490069fbbaa"), new Guid("1004b1f4-89ac-427f-8c35-629025660e75") }
                 });
 
             migrationBuilder.InsertData(
@@ -257,8 +277,8 @@ namespace LyteChat.Server.Migrations
                 columns: new[] { "ChatMessageId", "ChatGroupId", "Message", "UserId", "Uuid" },
                 values: new object[,]
                 {
-                    { 1L, 1L, "first message", new Guid("65d87ef5-1b84-4a99-b70f-9af5e62b2cf5"), new Guid("1269b2a9-2f39-49ea-960c-600e00d4ceb1") },
-                    { 2L, 2L, "second message", new Guid("ecc300eb-5de4-4ab9-87a6-359f4252d108"), new Guid("9c24f4b3-48b2-4b33-b71e-a571e7283ae6") }
+                    { 1L, 1L, "first message", new Guid("10772896-b970-4128-84d0-a11c9fd6aa7d"), new Guid("a18df668-0b2f-4d80-8fce-83b090423e2f") },
+                    { 2L, 2L, "second message", new Guid("bff5f162-d62a-45dd-94ec-c26395a89d47"), new Guid("0776edf0-5740-4cf8-b240-0cdb6aa6198a") }
                 });
 
             migrationBuilder.CreateIndex(

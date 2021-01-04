@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -19,82 +22,93 @@ using LyteChat.Server.Data.ServiceInterface;
 using LyteChat.Server.Services;
 using LyteChat.Server.Data.RepositoryInterface;
 using LyteChat.Server.Data.Models;
+using LyteChat.Server.Auth;
 
 namespace LyteChat.Server
 {
     public class Startup
     {
+        private readonly SymmetricSecurityKey SecurityKey;
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            SecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]));
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            string connectionStr = Configuration.GetConnectionString("DEV"); // Update for prod
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                options.UseSqlServer(connectionStr));
 
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
 
-            //services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //})
-            //.AddJwtBearer(options =>
-            //{
-            //    // Configure the Authority to the expected value for your authentication provider
-            //    // This ensures the token is appropriately validated
-            //    options.Authority = /* TODO: Insert Authority URL here */;
-            //    options.RequireHttpsMetadata = false;
-            //    options.TokenValidationParameters = new TokenValidationParameters
-            //    {
-            //        ValidIssuer = jwtSettings.Issuer,
-            //        ValidAudience = jwtSettings.Issuer,
-            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret)),
-            //        ClockSkew = TimeSpan.Zero
-            //    };
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Default User settings.
+                options.User.RequireUniqueEmail = true;
+            });
 
-            //    // We have to hook the OnMessageReceived event in order to
-            //    // allow the JWT authentication handler to read the access
-            //    // token from the query string when a WebSocket or 
-            //    // Server-Sent Events request comes in.
+            services.AddAuthentication(options =>
+            {
+                // Identity made Cookie authentication the default.
+                // However, we want JWT Bearer Auth to be the default.
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.RequireHttpsMetadata = true;  // Set to true for prod
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidAudience = Configuration["JWT:ValidAudience"],
+                        ValidIssuer = Configuration["JWT:ValidIssuer"],
+                        IssuerSigningKey = SecurityKey
+                    };
 
-            //    // Sending the access token in the query string is required due to
-            //    // a limitation in Browser APIs. We restrict it to only calls to the
-            //    // SignalR hub in this code.
-            //    // See https://docs.microsoft.com/aspnet/core/signalr/security#access-token-logging
-            //    // for more information about security considerations when using
-            //    // the query string to transmit the access token.
-            //    options.Events = new JwtBearerEvents
-            //    {
-            //        OnMessageReceived = context =>
-            //        {
-            //            var accessToken = context.Request.Query["access_token"];
+                    // We have to hook the OnMessageReceived event in order to
+                    // allow the JWT authentication handler to read the access
+                    // token from the query string when a WebSocket or 
+                    // Server-Sent Events request comes in.
 
-            //            // If the request is for our hub...
-            //            var path = context.HttpContext.Request.Path;
-            //            if (!string.IsNullOrEmpty(accessToken) &&
-            //                (path.StartsWithSegments("/chathub")))
-            //            {
-            //                // Read the token out of the query string
-            //                context.Token = accessToken;
-            //            }
-            //            return Task.CompletedTask;
-            //        }
-            //    };
-            //});
+                    // Sending the access token in the query string is required due to
+                    // a limitation in Browser APIs. We restrict it to only calls to the
+                    // SignalR hub in this code.
+                    // See https://docs.microsoft.com/aspnet/core/signalr/security#access-token-logging
+                    // for more information about security considerations when using
+                    // the query string to transmit the access token.
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
 
-            //services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+                            // If the request is for our hub...
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                (path.StartsWithSegments("/chathub")))
+                            {
+                                // Read the token out of the query string
+                                context.Token = accessToken;
+                            }
+                            return Task.CompletedTask;
+                        }
+                    };
+                });
 
             services.AddSignalR();
+            // Change to use email as the user identifier for SignalR
+            services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
+
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddResponseCompression(opts =>
@@ -118,7 +132,7 @@ namespace LyteChat.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<User> userManager)
         {
             app.UseResponseCompression();
 
@@ -143,13 +157,6 @@ namespace LyteChat.Server
             app.UseAuthentication();
             app.UseAuthorization();
 
-            //ENABLE CORS
-            //app.UseCors(x => x
-            //   .AllowAnyMethod()
-            //   .AllowAnyHeader()
-            //   .SetIsOriginAllowed(origin => true) // allow any origin  
-            //   .AllowCredentials());               // allow credentials 
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
@@ -157,6 +164,7 @@ namespace LyteChat.Server
                 endpoints.MapHub<ChatHub>("/chathub");
                 endpoints.MapFallbackToFile("index.html");
             });
+
         }
     }
 }
