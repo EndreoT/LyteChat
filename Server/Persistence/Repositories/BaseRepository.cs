@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using LyteChat.Server.Persistence.Context;
+﻿using LyteChat.Server.Persistence.Context;
 
 
 namespace LyteChat.Server.Persistence.Repositories

@@ -80,7 +80,7 @@ else
             ChatGroupUuid = chatGroupUuid,
             Message = messageInput
         };
-        await StateContainer.hubConnection.SendAsync("CreateMessage", chatMessage);
+        await StateContainer.SendMessage(chatMessage);
         messageInput = "";
     }
 

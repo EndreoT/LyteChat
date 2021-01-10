@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LyteChat.Server.Data.Models;
+﻿using LyteChat.Server.Data.Models;
 using LyteChat.Server.Data.RepositoryInterface;
 using LyteChat.Server.Data.RepositoryInterface.Repositories;
-using LyteChat.Shared.Communication;
-using LyteChat.Shared.DataTransferObject;
+using System;
+using System.Threading.Tasks;
 
 namespace LyteChat.Server.Services
 {

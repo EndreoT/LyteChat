@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using LyteChat.Server.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using LyteChat.Server.Data.Models;
-using LyteChat.Server.Auth;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LyteChat.Server.Persistence.Context
 {
@@ -22,6 +21,10 @@ namespace LyteChat.Server.Persistence.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<ChatGroup>()
+                .HasIndex(chatGroup => chatGroup.ChatGroupName)
+                .IsUnique();
+
             modelBuilder.Entity<ChatGroupUser>()
                 .HasKey(cgu => new { cgu.UserId, cgu.ChatGroupId });
             modelBuilder.Entity<ChatGroupUser>()
@@ -68,7 +71,7 @@ namespace LyteChat.Server.Persistence.Context
                      NormalizedEmail = "admin@email.com".ToUpper(),
                      PasswordHash = hasher.HashPassword(null, "pass$1"),
                  },
-                 new User { 
+                 new User {
                      Id=Guid.NewGuid(),
                      UserName = "Anonymous",
                      NormalizedUserName = "Anonymous".ToUpper(),
@@ -76,7 +79,7 @@ namespace LyteChat.Server.Persistence.Context
                      NormalizedEmail = User.AnonymousUserEmail.ToUpper(),
                      PasswordHash = hasher.HashPassword(null, "pass$2"),
                  },
-                 new User { 
+                 new User {
                      Id=Guid.NewGuid(),
                      UserName = "Bob" ,
                      NormalizedUserName = "Bob".ToUpper(),
@@ -84,7 +87,7 @@ namespace LyteChat.Server.Persistence.Context
                      NormalizedEmail = "bob@email.com".ToUpper(),
                      PasswordHash = hasher.HashPassword(null, "pass$3"),
                  },
-                 new User { 
+                 new User {
                      Id=Guid.NewGuid(),
                      UserName = "Alice",
                      NormalizedUserName = "Alice".ToUpper(),
@@ -122,7 +125,7 @@ namespace LyteChat.Server.Persistence.Context
 
             var chatGroups = new ChatGroup[]
             {
-                 new ChatGroup{ChatGroupId=1, ChatGroupName="All Chat"},
+                 new ChatGroup{ChatGroupId=1, ChatGroupName=ChatGroup.AllChat},
                  new ChatGroup{ChatGroupId=2, ChatGroupName="second chat group"},
                  new ChatGroup{ChatGroupId=3, ChatGroupName="third chat group"},
             };
@@ -145,7 +148,7 @@ namespace LyteChat.Server.Persistence.Context
                  },
            };
 
-            
+
             modelBuilder.Entity<ChatGroup>().HasData(chatGroups);
             modelBuilder.Entity<ChatGroupUser>().HasData(chatGroupUsers);
             modelBuilder.Entity<ChatMessage>().HasData(chatMessages);

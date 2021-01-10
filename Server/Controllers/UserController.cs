@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Shared.DataTransferObject;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using LyteChat.Server.Data.Models;
-using LyteChat.Server.Data.ServiceInterface;
-using LyteChat.Shared.DataTransferObject;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

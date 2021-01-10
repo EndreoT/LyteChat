@@ -1,13 +1,13 @@
-﻿using System;
+﻿using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Shared.Communication;
+using LyteChat.Shared.DataTransferObject;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LyteChat.Server.Data.Models;
-using LyteChat.Server.Data.RepositoryInterface;
-using LyteChat.Server.Data.ServiceInterface;
-using LyteChat.Server.Data.RepositoryInterface.Repositories;
-using LyteChat.Shared.DataTransferObject;
-using LyteChat.Shared.Communication;
 
 namespace LyteChat.Server.Services
 {
@@ -25,6 +25,11 @@ namespace LyteChat.Server.Services
         public async Task<ChatGroupUser> GetByUuidAsync(Guid uuid)
         {
             return await _chatGroupUserRepository.GetByUuidAsync(uuid);
+        }
+
+        public async Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
+        {
+            return await _chatGroupUserRepository.GetByUserAndChatGroupAsync(userUuid, chatGroupUuid);
         }
 
         public async Task<IEnumerable<UserDTO>> GetUsersForChatGroupAsync(Guid chatGroupUuId)
@@ -84,7 +89,8 @@ namespace LyteChat.Server.Services
                     user.Id, chatGroup.ChatGroupId);
                 if (chatGroupUser != null)
                 {
-                    return new ChatGroupUserResponse { 
+                    return new ChatGroupUserResponse
+                    {
                         ErrorMessage = $"User {user.Id} is already a member of chat group {chatGroup.Uuid}"
                     };
                 }

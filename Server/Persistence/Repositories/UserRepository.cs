@@ -1,11 +1,11 @@
-﻿using System;
+﻿using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using LyteChat.Server.Persistence.Context;
-using LyteChat.Server.Data.Models;
-using LyteChat.Server.Data.RepositoryInterface.Repositories;
 
 namespace LyteChat.Server.Persistence.Repositories
 {

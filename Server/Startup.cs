@@ -1,28 +1,27 @@
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LyteChat.Server.Auth;
+using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Server.Hubs;
+using LyteChat.Server.Persistence.Context;
+using LyteChat.Server.Persistence.Repositories;
+using LyteChat.Server.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using LyteChat.Server.Hubs;
-using LyteChat.Server.Persistence.Context;
-using LyteChat.Server.Data.RepositoryInterface.Repositories;
-using LyteChat.Server.Persistence.Repositories;
-using LyteChat.Server.Data.ServiceInterface;
-using LyteChat.Server.Services;
-using LyteChat.Server.Data.RepositoryInterface;
-using LyteChat.Server.Data.Models;
-using LyteChat.Server.Auth;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LyteChat.Server
 {
@@ -101,6 +100,22 @@ namespace LyteChat.Server
                                 context.Token = accessToken;
                             }
                             return Task.CompletedTask;
+                        },
+                        OnTokenValidated = context =>
+                        {
+                            return Task.CompletedTask;
+                        },
+                        OnAuthenticationFailed = context =>
+                        {
+                            return Task.CompletedTask;
+                        },
+                        OnChallenge = context =>
+                       {
+                           return Task.CompletedTask;
+                       },
+                        OnForbidden = context =>
+                        {
+                            return Task.CompletedTask;
                         }
                     };
                 });
@@ -108,6 +123,19 @@ namespace LyteChat.Server
             services.AddSignalR();
             // Change to use email as the user identifier for SignalR
             services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
+
+            // Authorization services
+            services
+               .AddAuthorization(options =>
+               {
+                   options.AddPolicy(AuthPolicy.UserCanCreateChatMessage, policy =>
+                   {
+                       policy.Requirements.Add(new UserCanCreateChatMessageRequirement());
+                   });
+               });
+            services.AddScoped<IAuthorizationHandler, UserCanCreateChatMessageRequirementHandler>();
+            services.AddScoped<IAuthorizationHandler,
+                      UserIsGroupMemberAuthHandler>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

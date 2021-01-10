@@ -1,7 +1,8 @@
-﻿
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using LyteChat.Server.Auth;
+using LyteChat.Server.Data.Models;
+using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -11,9 +12,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using LyteChat.Server;
-using LyteChat.Server.Data.Models;
-using LyteChat.Server.Auth;
 
 
 namespace LyteChat.Server.Controllers
@@ -60,9 +58,10 @@ namespace LyteChat.Server.Controllers
             var user = await _userManager.FindByEmailAsync(Data.Models.User.AnonymousUserEmail);
 
             JwtSecurityToken token = await GetToken(user);
+            string tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
             return Ok(new LoginResponse
             {
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Token = tokenStr,
                 Expiration = token.ValidTo
             });
         }

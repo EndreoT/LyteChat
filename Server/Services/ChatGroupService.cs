@@ -1,16 +1,16 @@
-﻿using System;
+﻿using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Shared.DataTransferObject;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LyteChat.Server.Data.Models;
-using LyteChat.Server.Data.RepositoryInterface;
-using LyteChat.Server.Data.ServiceInterface;
-using LyteChat.Server.Data.RepositoryInterface.Repositories;
-using LyteChat.Shared.DataTransferObject;
 
 namespace LyteChat.Server.Services
 {
-    public class ChatGroupService: ServiceBase, IChatGroupService
+    public class ChatGroupService : ServiceBase, IChatGroupService
     {
         public ChatGroupService(
            IChatMessageRepository chatMessageRepository,

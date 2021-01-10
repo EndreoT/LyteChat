@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LyteChat.Server.Data.Models
 {
-    public class ChatMessage: BaseModel
+    public class ChatMessage : BaseModel
     {
         public ChatMessage() : base() { }
         public long ChatMessageId { get; set; }

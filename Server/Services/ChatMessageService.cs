@@ -1,17 +1,17 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using LyteChat.Server.Data.Communication;
 //using AutoMapper;
 //using Texter.DataTransferObject;
 using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface;
 using LyteChat.Server.Data.RepositoryInterface.Repositories;
 using LyteChat.Server.Data.ServiceInterface;
-using LyteChat.Server.Data.RepositoryInterface;
-using LyteChat.Server.Data.Communication;
 using LyteChat.Shared.Communication;
 using LyteChat.Shared.DataTransferObject;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 
 //using Texter.Domain.RepositoryInterface.MessageRepository;
 //using Texter.Domain.Services;
@@ -20,14 +20,20 @@ namespace LyteChat.Server.Services
 {
     public class ChatMessageService : ServiceBase, IChatMessageService
     {
+
+
         public ChatMessageService(
             IChatMessageRepository chatMessageRepository,
             IUserRepository userRepository,
             IChatGroupRepository chatGroupRepository,
             IChatGroupUserRepository chatGroupUserRepository,
             IUnitOfWork unitOfWork
+
+
             //IMapper mapper,
-            ) : base(chatMessageRepository, userRepository, chatGroupRepository, chatGroupUserRepository, unitOfWork) { }
+            ) : base(chatMessageRepository, userRepository, chatGroupRepository, chatGroupUserRepository, unitOfWork)
+        {
+        }
 
         public async Task<ChatMessageDTO> GetByUuidAsync(Guid uuid)
         {
@@ -67,7 +73,7 @@ namespace LyteChat.Server.Services
         {
             ChatGroup allChat = await _chatGroupRepository.GetAllChatAsync();
             IEnumerable<ChatMessageDTO> messages = await ListMessagesForGroupAsync(allChat.Uuid);
-            
+
             return messages;
         }
 
@@ -80,6 +86,7 @@ namespace LyteChat.Server.Services
 
         public async Task<ChatMessageResponse> CreateChatMessageAsync(CreateChatMessage chatMessage)
         {
+            // User should already be authorized
             try
             {
                 User user = chatMessage.User;
@@ -114,7 +121,8 @@ namespace LyteChat.Server.Services
 
                 //ChatMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
 
-                return new ChatMessageResponse {
+                return new ChatMessageResponse
+                {
                     Success = true,
                     ChatMessageDTO = chatMessageDTO
                 };

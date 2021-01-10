@@ -1,18 +1,19 @@
-﻿using System;
+﻿using LyteChat.Shared.Communication;
+using LyteChat.Shared.DataTransferObject;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Net.Http;
 using System.Net.Http.Json;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.AspNetCore.Components;
-using LyteChat.Shared.DataTransferObject;
-using LyteChat.Shared.Communication;
+using System.Net.WebSockets;
+using System.Threading.Tasks;
 
 
 namespace LyteChat.Client
 {
-    public class StateContainer: IAsyncDisposable
+    public class StateContainer : IAsyncDisposable
     {
         public UserDTO CurrentUser;
 
@@ -24,18 +25,17 @@ namespace LyteChat.Client
 
         private readonly HttpClient Http;
 
-        internal HubConnection hubConnection;
-        private NavigationManager NavigationManager { get; set; }
+        private HubConnection hubConnection;
 
-        public StateContainer(HttpClient http, NavigationManager navigationManager)
+        private string accessToken;
+
+        public StateContainer(HttpClient http)
         {
             Http = http;
-            NavigationManager = navigationManager;
         }
 
         public async Task Init(Uri url)
         {
-            string accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhbm9ueW1vdXNAZW1haWwuY29tIiwianRpIjoiMzllNjI1NjMtZDJhOS00ZWY5LTlhZmMtNDE0NTcyZGVjNDc0IiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQW5vbnltb3VzVXNlciIsImV4cCI6MTYwOTczNDI3NSwiaXNzIjoiaHR0cHM6Ly9seXRlY2hhdC5henVyZXdlYnNpdGVzLm5ldC8iLCJhdWQiOiJodHRwczovL2x5dGVjaGF0LmF6dXJld2Vic2l0ZXMubmV0LyJ9.CUlE1riqrAarAZ5glzV2VMHquxMg-Q7ni-ocbB_HUUw";
             hubConnection = new HubConnectionBuilder()
             .WithUrl(url, options =>
             {
@@ -64,21 +64,30 @@ namespace LyteChat.Client
                 }
             });
 
+            hubConnection.Closed += async (error) =>
+            {
+                Console.WriteLine(error);
+            };
+
             //hubConnection.On<string>("WelcomeMessage", (string welcomeChat) =>
             //{
             //    messages.Add(welcomeChat);
             //    StateHasChanged();
             //});
 
+            // Login as anonymous user first
+            var loginResMessage = await Http.PostAsync("/api/authenticate/login/anonymous", null);
+            LoginResponse loginRes = await loginResMessage.Content.ReadFromJsonAsync<LoginResponse>();
+            accessToken = loginRes.Token;
+
             try
             {
                 await hubConnection.StartAsync();
             }
-            catch (System.Net.WebSockets.WebSocketException e)
+            catch (WebSocketException e)
             {
                 Console.WriteLine(e);
             }
-            
 
             IEnumerable<UserDTO> users = await Http.GetFromJsonAsync<List<UserDTO>>("/api/User");
             AllUsers = users.ToDictionary(u => u.Uuid);
@@ -86,6 +95,27 @@ namespace LyteChat.Client
             CurrentUser = AllUsers.FirstOrDefault().Value;
 
             await GetChatGroupUsersAndMessages();
+        }
+
+        public async Task SendMessage(ChatMessageDTO chatMessage)
+        {
+            try
+            {
+                await hubConnection.InvokeAsync("CreateMessage", chatMessage);
+            }
+            catch (WebSocketException e)
+            {
+                Console.WriteLine(e);
+            }
+            catch (TimeoutException e)
+            {
+                Console.WriteLine(e);
+            }
+            catch (HubException e)
+            {
+                // Probably unauthorized
+                Console.WriteLine(e);
+            }
         }
 
         public async Task SetUser(UserDTO currentUser)

@@ -1,9 +1,9 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
 
 namespace LyteChat.Server.Auth
 {
-    public class EmailBasedUserIdProvider: IUserIdProvider
+    public class EmailBasedUserIdProvider : IUserIdProvider
     {
         public virtual string GetUserId(HubConnectionContext connection)
         {
