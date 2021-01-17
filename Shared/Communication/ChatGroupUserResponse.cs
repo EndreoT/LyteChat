@@ -6,6 +6,5 @@ namespace LyteChat.Shared.Communication
     {
         public bool Success { get; set; }
         public string ErrorMessage { get; set; }
-        public ChatGroupUserDTO ChatGroupUserDTO { get; set; }
     }
 }

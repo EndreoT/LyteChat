@@ -27,6 +27,13 @@ namespace LyteChat.Server.Auth
             _chatGroupUserService = chatGroupUserService;
         }
 
+        /// <summary>
+        /// Authorize a user creating a chat message for a chat group using the Signalr ChatHub
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="requirement"></param>
+        /// <param name="resource"></param>
+        /// <returns></returns>
         protected override async Task<Task> HandleRequirementAsync(AuthorizationHandlerContext context,
             UserCanCreateChatMessageRequirement requirement,
             HubInvocationContext resource)
@@ -53,12 +60,11 @@ namespace LyteChat.Server.Auth
 
             if (user != null && chatGroupUser != null && chatGroupUser.UserId.Equals(user.Id))
             {
+                //User is chat group member
                 context.Succeed(requirement);
             }
 
             return Task.CompletedTask;
         }
-
-
     }
 }

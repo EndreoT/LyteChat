@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+
 namespace LyteChat.Server.Data.ServiceInterface
 {
     public interface IChatGroupUserService : IServiceBase<ChatGroupUser>
@@ -15,8 +16,8 @@ namespace LyteChat.Server.Data.ServiceInterface
 
         public Task<IEnumerable<ChatGroupDTO>> GetChatGroupsForUserAsync(Guid UserUuid);
 
-        public Task<ChatGroupUserResponse> AddUserToChatGroupAsync(ChatGroupUserDTO chatGroupUser);
+        public Task<ChatGroupUserResponse> AddUserToChatGroupAsync(User user, Guid chatGroupUuid);
 
-        public Task<ChatGroupUserResponse> RemoveUserFromChatGroupAsync(Guid userUuid, Guid chatGroupUuid);
+        public Task<ChatGroupUserResponse> RemoveUserFromChatGroupAsync(User user, Guid chatGroupUuid);
     }
 }

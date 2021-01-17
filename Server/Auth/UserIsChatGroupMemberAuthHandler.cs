@@ -7,18 +7,25 @@ using System.Threading.Tasks;
 
 namespace LyteChat.Server.Auth
 {
-    public class UserIsGroupMemberAuthHandler : AuthorizationHandler<OperationAuthorizationRequirement, ChatGroupUser>
+    public class UserIsChatGroupMemberAuthHandler : AuthorizationHandler<OperationAuthorizationRequirement, ChatGroupUser>
     {
         private readonly UserManager<User> _userManager;
-        public UserIsGroupMemberAuthHandler(UserManager<User> userManager)
+        public UserIsChatGroupMemberAuthHandler(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
 
-        protected override async Task<Task>
-            HandleRequirementAsync(AuthorizationHandlerContext context,
-                                   OperationAuthorizationRequirement requirement,
-                                   ChatGroupUser resource)
+        /// <summary>
+        /// /// Authorize a user reading/creating messages for the chat group
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="requirement"></param>
+        /// <param name="resource"></param>
+        /// <returns></returns>
+        protected override async Task<Task> HandleRequirementAsync(
+            AuthorizationHandlerContext context,
+            OperationAuthorizationRequirement requirement,
+            ChatGroupUser resource)
         {
             if (context.User == null || resource == null)
             {
@@ -39,6 +46,7 @@ namespace LyteChat.Server.Auth
 
             if (user != null && resource.UserId.Equals(user.Id))
             {
+                //User is part of the chat group
                 context.Succeed(requirement);
             }
 

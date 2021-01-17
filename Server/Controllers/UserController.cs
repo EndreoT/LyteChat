@@ -5,7 +5,13 @@ using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using LyteChat.Server.Data.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,14 +24,23 @@ namespace LyteChat.Server.Controllers
     {
         private readonly IUserService _userService;
         private readonly IChatGroupUserService _chatGroupUserService;
+        private readonly UserManager<User> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
-        public UserController(IUserService userService, IChatGroupUserService chatGroupUserService)
+        public UserController(
+            IUserService userService, 
+            IChatGroupUserService chatGroupUserService,
+            UserManager<User> userManager,
+            IAuthorizationService authorizationService)
         {
             _userService = userService;
             _chatGroupUserService = chatGroupUserService;
+            _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
         // GET: api/<UserController>
+        [Authorize(Roles = Role.AuthenticatedUser)]
         [HttpGet]
         public async Task<IEnumerable<UserDTO>> GetAllUsers()
         {
@@ -41,9 +56,16 @@ namespace LyteChat.Server.Controllers
 
         // GET api/<UserController>/fa50df81-0158-4fda-9813-ddff9f70ba9e/chatgroup
         [HttpGet("{userUuid}/chatgroup")]
-        public async Task<IEnumerable<ChatGroupDTO>> GetChatGroupsForUser(Guid userUuid)
+        public async Task<ActionResult<IEnumerable<ChatGroupDTO>>> GetChatGroupsForUser(Guid userUuid)
         {
-            return await _chatGroupUserService.GetChatGroupsForUserAsync(userUuid);
+            string userEmail = User.FindFirstValue(ClaimTypes.Email);
+            User user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null || user.Id != userUuid)
+            {
+                return Forbid();
+            }
+
+            return Ok(await _chatGroupUserService.GetChatGroupsForUserAsync(userUuid));
         }
     }
 }

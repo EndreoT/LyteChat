@@ -11,6 +11,7 @@ using System.Net.Http.Json;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Text.Json;
 
 
 namespace LyteChat.Client
@@ -207,7 +208,7 @@ namespace LyteChat.Client
 
         public async Task<bool> ModifyGroupMembership(bool joinGroup, Guid chatGroupUuid)
         {
-            ChatGroupUserDTO body = new ChatGroupUserDTO { UserUuid = CurrentUser.Uuid, ChatGroupUuid = chatGroupUuid };
+            ChatGroupUserDTO body = new ChatGroupUserDTO { ChatGroupUuid = chatGroupUuid };
             HttpResponseMessage response;
 
             if (joinGroup)
@@ -218,21 +219,27 @@ namespace LyteChat.Client
             else
             {
                 response = await Http.DeleteAsync(
-                    $"/api/chatGroupUser/user/{CurrentUser.Uuid}/chatgroup/{chatGroupUuid}");
+                    $"/api/chatGroupUser/{chatGroupUuid}");
             }
-
-            ChatGroupUserResponse content = await response.Content.ReadFromJsonAsync<ChatGroupUserResponse>();
-            if (content.Success == true)
+            try
             {
-                await GetChatGroupUsersAndMessages();
-                NotifyStateChanged();
-                return true;
-            }
-            else
+                ChatGroupUserResponse content = await response.Content.ReadFromJsonAsync<ChatGroupUserResponse>();
+                if (content.Success == true)
+                {
+                    await GetChatGroupUsersAndMessages();
+                    NotifyStateChanged();
+                    return true;
+                }
+                else
+                {
+                    //TODO handle issue with server
+                }
+            } catch (JsonException e)
             {
-                //TODO handle issue with server
-                return false;
+                // TODO probably unauthorized
+                Console.WriteLine(e);
             }
+            return false;
         }
 
         public async Task<List<ChatGroupDTO>> GetChatGroups()

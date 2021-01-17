@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace LyteChat.Server.Controllers
 {
@@ -43,8 +42,13 @@ namespace LyteChat.Server.Controllers
             _authorizationService = authorizationService;
         }
 
-        // POST api/<ChatMessageController>
         [HttpPost]
+        /// <summary>
+        /// Create a chat message for the chat group. Uses resource based authorization
+        /// POST api/<ChatMessageController>
+        /// </summary>
+        /// <param name="chatMessageDTO"></param>
+        /// <returns></returns>
         public async Task<ActionResult<ChatMessageResponse>> CreateChat([FromBody] CreateChatMessageDTO chatMessageDTO)
         {
             string userEmail = User.FindFirstValue(ClaimTypes.Email);

@@ -2,6 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using LyteChat.Server.Data.Models;
+using System.Security.Claims;
+using LyteChat.Server.Auth;
 using LyteChat.Server.Data.ServiceInterface;
 using LyteChat.Shared.Communication;
 using LyteChat.Shared.DataTransferObject;
@@ -10,30 +14,64 @@ using LyteChat.Shared.DataTransferObject;
 
 namespace LyteChat.Server.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = Role.AuthenticatedUser)]
     [Route("api/[controller]")]
     [ApiController]
     public class ChatGroupUserController : ControllerBase
     {
         private readonly IChatGroupUserService _chatGroupUserService;
+        private readonly UserManager<User> _userManager;
+        private readonly IAuthorizationService _authorizationService;
 
-        public ChatGroupUserController(IChatGroupUserService chatGroupUserService)
+        public ChatGroupUserController(
+            IChatGroupUserService chatGroupUserService,
+            UserManager<User> userManager,
+            IAuthorizationService authorizationService)
         {
             _chatGroupUserService = chatGroupUserService;
+            _userManager = userManager;
+            _authorizationService = authorizationService;
         }
 
         // POST api/<ChatGroupUserController>
         [HttpPost]
-        public async Task<ChatGroupUserResponse> AddUserToChatGroupAsync([FromBody] ChatGroupUserDTO chatgroup)
+        public async Task<ActionResult<ChatGroupUserResponse>> AddUserToChatGroupAsync([FromBody] ChatGroupUserDTO chatgroup)
         {
-            return await _chatGroupUserService.AddUserToChatGroupAsync(chatgroup);
+            string userEmail = User.FindFirstValue(ClaimTypes.Email);
+            User user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null)
+            {
+                return Forbid();
+            }
+
+            return Ok(await _chatGroupUserService.AddUserToChatGroupAsync(user, chatgroup.ChatGroupUuid));
         }
 
-        // DELETE api/<ChatGroupUserController>/user/{userUuid}/chatgroup/{chatGroupUuid}
-        [HttpDelete("user/{userUuid}/chatgroup/{chatGroupUuid}")]
-        public async Task<ChatGroupUserResponse> RemoveUserFromChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
+        // DELETE api/<ChatGroupUserController>/{chatGroupUuid}
+        [HttpDelete("{chatGroupUuid}")]
+        public async Task<ActionResult<ChatGroupUserResponse>> RemoveUserFromChatGroupAsync(Guid chatGroupUuid)
         {
-            return await _chatGroupUserService.RemoveUserFromChatGroupAsync(userUuid, chatGroupUuid);
+            string userEmail = User.FindFirstValue(ClaimTypes.Email);
+            User user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null)
+            {
+                return Forbid();
+            }
+
+            ChatGroupUser chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
+                user.Id, chatGroupUuid);
+
+            // Check if user is authorized to remove user from the chat group
+            AuthorizationResult isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                chatGroupUser,
+                Operations.Create);
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return await _chatGroupUserService.RemoveUserFromChatGroupAsync(user, chatGroupUuid);
         }
     }
 }

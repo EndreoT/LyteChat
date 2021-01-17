@@ -130,12 +130,14 @@ namespace LyteChat.Server
                {
                    options.AddPolicy(AuthPolicy.UserCanCreateChatMessage, policy =>
                    {
+                       //For chat hub auth
                        policy.Requirements.Add(new UserCanCreateChatMessageRequirement());
                    });
                });
+            //For chat hub auth
             services.AddScoped<IAuthorizationHandler, UserCanCreateChatMessageRequirementHandler>();
-            services.AddScoped<IAuthorizationHandler,
-                      UserIsGroupMemberAuthHandler>();
+            //For REST API auth
+            services.AddScoped<IAuthorizationHandler, UserIsChatGroupMemberAuthHandler>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -160,7 +162,7 @@ namespace LyteChat.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<User> userManager)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseResponseCompression();
 
