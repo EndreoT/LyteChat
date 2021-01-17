@@ -1,6 +1,7 @@
 ﻿using LyteChat.Server.Data.ServiceInterface;
 using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace LyteChat.Server.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ChatGroupController : ControllerBase

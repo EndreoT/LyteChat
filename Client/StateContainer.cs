@@ -2,6 +2,7 @@
 using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace LyteChat.Client
         public Dictionary<Guid, UserDTO> KnownUsers = new Dictionary<Guid, UserDTO>();
 
         public Dictionary<Guid, ChatGroupData> ChatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
+
+        public List<ChatGroupDTO> AllChatGroups = new List<ChatGroupDTO>();
 
         public event Action OnChange;
 
@@ -93,13 +96,14 @@ namespace LyteChat.Client
             }
 
             var authState = await _authService.GetAuthenticationStateAsync();
-            var userUuid = authState.User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var userName = authState.User.FindFirst(ClaimTypes.Name).Value;
+            string userUuid = authState.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string userName = authState.User.FindFirst(ClaimTypes.Name).Value;
 
             bool parseSuccess = Guid.TryParse(userUuid, out Guid guid);
             if (parseSuccess)
             {
                 UserDTO currentUser = new UserDTO { Uuid = guid, Name = userName };
+                
                 await SetUser(currentUser);
             }
             else
@@ -132,6 +136,14 @@ namespace LyteChat.Client
         public async Task SetUser(UserDTO currentUser)
         {
             CurrentUser = currentUser;
+
+            // Set Bearer token header for all future requests
+            string authToken = await _authService.GetTokenAsync();
+            AuthenticationHeaderValue header = new AuthenticationHeaderValue("Bearer", authToken);
+            Http.DefaultRequestHeaders.Authorization = header;
+
+            AllChatGroups = await GetChatGroups();
+            
             await GetChatGroupUsersAndMessages();
             NotifyStateChanged();
         }
@@ -140,6 +152,9 @@ namespace LyteChat.Client
         {
             KnownUsers = new Dictionary<Guid, UserDTO>();
             ChatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
+            // Remove Bearer token header
+            Http.DefaultRequestHeaders.Authorization = null;
+
             await DisposeAsync();
             NotifyStateChanged();
         }
@@ -149,7 +164,7 @@ namespace LyteChat.Client
             //Clear all chat groups
             ChatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
 
-            //Get all chat groups for the user
+            //Get chat groups the user belongs to
             List<ChatGroupDTO> chatGroups = await Http.GetFromJsonAsync<List<ChatGroupDTO>>(
             $"/api/user/{CurrentUser.Uuid}/chatgroup");
 
@@ -194,6 +209,7 @@ namespace LyteChat.Client
         {
             ChatGroupUserDTO body = new ChatGroupUserDTO { UserUuid = CurrentUser.Uuid, ChatGroupUuid = chatGroupUuid };
             HttpResponseMessage response;
+
             if (joinGroup)
             {
                 response = await Http.PostAsJsonAsync(
@@ -209,6 +225,7 @@ namespace LyteChat.Client
             if (content.Success == true)
             {
                 await GetChatGroupUsersAndMessages();
+                NotifyStateChanged();
                 return true;
             }
             else

@@ -10,7 +10,7 @@ using LyteChat.Shared.DataTransferObject;
 
 namespace LyteChat.Server.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ChatGroupUserController : ControllerBase

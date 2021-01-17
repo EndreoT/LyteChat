@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LyteChat.Server.Data.Models
 {
@@ -7,6 +9,7 @@ namespace LyteChat.Server.Data.Models
         public ChatMessage() : base() { }
         public long ChatMessageId { get; set; }
 
+        [Required]
         public string Message { get; set; }
 
         public Guid UserId { get; set; }

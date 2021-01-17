@@ -14,13 +14,6 @@
 @implements IDisposable
 
 
-<div class="form-group">
-    <label>
-        Message:
-        <input @bind="messageInput" size="50" />
-    </label>
-</div>
-
 @if (ChatGroupDataExists())
 {
     ChatGroupData ChatGroupData = StateContainer.ChatGroupsForUser[ChatGroupUuid];
@@ -36,13 +29,20 @@
         }
     </ul>
 
+    <div class="form-group">
+        <label>
+            Message:
+            <input @bind="messageInput" size="50" />
+        </label>
+    </div>
+
     <button @onclick="(() => Send(ChatGroupData.ChatGroup.Uuid))" disabled="@(cannotSendMessage)">Send</button>
     <h3>Messages: </h3>
     <ul class="messagesList">
         @foreach (var message in ChatGroupData.Messages)
         {
             {
-                <li>@message.UserName: @message.Message</li>
+                <li>@message.CreatedOn | @message.UserName: @message.Message</li>
             }
         }
     </ul>

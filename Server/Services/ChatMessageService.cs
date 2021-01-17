@@ -20,8 +20,6 @@ namespace LyteChat.Server.Services
 {
     public class ChatMessageService : ServiceBase, IChatMessageService
     {
-
-
         public ChatMessageService(
             IChatMessageRepository chatMessageRepository,
             IUserRepository userRepository,
@@ -61,6 +59,7 @@ namespace LyteChat.Server.Services
                     UserUuid = message.User.Id,
                     UserName = message.User.UserName,
                     Message = message.Message,
+                    CreatedOn = message.CreatedOn,
                     ChatGroupUuid = message.ChatGroup.Uuid,
                     ChatGroupName = message.ChatGroup.ChatGroupName
                 });
@@ -113,6 +112,7 @@ namespace LyteChat.Server.Services
                 {
                     Uuid = saveChatMessage.Uuid,
                     Message = saveChatMessage.Message,
+                    CreatedOn = saveChatMessage.CreatedOn,
                     ChatGroupName = saveChatMessage.ChatGroup.ChatGroupName,
                     ChatGroupUuid = saveChatMessage.ChatGroup.Uuid,
                     UserName = saveChatMessage.User.UserName,

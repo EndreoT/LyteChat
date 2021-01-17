@@ -16,7 +16,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var chatGroup in _chatGroups)
+        @foreach (var chatGroup in StateContainer.AllChatGroups)
         {
         <tr>
             <td>@chatGroup.ChatGroupName</td>
@@ -37,12 +37,10 @@
 
 
 @code {
-    private List<ChatGroupDTO> _chatGroups = new List<ChatGroupDTO>();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         StateContainer.OnChange += StateHasChanged;
-        _chatGroups = await StateContainer.GetChatGroups();
     }
 
     private async Task ModifyGroupMembership(bool joinGroup, Guid groupUuid)
@@ -54,4 +52,5 @@
     {
         StateContainer.OnChange -= StateHasChanged;
     }
+
 }
