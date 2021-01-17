@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 
 namespace LyteChat.Client
@@ -17,7 +18,7 @@ namespace LyteChat.Client
     {
         public UserDTO CurrentUser;
 
-        public Dictionary<Guid, UserDTO> AllUsers = new Dictionary<Guid, UserDTO>();
+        public Dictionary<Guid, UserDTO> KnownUsers = new Dictionary<Guid, UserDTO>();
 
         public Dictionary<Guid, ChatGroupData> ChatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
 
@@ -27,31 +28,38 @@ namespace LyteChat.Client
 
         private HubConnection hubConnection;
 
-        private string accessToken;
+        private readonly JWTAuthenticationStateProvider _authService;
 
-        public StateContainer(HttpClient http)
+        public StateContainer(HttpClient http, JWTAuthenticationStateProvider authService)
         {
             Http = http;
+            _authService = authService;
         }
 
         public async Task Init(Uri url)
         {
-            hubConnection = new HubConnectionBuilder()
-            .WithUrl(url, options =>
+            string accessToken = await _authService.GetTokenAsync();
+            if (accessToken == null)
             {
-                options.SkipNegotiation = true;
-                options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
-                options.AccessTokenProvider = () => Task.FromResult(accessToken);
-            })
-            .WithAutomaticReconnect()
-            .Build();
+                return;
+            }
+            
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl(url, options =>
+                {
+                    options.SkipNegotiation = true;
+                    options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
+                    options.AccessTokenProvider = () => Task.FromResult(accessToken);
+                })
+                .WithAutomaticReconnect()
+                .Build();
 
             hubConnection.On("ReceiveMessage", (ChatMessageResponse chatMessageRes) =>
             {
                 if (!chatMessageRes.Success)
                 {
-                    //TODO
-                    Console.WriteLine(chatMessageRes.ErrorMessage);
+                //TODO
+                Console.WriteLine(chatMessageRes.ErrorMessage);
                 }
                 else
                 {
@@ -75,11 +83,6 @@ namespace LyteChat.Client
             //    StateHasChanged();
             //});
 
-            // Login as anonymous user first
-            var loginResMessage = await Http.PostAsync("/api/authenticate/login/anonymous", null);
-            LoginResponse loginRes = await loginResMessage.Content.ReadFromJsonAsync<LoginResponse>();
-            accessToken = loginRes.Token;
-
             try
             {
                 await hubConnection.StartAsync();
@@ -89,12 +92,20 @@ namespace LyteChat.Client
                 Console.WriteLine(e);
             }
 
-            IEnumerable<UserDTO> users = await Http.GetFromJsonAsync<List<UserDTO>>("/api/User");
-            AllUsers = users.ToDictionary(u => u.Uuid);
+            var authState = await _authService.GetAuthenticationStateAsync();
+            var userUuid = authState.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var userName = authState.User.FindFirst(ClaimTypes.Name).Value;
 
-            CurrentUser = AllUsers.FirstOrDefault().Value;
-
-            await GetChatGroupUsersAndMessages();
+            bool parseSuccess = Guid.TryParse(userUuid, out Guid guid);
+            if (parseSuccess)
+            {
+                UserDTO currentUser = new UserDTO { Uuid = guid, Name = userName };
+                await SetUser(currentUser);
+            }
+            else
+            {
+                //TODO
+            }
         }
 
         public async Task SendMessage(ChatMessageDTO chatMessage)
@@ -152,7 +163,16 @@ namespace LyteChat.Client
         private async Task GetUsersForChatGroupAsync(Guid chatGroupUuid)
         {
             IEnumerable<UserDTO> users = await Http.GetFromJsonAsync<UserDTO[]>($"/api/ChatGroup/{chatGroupUuid}/user");
-            ChatGroupsForUser[chatGroupUuid].Users = users.Select(u => u.Uuid).ToList();
+            List<Guid> chatGroupUserUuids = new List<Guid>();
+            foreach (UserDTO user in users)
+            {
+                chatGroupUserUuids.Add(user.Uuid);
+                if (!KnownUsers.ContainsKey(user.Uuid))
+                {
+                    KnownUsers[user.Uuid] = user;
+                }
+            }
+            ChatGroupsForUser[chatGroupUuid].Users = chatGroupUserUuids;
         }
 
         private async Task AddMessagesForChatGroupAsync(Guid chatGroupUuid)
@@ -197,10 +217,14 @@ namespace LyteChat.Client
 
         private void NotifyStateChanged() => OnChange?.Invoke();
 
-        public bool IsConnected => hubConnection.State == HubConnectionState.Connected;
+        public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 
         public string ConnectionState()
         {
+            if (hubConnection == null)
+            {
+                return "Disconnected";
+            }
             string connectionState = hubConnection.State switch
             {
                 HubConnectionState.Connected => "Connected",
@@ -209,13 +233,16 @@ namespace LyteChat.Client
                 HubConnectionState.Reconnecting => "Reconnecting",
                 _ => "",
             };
+
             return connectionState;
         }
 
-
         public async ValueTask DisposeAsync()
         {
-            await hubConnection.DisposeAsync();
+            if (hubConnection != null)
+            {
+                await hubConnection.DisposeAsync();
+            }
         }
     }
 }

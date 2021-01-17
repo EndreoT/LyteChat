@@ -5,6 +5,8 @@
 @inject StateContainer StateContainer
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
+@inject JWTAuthenticationStateProvider TokenProvider
+
 
 <div class="page">
     <div class="sidebar">
@@ -12,14 +14,21 @@
     </div>
 
     <div class="main">
+
         <div class="top-row px-4">
-            <div class="form-group">
-                <select @onchange="(eventArgs => SelectUser(eventArgs))">
-                    @foreach (KeyValuePair<Guid, UserDTO> kv in StateContainer.AllUsers)
-                    {
-                        <option value=@kv.Value.Uuid>@kv.Value.Name; @kv.Value.Uuid</option>
-                    }
-                </select>
+            <div class="content px-4">
+                <AuthorizeView>
+                    <Authorized>
+                        Logged in as @context.User.Identity.Name
+                        <button class="btn btn-sm btn-outline-dark" @onclick="@(() => TokenProvider.SetTokenAsync(null))">Logout</button>
+                    </Authorized>
+                    <NotAuthorized>
+                        <NavLink class="nav-link" href="authentication/login" Match="NavLinkMatch.All">
+                            <span class="oi oi-list-rich" aria-hidden="true"></span> Log in
+                        </NavLink>
+                    </NotAuthorized>
+                    
+                </AuthorizeView>
             </div>
             <div class="content px-4">
                 <label>@StateContainer.ConnectionState()</label>
@@ -31,19 +40,3 @@
         </div>
     </div>
 </div>
-
-@code{
-    public async Task SelectUser(ChangeEventArgs eventArgs)
-    {
-        bool parseSuccess = Guid.TryParse(eventArgs.Value.ToString(), out Guid guid);
-        if (parseSuccess)
-        {
-            UserDTO currentUser = StateContainer.AllUsers[guid];
-            await StateContainer.SetUser(currentUser);
-        }
-        else
-        {
-            //TODO
-        }
-    }
-}

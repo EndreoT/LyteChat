@@ -1,0 +1,83 @@
+﻿@page "/authentication/login"
+@inject JWTAuthenticationStateProvider AuthStateProvider
+@inject StateContainer StateContainer
+@using LyteChat.Shared.DataTransferObject
+@implements IDisposable
+@inject NavigationManager NavigationManager
+
+<div class="container col-6">
+    @if (loginFailure)
+    {
+        <div class="alert alert-danger">Your credentials did not work. Please try again.</div>
+    }
+    <div class="card">
+
+        <div class="card-body">
+            <h5 class="card-title">Login</h5>
+            <EditForm @ref="loginform" Model="credentials" OnValidSubmit="SubmitCredentials">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Login as anonymous</label>
+                    <InputCheckbox @bind-Value="loginAsAnonymous"></InputCheckbox>
+                </div>
+
+                <div class="form-group">
+                    <label>Email address</label>
+                    <InputText disabled="@loginAsAnonymous" class="form-control" @bind-Value="credentials.Email" />
+                    <ValidationMessage For="@(()=> credentials.Email)" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <InputText disabled="@loginAsAnonymous" type="password" class="form-control" @bind-Value="credentials.Password" />
+                    <ValidationMessage For="@(()=> credentials.Password)" />
+                </div>
+
+                <button type="submit" class="btn btn-outline-primary btn-sm">Submit</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private class Credentials
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+    Credentials credentials = new Credentials();
+    private bool loginAsAnonymous;
+    bool loginFailure;
+
+    EditForm loginform { get; set; }
+
+    async Task SubmitCredentials()
+    {
+        LoginResponse loginRes;
+        if (loginAsAnonymous)
+        {
+            loginRes = await AuthStateProvider.RequestTokenForAnonymousUser();
+        }
+        else
+        {
+            loginRes = await AuthStateProvider.RequestTokenForAuthenticatedUser(
+                credentials.Email, credentials.Password);
+        }
+        loginFailure = loginRes.Token == null;
+        if (!loginFailure)
+        {
+            await AuthStateProvider.SetTokenAsync(loginRes.Token, loginRes.Expiration);
+            // Reset connection to chathub with new JWT auth
+            Uri url = NavigationManager.ToAbsoluteUri("/chathub");
+            StateContainer.OnChange += StateHasChanged;
+            await StateContainer.Init(url);
+        }
+    }
+
+    public void Dispose()
+    {
+        StateContainer.OnChange -= StateHasChanged;
+    }
+
+
+}
