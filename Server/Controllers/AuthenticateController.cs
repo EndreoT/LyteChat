@@ -12,6 +12,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
+using Microsoft.Extensions.Primitives;
 
 
 namespace LyteChat.Server.Controllers
@@ -34,11 +36,20 @@ namespace LyteChat.Server.Controllers
         [AllowAnonymous]
         [HttpPost]
         [Route("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login()
         {
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+            if (!Request.Headers.ContainsKey("Authorization"))
+            {
+                return Unauthorized();
+            }
+            StringValues reqAuthHeader = Request.Headers["Authorization"];
+            AuthenticationHeaderValue authHeader = AuthenticationHeaderValue.Parse(reqAuthHeader);
+            byte[] credentialBytes = Convert.FromBase64String(authHeader.Parameter);
+            string[] credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
+            string email = credentials[0];
+            string password = credentials[1];
+            User user = await _userManager.FindByEmailAsync(email);
+            if (user != null && await _userManager.CheckPasswordAsync(user, password))
             {
                 JwtSecurityToken token = await GetToken(user);
                 return Ok(new LoginResponse
@@ -71,10 +82,12 @@ namespace LyteChat.Server.Controllers
             var userRoles = await _userManager.GetRolesAsync(user);
 
             var authClaims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    };
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier , user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            };
 
             foreach (var userRole in userRoles)
             {

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace LyteChat.Server.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ChatMessageController : ControllerBase
