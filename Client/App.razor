@@ -27,6 +27,7 @@
 #if DEBUG
         await Task.Delay(2000);
 #endif
+        // Connect to chat hub if already logged in
         Uri url = NavigationManager.ToAbsoluteUri("/chathub");
         StateContainer.OnChange += StateHasChanged;
         await StateContainer.Init(url);

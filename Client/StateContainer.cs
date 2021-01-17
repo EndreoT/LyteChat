@@ -136,6 +136,14 @@ namespace LyteChat.Client
             NotifyStateChanged();
         }
 
+        public async Task RemoveStateOnLogout()
+        {
+            KnownUsers = new Dictionary<Guid, UserDTO>();
+            ChatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
+            await DisposeAsync();
+            NotifyStateChanged();
+        }
+
         public async Task GetChatGroupUsersAndMessages()
         {
             //Clear all chat groups
