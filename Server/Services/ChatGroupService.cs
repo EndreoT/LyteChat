@@ -2,8 +2,8 @@
 using LyteChat.Server.Data.RepositoryInterface;
 using LyteChat.Server.Data.RepositoryInterface.Repositories;
 using LyteChat.Server.Data.ServiceInterface;
-using LyteChat.Shared.DataTransferObject;
 using LyteChat.Shared.Communication;
+using LyteChat.Shared.DataTransferObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,7 +86,8 @@ namespace LyteChat.Server.Services
 
                 chatGroupResponse.Success = true;
                 chatGroupResponse.ChatGroupDTO = chatGroupDTO;
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 chatGroupResponse.ErrorMessage = "An error occurred when saving the chat group";
             }

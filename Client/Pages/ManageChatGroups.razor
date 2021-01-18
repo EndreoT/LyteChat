@@ -1,9 +1,9 @@
 ﻿@page "/"
-@using System.Threading
-@using System.Collections.Generic
 @using LyteChat.Shared.DataTransferObject
+@using Microsoft.AspNetCore.Authorization
 @inject StateContainer StateContainer
 @implements IDisposable
+@attribute [Authorize(Roles = "AuthenticatedUser")]
 
 <h1>Chat Groups</h1>
 
@@ -16,21 +16,21 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var chatGroup in StateContainer.AllChatGroups)
+        @foreach (ChatGroupDTO chatGroup in StateContainer.AllChatGroups)
         {
-        <tr>
-            <td>@chatGroup.ChatGroupName</td>
-            <td>@chatGroup.Uuid</td>
-            @if (StateContainer.ChatGroupsForUser.ContainsKey(chatGroup.Uuid))
-            {
-                <td><button @onclick="(() => ModifyGroupMembership(false, chatGroup.Uuid))">Leave Group</button></td>
-            }
-            else
-            {
-                <td><button @onclick="(() => ModifyGroupMembership(true, chatGroup.Uuid))">Join Group</button></td>
-            }
+            <tr>
+                <td>@chatGroup.ChatGroupName</td>
+                <td>@chatGroup.Uuid</td>
+                @if (StateContainer.ChatGroupsForUser.ContainsKey(chatGroup.Uuid))
+                {
+                    <td><button @onclick="(() => ModifyGroupMembership(false, chatGroup.Uuid))">Leave Group</button></td>
+                }
+                else
+                {
+                    <td><button @onclick="(() => ModifyGroupMembership(true, chatGroup.Uuid))">Join Group</button></td>
+                }
 
-        </tr>
+            </tr>
         }
     </tbody>
 </table>

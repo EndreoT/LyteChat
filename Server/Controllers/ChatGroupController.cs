@@ -1,8 +1,8 @@
 ﻿using LyteChat.Server.Auth;
 using LyteChat.Server.Data.Models;
 using LyteChat.Server.Data.ServiceInterface;
-using LyteChat.Shared.DataTransferObject;
 using LyteChat.Shared.Communication;
+using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

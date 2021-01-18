@@ -1,5 +1,5 @@
-﻿using LyteChat.Shared.DataTransferObject;
-using LyteChat.Shared.Communication;
+﻿using LyteChat.Shared.Communication;
+using LyteChat.Shared.DataTransferObject;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
