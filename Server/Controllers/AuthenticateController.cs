@@ -1,4 +1,4 @@
-﻿using LyteChat.Server.Auth;
+﻿using System.Linq;
 using LyteChat.Server.Data.Models;
 using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -35,8 +36,10 @@ namespace LyteChat.Server.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Route("login")]
-        public async Task<IActionResult> Login()
+        public async Task<ActionResult<LoginResponse>> Login()
         {
             if (!Request.Headers.ContainsKey("Authorization"))
             {
@@ -63,8 +66,9 @@ namespace LyteChat.Server.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Route("login/anonymous")]
-        public async Task<IActionResult> LoginAsAnonymous()
+        public async Task<ActionResult<LoginResponse>> LoginAsAnonymous()
         {
             var user = await _userManager.FindByEmailAsync(Data.Models.User.AnonymousUserEmail);
 
@@ -73,6 +77,46 @@ namespace LyteChat.Server.Controllers
             return Ok(new LoginResponse
             {
                 Token = tokenStr,
+                Expiration = token.ValidTo
+            });
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [Route("register")]
+        public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterModel model)
+        {
+            User userExists = await _userManager.FindByEmailAsync(model.Email);
+            if (userExists != null)
+            {
+                return BadRequest(new RegisterResponse {FailureMessage = "User already exists!" });
+            }
+
+            User user = new User()
+            {
+                Email = model.Email,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = model.UserName
+            };
+
+            IdentityResult createUserRes = await _userManager.CreateAsync(user, model.Password);
+            if (!createUserRes.Succeeded)
+            {
+                return BadRequest(new RegisterResponse { ErrorList = createUserRes.Errors.ToList() });
+            }
+
+            IdentityResult addRoleRes = await _userManager.AddToRoleAsync(user, Role.AuthenticatedUser);
+            if (!addRoleRes.Succeeded)
+            {
+                return BadRequest(new RegisterResponse { ErrorList = createUserRes.Errors.ToList() });
+            }
+
+            JwtSecurityToken token = await GetToken(user);
+            return Ok(new RegisterResponse
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo
             });
         }
@@ -105,59 +149,6 @@ namespace LyteChat.Server.Controllers
                 );
 
             return token;
-
         }
-
-        //[HttpPost]
-        //[Route("register")]
-        //public async Task<IActionResult> Register([FromBody] RegisterModel model)
-        //{
-        //    var userExists = await userManager.FindByNameAsync(model.Username);
-        //    if (userExists != null)
-        //        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
-
-        //    ApplicationUser user = new ApplicationUser()
-        //    {
-        //        Email = model.Email,
-        //        SecurityStamp = Guid.NewGuid().ToString(),
-        //        UserName = model.Username
-        //    };
-        //    var result = await userManager.CreateAsync(user, model.Password);
-        //    if (!result.Succeeded)
-        //        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
-
-        //    return Ok(new Response { Status = "Success", Message = "User created successfully!" });
-        //}
-
-        //[HttpPost]
-        //[Route("register-admin")]
-        //public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModel model)
-        //{
-        //    var userExists = await userManager.FindByNameAsync(model.Username);
-        //    if (userExists != null)
-        //        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
-
-        //    User user = new User()
-        //    {
-        //        Email = model.Email,
-        //        SecurityStamp = Guid.NewGuid().ToString(),
-        //        UserName = model.Username
-        //    };
-        //    var result = await userManager.CreateAsync(user, model.Password);
-        //    if (!result.Succeeded)
-        //        return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
-
-        //    if (!await roleManager.RoleExistsAsync(Role.Admin))
-        //        await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-        //    if (!await roleManager.RoleExistsAsync(UserRoles.User))
-        //        await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-
-        //    if (await roleManager.RoleExistsAsync(UserRoles.Admin))
-        //    {
-        //        await userManager.AddToRoleAsync(user, UserRoles.Admin);
-        //    }
-
-        //    return Ok(new Response { Status = "Success", Message = "User created successfully!" });
-        //}
     }
 }

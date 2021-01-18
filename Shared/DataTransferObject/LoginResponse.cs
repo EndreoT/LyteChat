@@ -2,10 +2,7 @@
 
 namespace LyteChat.Shared.DataTransferObject
 {
-    public class LoginResponse
+    public class LoginResponse: AuthResponseBase
     {
-        public string Token { get; set; }
-
-        public DateTime Expiration { get; set; }
     }
 }

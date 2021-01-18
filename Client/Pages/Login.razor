@@ -1,20 +1,26 @@
-﻿@page "/authentication/login"
-@inject JWTAuthenticationStateProvider AuthStateProvider
+﻿@inject JWTAuthenticationStateProvider AuthStateProvider
 @inject StateContainer StateContainer
 @using LyteChat.Shared.DataTransferObject
+@using Microsoft.AspNetCore.Identity
 @implements IDisposable
 @inject NavigationManager NavigationManager
 
 <div class="container col-6">
-    @if (loginFailure)
+    @if (authFailureMessage != null)
     {
-        <div class="alert alert-danger">Your credentials did not work. Please try again.</div>
+        <div class="alert alert-danger">@authFailureMessage</div>
+    }
+    @if (authErrors != null)
+    {
+        foreach(IdentityError error in authErrors)
+        {
+            <div class="alert alert-danger">@error.Description</div>
+        }
     }
     <div class="card">
-
         <div class="card-body">
             <h5 class="card-title">Login</h5>
-            <EditForm @ref="loginform" Model="credentials" OnValidSubmit="SubmitCredentials">
+            <EditForm @ref="loginform" Model="loginCredentials" OnValidSubmit="SubmitLogin">
                 <DataAnnotationsValidator />
                 <div class="form-group">
                     <label>Login as anonymous</label>
@@ -23,35 +29,65 @@
 
                 <div class="form-group">
                     <label>Email address</label>
-                    <InputText disabled="@loginAsAnonymous" class="form-control" @bind-Value="credentials.Email" />
-                    <ValidationMessage For="@(()=> credentials.Email)" />
+                    <InputText disabled="@loginAsAnonymous" class="form-control" @bind-Value="loginCredentials.Email" />
+                    <ValidationMessage For="@(()=> loginCredentials.Email)" />
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <InputText disabled="@loginAsAnonymous" type="password" class="form-control" @bind-Value="credentials.Password" />
-                    <ValidationMessage For="@(()=> credentials.Password)" />
+                    <InputText disabled="@loginAsAnonymous" type="password" class="form-control" @bind-Value="loginCredentials.Password" />
+                    <ValidationMessage For="@(()=> loginCredentials.Password)" />
                 </div>
 
-                <button type="submit" class="btn btn-outline-primary btn-sm">Submit</button>
+                <button type="submit" class="btn btn-outline-primary btn-sm">Login</button>
+            </EditForm>
+        </div>
+
+        <hr />
+
+        <div class="card-body">
+            <h5 class="card-title">Sign Up</h5>
+            <EditForm @ref="registerform" Model="registerCredentials" OnValidSubmit="SubmitRegister">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Email address</label>
+                    <InputText disabled="@loginAsAnonymous" class="form-control" @bind-Value="registerCredentials.Email" />
+                    <ValidationMessage For="@(()=> registerCredentials.Email)" />
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <InputText disabled="@loginAsAnonymous" class="form-control" @bind-Value="registerCredentials.UserName" />
+                    <ValidationMessage For="@(()=> registerCredentials.UserName)" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <InputText disabled="@loginAsAnonymous" type="password" class="form-control" @bind-Value="registerCredentials.Password" />
+                    <ValidationMessage For="@(()=> registerCredentials.Password)" />
+                </div>
+
+                <button disabled="@loginAsAnonymous" type="submit" class="btn btn-outline-primary btn-sm">Register</button>
             </EditForm>
         </div>
     </div>
 </div>
 
 @code {
-    private class Credentials
+    private class LoginCredentials
     {
         public string Email { get; set; }
         public string Password { get; set; }
     }
 
-    Credentials credentials = new Credentials();
+    private LoginCredentials loginCredentials = new LoginCredentials();
+    private RegisterModel registerCredentials = new RegisterModel();
+
     private bool loginAsAnonymous;
-    bool loginFailure;
+    private string authFailureMessage;
+    private IEnumerable<IdentityError> authErrors;
 
-    EditForm loginform { get; set; }
+    private EditForm loginform { get; set; }
+    private EditForm registerform { get; set; }
 
-    async Task SubmitCredentials()
+    private async Task SubmitLogin()
     {
         LoginResponse loginRes;
         if (loginAsAnonymous)
@@ -61,23 +97,46 @@
         else
         {
             loginRes = await AuthStateProvider.RequestTokenForAuthenticatedUser(
-                credentials.Email, credentials.Password);
+                loginCredentials.Email, loginCredentials.Password);
         }
-        loginFailure = loginRes.Token == null;
-        if (!loginFailure)
+        if(loginRes.Token == null)
         {
-            await AuthStateProvider.SetTokenAsync(loginRes.Token, loginRes.Expiration);
-            // Reset connection to chathub with new JWT auth
-            Uri url = NavigationManager.ToAbsoluteUri("/chathub");
-            StateContainer.OnChange += StateHasChanged;
-            await StateContainer.Init(url);
+            authFailureMessage = "Your credentials did not work. Please try again.";
         }
+        else
+        {
+            await AuthSuccess(loginRes);
+        }
+    }
+
+    private async Task SubmitRegister()
+    {
+        RegisterResponse registerRes = await AuthStateProvider.RegisterUser(registerCredentials);
+
+        if (registerRes.Token == null)
+        {
+            authFailureMessage = registerRes.FailureMessage;
+            authErrors = registerRes.ErrorList;
+        }
+        else
+        {
+            await AuthSuccess(registerRes);
+        }
+    }
+
+    private async Task AuthSuccess(AuthResponseBase authRes)
+    {
+        await AuthStateProvider.SetTokenAsync(authRes.Token, authRes.Expiration);
+        // Reset connection to chathub with new JWT auth
+        Uri url = NavigationManager.ToAbsoluteUri("/chathub");
+        StateContainer.OnChange += StateHasChanged;
+        await StateContainer.Init(url);
+        authFailureMessage = null;
+        authErrors = null;
     }
 
     public void Dispose()
     {
         StateContainer.OnChange -= StateHasChanged;
     }
-
-
 }

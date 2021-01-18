@@ -19,15 +19,9 @@
             <div class="content px-4">
                 <AuthorizeView>
                     <Authorized>
-                        Logged in as @context.User.Identity.Name
+                        Hello, @context.User.Identity.Name
                         <button class="btn btn-sm btn-outline-dark" @onclick="@(() => Logout())">Logout</button>
                     </Authorized>
-                    <NotAuthorized>
-                        <NavLink class="nav-link" href="authentication/login" Match="NavLinkMatch.All">
-                            <span class="oi oi-list-rich" aria-hidden="true"></span> Log in
-                        </NavLink>
-                    </NotAuthorized>
-                    
                 </AuthorizeView>
             </div>
             <div class="content px-4">

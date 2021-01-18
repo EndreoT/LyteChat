@@ -6,14 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using LyteChat.Server.Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace LyteChat.Server.Controllers
 {

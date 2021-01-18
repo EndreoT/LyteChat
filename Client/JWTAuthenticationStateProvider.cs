@@ -66,18 +66,24 @@ namespace LyteChat.Client
 
         public async Task<LoginResponse> RequestTokenForAuthenticatedUser(string username, string password)
         {
+            //Only set Basic auth headers for login request
             string loginPath = "api/authenticate/login";
             Uri baseUrl = Http.BaseAddress;
-
             string urlStr = baseUrl.ToString() + loginPath;
-           
             HttpClient client = new HttpClient();
             byte[] byteArray = Encoding.UTF8.GetBytes($"{username}:{password}");
             AuthenticationHeaderValue header = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
             client.DefaultRequestHeaders.Authorization = header;
-
+            //Attempt to login
             HttpResponseMessage response = await client.PostAsync(urlStr, null);
             LoginResponse loginRes = await response.Content.ReadFromJsonAsync<LoginResponse>();
+            return loginRes;
+        }
+
+        public async Task<RegisterResponse> RegisterUser(RegisterModel registerModel)
+        {
+            HttpResponseMessage response = await Http.PostAsJsonAsync($"/api/authenticate/register", registerModel);
+            RegisterResponse loginRes = await response.Content.ReadFromJsonAsync<RegisterResponse>();
             return loginRes;
         }
 
