@@ -3,20 +3,16 @@
 @using Microsoft.AspNetCore.Components
 @using System.Collections.Generic
 @using Microsoft.AspNetCore.SignalR.Client
+@using System.Net.Http.Headers;
 @using LyteChat.Shared.DataTransferObject
 @using LyteChat.Shared.Communication
 @using LyteChat.Shared
 @using LyteChat.Client;
 @inject StateContainer StateContainer
 @inject HttpClient Http
+@inject JWTAuthenticationStateProvider TokenProvider
 @implements IDisposable
 
-<div class="form-group">
-    <label>
-        Message:
-        <input @bind="messageInput" size="50" />
-    </label>
-</div>
 
 @if (ChatGroupDataExists())
 {
@@ -24,21 +20,29 @@
     <h2>Chat Group Name: @ChatGroupData.ChatGroup.ChatGroupName</h2>
     <h3>Users: </h3>
     <ul class="messagesList">
-        @foreach (var userUuid in ChatGroupData.Users)
+        @foreach (Guid userUuid in ChatGroupData.Users)
         {
+            if (StateContainer.KnownUsers.ContainsKey(userUuid))
             {
-                <li>@StateContainer.AllUsers[userUuid].Name</li>
+                <li>@StateContainer.KnownUsers[userUuid].Name</li>
             }
         }
     </ul>
 
-    <button @onclick="(() => Send(ChatGroupData.ChatGroup.Uuid))" disabled="@(!StateContainer.IsConnected)">Send</button>
+    <div class="form-group">
+        <label>
+            Message:
+            <input @bind="messageInput" size="50" />
+        </label>
+    </div>
+
+    <button @onclick="(() => Send(ChatGroupData.ChatGroup.Uuid))" disabled="@(cannotSendMessage)">Send</button>
     <h3>Messages: </h3>
     <ul class="messagesList">
         @foreach (var message in ChatGroupData.Messages)
         {
             {
-                <li>@message.UserName: @message.Message</li>
+                <li>@message.CreatedOn | @message.UserName: @message.Message</li>
             }
         }
     </ul>
@@ -48,7 +52,7 @@
 }
 else
 {
-    <h2>Chat Group: @ChatGroupUuidStr does not exist</h2>
+    <h2>Chat Group: @ChatGroupUuidStr does not exist or you are not authorized for this group</h2>
 }
 
 
@@ -57,8 +61,8 @@ else
     public string ChatGroupUuidStr { get; set; }
     private Guid ChatGroupUuid { get; set; }
 
-    private string userInput;
-    private string messageInput;
+    private string messageInput = "";
+    private bool cannotSendMessage => !(StateContainer.IsConnected && messageInput.Length != 0);
 
     protected override void OnParametersSet()
     {
@@ -72,7 +76,7 @@ else
         return StateContainer.ChatGroupsForUser.ContainsKey(ChatGroupUuid);
     }
 
-    public async Task Send(Guid chatGroupUuid)
+    private async Task Send(Guid chatGroupUuid)
     {
         ChatMessageDTO chatMessage = new ChatMessageDTO
         {
@@ -80,7 +84,8 @@ else
             ChatGroupUuid = chatGroupUuid,
             Message = messageInput
         };
-        await StateContainer.hubConnection.SendAsync("CreateMessage", chatMessage);
+        await StateContainer.SendMessage(chatMessage);
+        messageInput = "";
     }
 
     public void Dispose()

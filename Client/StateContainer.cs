@@ -1,43 +1,61 @@
-﻿using System;
+﻿using LyteChat.Shared.Communication;
+using LyteChat.Shared.DataTransferObject;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.SignalR.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.AspNetCore.Components;
-using LyteChat.Shared.DataTransferObject;
-using LyteChat.Shared.Communication;
+using System.Net.WebSockets;
+using System.Security.Claims;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 
 namespace LyteChat.Client
 {
-    public class StateContainer: IAsyncDisposable
+    public class StateContainer : IAsyncDisposable
     {
         public UserDTO CurrentUser;
 
-        public Dictionary<Guid, UserDTO> AllUsers = new Dictionary<Guid, UserDTO>();
+        public Dictionary<Guid, UserDTO> KnownUsers = new Dictionary<Guid, UserDTO>();
 
         public Dictionary<Guid, ChatGroupData> ChatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
+
+        public List<ChatGroupDTO> AllChatGroups = new List<ChatGroupDTO>();
 
         public event Action OnChange;
 
         private readonly HttpClient Http;
 
-        internal HubConnection hubConnection;
-        private NavigationManager NavigationManager { get; set; }
+        private HubConnection hubConnection;
 
-        public StateContainer(HttpClient http, NavigationManager navigationManager)
+        private readonly JWTAuthenticationStateProvider _authService;
+
+        public StateContainer(HttpClient http, JWTAuthenticationStateProvider authService)
         {
             Http = http;
-            NavigationManager = navigationManager;
+            _authService = authService;
         }
 
         public async Task Init(Uri url)
         {
+            string accessToken = await _authService.GetTokenAsync();
+            if (accessToken == null)
+            {
+                return;
+            }
+
             hubConnection = new HubConnectionBuilder()
-                .WithUrl(url)
-                //.WithAutomaticReconnect()
+                .WithUrl(url, options =>
+                {
+                    options.SkipNegotiation = true;
+                    options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
+                    options.AccessTokenProvider = () => Task.FromResult(accessToken);
+                })
+                .WithAutomaticReconnect()
                 .Build();
 
             hubConnection.On("ReceiveMessage", (ChatMessageResponse chatMessageRes) =>
@@ -58,34 +76,96 @@ namespace LyteChat.Client
                 }
             });
 
+            hubConnection.Closed += async (error) =>
+            {
+                Console.WriteLine(error);
+            };
+
             //hubConnection.On<string>("WelcomeMessage", (string welcomeChat) =>
             //{
             //    messages.Add(welcomeChat);
             //    StateHasChanged();
             //});
 
-            await hubConnection.StartAsync();
-            IEnumerable<UserDTO> users = await Http.GetFromJsonAsync<List<UserDTO>>("/api/User");
-            AllUsers = users.ToDictionary(u => u.Uuid);
+            try
+            {
+                await hubConnection.StartAsync();
+            }
+            catch (WebSocketException e)
+            {
+                Console.WriteLine(e);
+            }
 
-            CurrentUser = AllUsers.FirstOrDefault().Value;
+            var authState = await _authService.GetAuthenticationStateAsync();
+            string userUuid = authState.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string userName = authState.User.FindFirst(ClaimTypes.Name).Value;
 
-            await GetChatGroupUsersAndMessages();
+            bool parseSuccess = Guid.TryParse(userUuid, out Guid guid);
+            if (parseSuccess)
+            {
+                UserDTO currentUser = new UserDTO { Uuid = guid, Name = userName };
+
+                await SetUser(currentUser);
+            }
+            else
+            {
+                //TODO
+            }
+        }
+
+        public async Task SendMessage(ChatMessageDTO chatMessage)
+        {
+            try
+            {
+                await hubConnection.InvokeAsync("CreateMessage", chatMessage);
+            }
+            catch (WebSocketException e)
+            {
+                Console.WriteLine(e);
+            }
+            catch (TimeoutException e)
+            {
+                Console.WriteLine(e);
+            }
+            catch (HubException e)
+            {
+                // Probably unauthorized
+                Console.WriteLine(e);
+            }
         }
 
         public async Task SetUser(UserDTO currentUser)
         {
             CurrentUser = currentUser;
+
+            // Set Bearer token header for all future requests
+            string authToken = await _authService.GetTokenAsync();
+            AuthenticationHeaderValue header = new AuthenticationHeaderValue("Bearer", authToken);
+            Http.DefaultRequestHeaders.Authorization = header;
+
             await GetChatGroupUsersAndMessages();
+            NotifyStateChanged();
+        }
+
+        public async Task RemoveStateOnLogout()
+        {
+            KnownUsers = new Dictionary<Guid, UserDTO>();
+            ChatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
+            // Remove Bearer token header
+            Http.DefaultRequestHeaders.Authorization = null;
+
+            await DisposeAsync();
             NotifyStateChanged();
         }
 
         public async Task GetChatGroupUsersAndMessages()
         {
+            AllChatGroups = await GetChatGroups();
+
             //Clear all chat groups
             ChatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
 
-            //Get all chat groups for the user
+            //Get chat groups the user belongs to
             List<ChatGroupDTO> chatGroups = await Http.GetFromJsonAsync<List<ChatGroupDTO>>(
             $"/api/user/{CurrentUser.Uuid}/chatgroup");
 
@@ -107,7 +187,16 @@ namespace LyteChat.Client
         private async Task GetUsersForChatGroupAsync(Guid chatGroupUuid)
         {
             IEnumerable<UserDTO> users = await Http.GetFromJsonAsync<UserDTO[]>($"/api/ChatGroup/{chatGroupUuid}/user");
-            ChatGroupsForUser[chatGroupUuid].Users = users.Select(u => u.Uuid).ToList();
+            List<Guid> chatGroupUserUuids = new List<Guid>();
+            foreach (UserDTO user in users)
+            {
+                chatGroupUserUuids.Add(user.Uuid);
+                if (!KnownUsers.ContainsKey(user.Uuid))
+                {
+                    KnownUsers[user.Uuid] = user;
+                }
+            }
+            ChatGroupsForUser[chatGroupUuid].Users = chatGroupUserUuids;
         }
 
         private async Task AddMessagesForChatGroupAsync(Guid chatGroupUuid)
@@ -117,10 +206,11 @@ namespace LyteChat.Client
             ChatGroupsForUser[chatGroupUuid].Messages = messages.ToList();
         }
 
-        public async Task <bool> ModifyGroupMembership(bool joinGroup, Guid chatGroupUuid)
+        public async Task<bool> ModifyGroupMembership(bool joinGroup, Guid chatGroupUuid)
         {
-            ChatGroupUserDTO body = new ChatGroupUserDTO { UserUuid = CurrentUser.Uuid, ChatGroupUuid = chatGroupUuid };
+            ChatGroupUserDTO body = new ChatGroupUserDTO { ChatGroupUuid = chatGroupUuid };
             HttpResponseMessage response;
+
             if (joinGroup)
             {
                 response = await Http.PostAsJsonAsync(
@@ -129,20 +219,28 @@ namespace LyteChat.Client
             else
             {
                 response = await Http.DeleteAsync(
-                    $"/api/chatGroupUser/user/{CurrentUser.Uuid}/chatgroup/{chatGroupUuid}");
+                    $"/api/chatGroupUser/{chatGroupUuid}");
             }
-                
-            ChatGroupUserResponse content = await response.Content.ReadFromJsonAsync<ChatGroupUserResponse>();
-            if (content.Success == true)
+            try
             {
-                await GetChatGroupUsersAndMessages();
-                return true;
+                ChatGroupUserResponse content = await response.Content.ReadFromJsonAsync<ChatGroupUserResponse>();
+                if (content.Success == true)
+                {
+                    await GetChatGroupUsersAndMessages();
+                    NotifyStateChanged();
+                    return true;
+                }
+                else
+                {
+                    //TODO handle issue with server
+                }
             }
-            else
+            catch (JsonException e)
             {
-                //TODO handle issue with server
-                return false;
+                // TODO probably unauthorized
+                Console.WriteLine(e);
             }
+            return false;
         }
 
         public async Task<List<ChatGroupDTO>> GetChatGroups()
@@ -150,14 +248,47 @@ namespace LyteChat.Client
             return await Http.GetFromJsonAsync<List<ChatGroupDTO>>("api/ChatGroup");
         }
 
+        public async Task<ChatGroupResponse> CreateChatGroup(ChatGroupDTO chatGroupDTO)
+        {
+            HttpResponseMessage response = await Http.PostAsJsonAsync($"/api/chatgroup", chatGroupDTO);
+            ChatGroupResponse createRes = await response.Content.ReadFromJsonAsync<ChatGroupResponse>();
+            if (createRes.Success)
+            {
+                // Get new state
+                await GetChatGroupUsersAndMessages();
+            }
+            return createRes;
+        }
+
+
         private void NotifyStateChanged() => OnChange?.Invoke();
 
-        public bool IsConnected =>
-            hubConnection.State == HubConnectionState.Connected;
+        public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+        public string ConnectionState()
+        {
+            if (hubConnection == null)
+            {
+                return "Disconnected";
+            }
+            string connectionState = hubConnection.State switch
+            {
+                HubConnectionState.Connected => "Connected",
+                HubConnectionState.Disconnected => "Disconnected",
+                HubConnectionState.Connecting => "Connecting",
+                HubConnectionState.Reconnecting => "Reconnecting",
+                _ => "",
+            };
+
+            return connectionState;
+        }
 
         public async ValueTask DisposeAsync()
         {
-            await hubConnection.DisposeAsync();
+            if (hubConnection != null)
+            {
+                await hubConnection.DisposeAsync();
+            }
         }
     }
 }

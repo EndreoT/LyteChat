@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace LyteChat.Server.Data.Models
 {
-    public class ChatGroupUser: BaseModel
+    public class ChatGroupUser : BaseModel
     {
         public ChatGroupUser() : base() { }
 

@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using LyteChat.Server.Data.RepositoryInterface;
+﻿using LyteChat.Server.Data.RepositoryInterface;
 using LyteChat.Server.Persistence.Context;
+using System.Threading.Tasks;
 
 namespace LyteChat.Server.Persistence.Repositories
 {

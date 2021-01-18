@@ -1,48 +1,88 @@
-﻿@page "/"
-@using System.Threading
-@using System.Collections.Generic
+﻿@page "/chatgroup"
 @using LyteChat.Shared.DataTransferObject
+@using LyteChat.Shared.Communication
+@using Microsoft.AspNetCore.Authorization
 @inject StateContainer StateContainer
+@inject NavigationManager NavigationManager
 @implements IDisposable
+@attribute [Authorize(Roles = "AuthenticatedUser")]
 
-<h1>Chat Groups</h1>
+<div class="container col-6">
+    <h1>Chat Groups</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Uuid</th>
-            <th>Membership status</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var chatGroup in _chatGroups)
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Uuid</th>
+                <th>Membership status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ChatGroupDTO chatGroup in StateContainer.AllChatGroups)
+            {
+                <tr>
+                    <td>@chatGroup.ChatGroupName</td>
+                    <td>@chatGroup.Uuid</td>
+                    @if (StateContainer.ChatGroupsForUser.ContainsKey(chatGroup.Uuid))
+                    {
+                        <td><button @onclick="(() => ModifyGroupMembership(false, chatGroup.Uuid))">Leave Group</button></td>
+                    }
+                    else
+                    {
+                        <td><button @onclick="(() => ModifyGroupMembership(true, chatGroup.Uuid))">Join Group</button></td>
+                    }
+
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="card">
+        @if (CreateFailure)
         {
-        <tr>
-            <td>@chatGroup.ChatGroupName</td>
-            <td>@chatGroup.Uuid</td>
-            @if (StateContainer.ChatGroupsForUser.ContainsKey(chatGroup.Uuid))
-            {
-                <td><button @onclick="(() => ModifyGroupMembership(false, chatGroup.Uuid))">Leave Group</button></td>
-            }
-            else
-            {
-                <td><button @onclick="(() => ModifyGroupMembership(true, chatGroup.Uuid))">Join Group</button></td>
-            }
-
-        </tr>
+            <div class="alert alert-danger">@CreateFailureMessage</div>
         }
-    </tbody>
-</table>
+        <div class="card-body">
+            <h5 class="card-title">Create a Chat Group</h5>
+            <EditForm @ref="createchatgroupform" Model="ChatGroupModel" OnValidSubmit="SubmitCreateChatGroup">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Chat Group Name</label>
+                    <InputText class="form-control" @bind-Value="ChatGroupModel.ChatGroupName" />
+                </div>
+
+                <button type="submit" class="btn btn-outline-primary btn-sm">Create</button>
+            </EditForm>
+        </div>
+    </div>
+</div>
 
 
 @code {
-    private List<ChatGroupDTO> _chatGroups = new List<ChatGroupDTO>();
+    private bool CreateFailure;
+    private string CreateFailureMessage;
+    private EditForm createchatgroupform { get; set; }
+    private ChatGroupDTO ChatGroupModel = new ChatGroupDTO();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         StateContainer.OnChange += StateHasChanged;
-        _chatGroups = await StateContainer.GetChatGroups();
+    }
+
+    private async Task SubmitCreateChatGroup()
+    {
+        ChatGroupResponse createRes = await StateContainer.CreateChatGroup(ChatGroupModel);
+        if (createRes.Success)
+        {
+            //Direct user to the chat group
+            NavigationManager.NavigateTo($"/chatgroup/{createRes.ChatGroupDTO.Uuid}");
+        }
+        else
+        {
+            CreateFailure = true;
+            CreateFailureMessage = createRes.ErrorMessage;
+        }
     }
 
     private async Task ModifyGroupMembership(bool joinGroup, Guid groupUuid)
@@ -54,4 +94,5 @@
     {
         StateContainer.OnChange -= StateHasChanged;
     }
+
 }

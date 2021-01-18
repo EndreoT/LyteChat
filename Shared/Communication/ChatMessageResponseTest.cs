@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LyteChat.Shared.DataTransferObject;
+﻿using LyteChat.Shared.DataTransferObject;
 
 
 namespace LyteChat.Shared.Communication
 {
-    public class ChatMessageResponseTest: BaseResponse
+    public class ChatMessageResponseTest : BaseResponse
     {
         public ChatMessageDTO ChatMessageDTO { get; private set; }
 

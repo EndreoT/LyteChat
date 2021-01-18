@@ -1,7 +1,5 @@
-﻿using System;
+﻿using LyteChat.Server.Persistence.Context;
 using System.Linq;
-using LyteChat.Server.Data.Models;
-using LyteChat.Server.Persistence.Context;
 
 namespace LyteChat.Server.Persistence
 {
@@ -9,7 +7,7 @@ namespace LyteChat.Server.Persistence
     {
         public static void Initialize(AppDbContext context)
         {
-           context.Database.EnsureCreated();
+            context.Database.EnsureCreated();
 
             if (context.Users.Any())
             {

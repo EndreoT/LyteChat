@@ -1,16 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-//using AutoMapper;
+﻿//using AutoMapper;
 using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface;
 using LyteChat.Server.Data.RepositoryInterface.Repositories;
 using LyteChat.Server.Data.ServiceInterface;
-using LyteChat.Server.Data.RepositoryInterface;
 using LyteChat.Shared.DataTransferObject;
-using LyteChat.Shared.Communication;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 
 namespace LyteChat.Server.Services
@@ -57,10 +54,10 @@ namespace LyteChat.Server.Services
             User userQuery = await _userRepository
                 .GetAnonymousUserAsync();
             UserDTO user = new UserDTO
-                {
-                    Name = userQuery.UserName,
-                    Uuid = userQuery.Id
-                };
+            {
+                Name = userQuery.UserName,
+                Uuid = userQuery.Id
+            };
 
             //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
             return user;

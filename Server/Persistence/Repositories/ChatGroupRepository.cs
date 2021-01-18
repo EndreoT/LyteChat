@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LyteChat.Server.Persistence.Context;
-using LyteChat.Server.Data.Models;
-using LyteChat.Server.Data.RepositoryInterface.Repositories;
 
 namespace LyteChat.Server.Persistence.Repositories
 {
@@ -41,16 +41,26 @@ namespace LyteChat.Server.Persistence.Repositories
 
         public async Task<ChatGroup> GetAllChatAsync()
         {
+            return await FindByName("ALL_CHAT");
+        }
+
+        public async Task<ChatGroup> FindByName(string chatGroupName)
+        {
             try
             {
                 return await _context.ChatGroups
-                   .Where(chatGroup => chatGroup.ChatGroupName.Equals("ALL_CHAT"))
+                   .Where(chatGroup => chatGroup.ChatGroupName.Equals(chatGroupName))
                    .SingleAsync();
             }
             catch (InvalidOperationException e)
             {
                 return null;
             }
+        }
+
+        public async Task AddChatGroupAsync(ChatGroup chatGroup)
+        {
+            await _context.ChatGroups.AddAsync(chatGroup);
         }
     }
 }

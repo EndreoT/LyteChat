@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LyteChat.Server.Persistence.Context;
-using LyteChat.Server.Data.Models;
-using LyteChat.Server.Data.RepositoryInterface.Repositories;
 
 namespace LyteChat.Server.Persistence.Repositories
 {
-    public class ChatMessageRepository: BaseRepository, IChatMessageRepository
+    public class ChatMessageRepository : BaseRepository, IChatMessageRepository
     {
         public ChatMessageRepository(AppDbContext context) : base(context) { }
         public async Task<IEnumerable<ChatMessage>> ListMessagesForGroupAsync(Guid groupUuid)
@@ -21,7 +21,8 @@ namespace LyteChat.Server.Persistence.Repositories
                     .Include(message => message.User)
                     .Include(message => message.ChatGroup)
                     .ToListAsync();
-            } catch (InvalidOperationException e)
+            }
+            catch (InvalidOperationException e)
             {
                 return null;
             }
