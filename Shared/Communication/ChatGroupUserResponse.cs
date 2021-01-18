@@ -1,6 +1,4 @@
-﻿using LyteChat.Shared.DataTransferObject;
-
-namespace LyteChat.Shared.Communication
+﻿namespace LyteChat.Shared.Communication
 {
     public class ChatGroupUserResponse
     {

@@ -2,16 +2,16 @@
 using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
-using System.Net.Http.Headers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.WebSockets;
-using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 
 namespace LyteChat.Client
@@ -47,7 +47,7 @@ namespace LyteChat.Client
             {
                 return;
             }
-            
+
             hubConnection = new HubConnectionBuilder()
                 .WithUrl(url, options =>
                 {
@@ -62,8 +62,8 @@ namespace LyteChat.Client
             {
                 if (!chatMessageRes.Success)
                 {
-                //TODO
-                Console.WriteLine(chatMessageRes.ErrorMessage);
+                    //TODO
+                    Console.WriteLine(chatMessageRes.ErrorMessage);
                 }
                 else
                 {
@@ -104,7 +104,7 @@ namespace LyteChat.Client
             if (parseSuccess)
             {
                 UserDTO currentUser = new UserDTO { Uuid = guid, Name = userName };
-                
+
                 await SetUser(currentUser);
             }
             else
@@ -144,7 +144,7 @@ namespace LyteChat.Client
             Http.DefaultRequestHeaders.Authorization = header;
 
             AllChatGroups = await GetChatGroups();
-            
+
             await GetChatGroupUsersAndMessages();
             NotifyStateChanged();
         }
@@ -234,7 +234,8 @@ namespace LyteChat.Client
                 {
                     //TODO handle issue with server
                 }
-            } catch (JsonException e)
+            }
+            catch (JsonException e)
             {
                 // TODO probably unauthorized
                 Console.WriteLine(e);

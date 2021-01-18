@@ -1,20 +1,20 @@
-﻿using System.Linq;
-using LyteChat.Server.Data.Models;
+﻿using LyteChat.Server.Data.Models;
 using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http.Headers;
-using Microsoft.Extensions.Primitives;
 
 
 namespace LyteChat.Server.Controllers
@@ -91,7 +91,7 @@ namespace LyteChat.Server.Controllers
             User userExists = await _userManager.FindByEmailAsync(model.Email);
             if (userExists != null)
             {
-                return BadRequest(new RegisterResponse {FailureMessage = "User already exists!" });
+                return BadRequest(new RegisterResponse { FailureMessage = "User already exists!" });
             }
 
             User user = new User()

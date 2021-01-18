@@ -1,4 +1,5 @@
-﻿using LyteChat.Server.Data.Communication;
+﻿using LyteChat.Server.Auth;
+using LyteChat.Server.Data.Communication;
 using LyteChat.Server.Data.Models;
 using LyteChat.Server.Data.ServiceInterface;
 using LyteChat.Shared.Communication;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
-using LyteChat.Server.Auth;
 
 namespace LyteChat.Server.Hubs
 {
@@ -44,7 +44,7 @@ namespace LyteChat.Server.Hubs
                 Message = chatMessageDTO.Message,
                 ChatGroupUuid = chatMessageDTO.ChatGroupUuid
             };
-            
+
             ChatMessageResponse chatMessageResponse = await _chatMessageService.CreateChatMessageAsync(chatMessage);
             await SendMessage(chatMessageResponse);
         }

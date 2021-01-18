@@ -1,13 +1,13 @@
-﻿using LyteChat.Server.Data.ServiceInterface;
+﻿using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.ServiceInterface;
 using LyteChat.Shared.DataTransferObject;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using LyteChat.Server.Data.Models;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 
 namespace LyteChat.Server.Controllers
@@ -23,7 +23,7 @@ namespace LyteChat.Server.Controllers
         private readonly IAuthorizationService _authorizationService;
 
         public UserController(
-            IUserService userService, 
+            IUserService userService,
             IChatGroupUserService chatGroupUserService,
             UserManager<User> userManager,
             IAuthorizationService authorizationService)

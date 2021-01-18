@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace LyteChat.Shared.DataTransferObject
+﻿namespace LyteChat.Shared.DataTransferObject
 {
-    public class LoginResponse: AuthResponseBase
+    public class LoginResponse : AuthResponseBase
     {
     }
 }
