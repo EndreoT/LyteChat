@@ -40,7 +40,11 @@ namespace LyteChat.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionStr = Configuration.GetConnectionString("DEV"); // Update for prod
+            string connectionStrId  = "DefaultConnection";
+#if DEBUG
+            connectionStrId = "DEV";
+#endif
+            string connectionStr = Configuration.GetConnectionString(connectionStrId);
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connectionStr));
 

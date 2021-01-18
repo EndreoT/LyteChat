@@ -1,6 +1,5 @@
 ﻿using LyteChat.Server.Data.Communication;
 //using AutoMapper;
-//using Texter.DataTransferObject;
 using LyteChat.Server.Data.Models;
 using LyteChat.Server.Data.RepositoryInterface;
 using LyteChat.Server.Data.RepositoryInterface.Repositories;
@@ -13,9 +12,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-//using Texter.Domain.RepositoryInterface.MessageRepository;
-//using Texter.Domain.Services;
-
 namespace LyteChat.Server.Services
 {
     public class ChatMessageService : ServiceBase, IChatMessageService
@@ -26,8 +22,6 @@ namespace LyteChat.Server.Services
             IChatGroupRepository chatGroupRepository,
             IChatGroupUserRepository chatGroupUserRepository,
             IUnitOfWork unitOfWork
-
-
             //IMapper mapper,
             ) : base(chatMessageRepository, userRepository, chatGroupRepository, chatGroupUserRepository, unitOfWork)
         {
@@ -75,13 +69,6 @@ namespace LyteChat.Server.Services
 
             return messages;
         }
-
-        //public async Task<FromMessageDTO> GetById(long id)
-        //{
-        //    Message message = await _messageRepository.GetByIdAsync(id);
-        //    FromMessageDTO resource = _mapper.Map<Message, FromMessageDTO>(message);
-        //    return resource;
-        //}
 
         public async Task<ChatMessageResponse> CreateChatMessageAsync(CreateChatMessage chatMessage)
         {

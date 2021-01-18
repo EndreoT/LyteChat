@@ -129,8 +129,11 @@ namespace LyteChat.Server.Controllers
             }
             ChatGroupResponse createRes = await _chatGroupService.CreateChatGroupAsync(chatGroupDTO);
 
-            //Add user to the chat group
-            await _chatGroupUserService.AddUserToChatGroupAsync(user, createRes.ChatGroupDTO.Uuid);
+            if (createRes.Success)
+            {
+                //Add user to the chat group
+                await _chatGroupUserService.AddUserToChatGroupAsync(user, createRes.ChatGroupDTO.Uuid);
+            }
             return createRes;
         }
     }

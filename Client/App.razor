@@ -25,6 +25,7 @@
     protected override async Task OnInitializedAsync()
     {
 #if DEBUG
+        // Debug start is slow
         await Task.Delay(2000);
 #endif
         // Connect to chat hub if already logged in

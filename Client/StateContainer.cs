@@ -143,8 +143,6 @@ namespace LyteChat.Client
             AuthenticationHeaderValue header = new AuthenticationHeaderValue("Bearer", authToken);
             Http.DefaultRequestHeaders.Authorization = header;
 
-            AllChatGroups = await GetChatGroups();
-
             await GetChatGroupUsersAndMessages();
             NotifyStateChanged();
         }
@@ -162,6 +160,8 @@ namespace LyteChat.Client
 
         public async Task GetChatGroupUsersAndMessages()
         {
+            AllChatGroups = await GetChatGroups();
+
             //Clear all chat groups
             ChatGroupsForUser = new Dictionary<Guid, ChatGroupData>();
 
@@ -247,6 +247,19 @@ namespace LyteChat.Client
         {
             return await Http.GetFromJsonAsync<List<ChatGroupDTO>>("api/ChatGroup");
         }
+
+        public async Task<ChatGroupResponse> CreateChatGroup(ChatGroupDTO chatGroupDTO)
+        {
+            HttpResponseMessage response = await Http.PostAsJsonAsync($"/api/chatgroup", chatGroupDTO);
+            ChatGroupResponse createRes = await response.Content.ReadFromJsonAsync<ChatGroupResponse>();
+            if (createRes.Success)
+            {
+                // Get new state
+                await GetChatGroupUsersAndMessages();
+            }
+            return createRes;
+        }
+
 
         private void NotifyStateChanged() => OnChange?.Invoke();
 
