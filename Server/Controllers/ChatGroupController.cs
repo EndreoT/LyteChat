@@ -2,6 +2,7 @@
 using LyteChat.Server.Data.Models;
 using LyteChat.Server.Data.ServiceInterface;
 using LyteChat.Shared.DataTransferObject;
+using LyteChat.Shared.Communication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -114,6 +115,23 @@ namespace LyteChat.Server.Controllers
 
             IEnumerable<ChatMessageDTO> messages = await _chatMessageService.ListMessagesForGroupAsync(chatGroupUuid);
             return Ok(messages);
+        }
+
+        [Authorize(Roles = Role.AuthenticatedUser)]
+        [HttpPost]
+        public async Task<ActionResult<ChatGroupResponse>> CreateChatGroup(ChatGroupDTO chatGroupDTO)
+        {
+            string userEmail = User.FindFirstValue(ClaimTypes.Email);
+            User user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null)
+            {
+                return Forbid();
+            }
+            ChatGroupResponse createRes = await _chatGroupService.CreateChatGroupAsync(chatGroupDTO);
+
+            //Add user to the chat group
+            await _chatGroupUserService.AddUserToChatGroupAsync(user, createRes.ChatGroupDTO.Uuid);
+            return createRes;
         }
     }
 }

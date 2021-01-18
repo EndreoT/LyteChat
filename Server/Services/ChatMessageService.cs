@@ -86,6 +86,7 @@ namespace LyteChat.Server.Services
         public async Task<ChatMessageResponse> CreateChatMessageAsync(CreateChatMessage chatMessage)
         {
             // User should already be authorized
+            ChatMessageResponse chatMessageResponse = new ChatMessageResponse();
             try
             {
                 User user = chatMessage.User;
@@ -121,17 +122,15 @@ namespace LyteChat.Server.Services
 
                 //ChatMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
 
-                return new ChatMessageResponse
-                {
-                    Success = true,
-                    ChatMessageDTO = chatMessageDTO
-                };
+                chatMessageResponse.Success = true;
+                chatMessageResponse.ChatMessageDTO = chatMessageDTO;
             }
             catch (Exception ex)
             {
                 // Do some logging stuff
-                return new ChatMessageResponse { ErrorMessage = $"An error occurred when saving the message: {ex.Message}" };
+                chatMessageResponse.ErrorMessage = "An error occurred when saving the message";
             }
+            return chatMessageResponse;
         }
     }
 }
