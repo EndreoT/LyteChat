@@ -22,35 +22,37 @@
             ChatGroupData ChatGroupData = StateContainer.ChatGroupsForUser[ChatGroupUuid];
             <h1 class="card-header text-center">@ChatGroupData.ChatGroup.ChatGroupName</h1>
             <div class="card-body">
-            <h3>Users: </h3>
-            <ul class="messagesList">
-                @foreach (Guid userUuid in ChatGroupData.Users)
-                {
-                    if (StateContainer.KnownUsers.ContainsKey(userUuid))
+                <h3>Users </h3>
+                <ul class="list-group list-group-horizontal-sm">
+                    @foreach (Guid userUuid in ChatGroupData.Users)
                     {
-                        <li>@StateContainer.KnownUsers[userUuid].Name</li>
+                        if (StateContainer.KnownUsers.ContainsKey(userUuid))
+                        {
+                            <li class="list-group-item">@StateContainer.KnownUsers[userUuid].Name</li>
+                        }
                     }
-                }
-            </ul>
+                </ul>
 
-            <div class="form-group">
-                <label>
-                    Message:
-                    <input @bind="messageInput" size="50" />
-                </label>
+                <EditForm @ref="createchatmessageform" Model="CreateChatMessage" OnValidSubmit="Send">
+                    <div class="form-group">
+                        <label>Email address</label>
+                        <InputText class="form-control" @bind-Value="CreateChatMessage.MessageInput" />
+                        <ValidationMessage For="@(()=> CreateChatMessage.MessageInput)" />
+                    </div>
+
+                    <button disabled="@(cannotSendMessage)" type="submit" class="btn btn-outline-primary btn-sm">Send Message</button>
+                </EditForm>
+
+                <h3>Messages: </h3>
+                <ul class="list-group">
+                    @foreach (var message in ChatGroupData.Messages)
+                    {
+                        {
+                            <li class="list-group-item">@message.CreatedOn | @message.UserName: @message.Message</li>
+                        }
+                    }
+                </ul>
             </div>
-
-            <button @onclick="(() => Send(ChatGroupData.ChatGroup.Uuid))" disabled="@(cannotSendMessage)">Send</button>
-            <h3>Messages: </h3>
-            <ul class="messagesList">
-                @foreach (var message in ChatGroupData.Messages)
-                {
-                    {
-                        <li>@message.CreatedOn | @message.UserName: @message.Message</li>
-                    }
-                }
-            </ul>
-        </div>
         }
         else
         {
@@ -63,12 +65,18 @@
 
 
 @code {
+    private class CreateMessageModel
+    {
+        public string MessageInput = "";
+    }
+
     [Parameter]
     public string ChatGroupUuidStr { get; set; }
     private Guid ChatGroupUuid { get; set; }
 
-    private string messageInput = "";
-    private bool cannotSendMessage => !(StateContainer.IsConnected && messageInput.Length != 0);
+    private EditForm createchatmessageform { get; set; }
+    private CreateMessageModel CreateChatMessage = new CreateMessageModel();
+    private bool cannotSendMessage => !(StateContainer.IsConnected && CreateChatMessage.MessageInput.Length != 0);
 
     protected override void OnParametersSet()
     {
@@ -82,16 +90,16 @@
         return StateContainer.ChatGroupsForUser.ContainsKey(ChatGroupUuid);
     }
 
-    private async Task Send(Guid chatGroupUuid)
+    private async Task Send()
     {
         ChatMessageDTO chatMessage = new ChatMessageDTO
         {
             UserUuid = StateContainer.CurrentUser.Uuid,
-            ChatGroupUuid = chatGroupUuid,
-            Message = messageInput
+            ChatGroupUuid = ChatGroupUuid,
+            Message = CreateChatMessage.MessageInput
         };
         await StateContainer.SendMessage(chatMessage);
-        messageInput = "";
+        CreateChatMessage.MessageInput = "";
     }
 
     public void Dispose()
