@@ -13,47 +13,53 @@
 @inject JWTAuthenticationStateProvider TokenProvider
 @implements IDisposable
 
+<div class="container-fluid">
+    <div class="card bg-light mb-3">
 
-@if (ChatGroupDataExists())
-{
-    ChatGroupData ChatGroupData = StateContainer.ChatGroupsForUser[ChatGroupUuid];
-    <h2>Chat Group Name: @ChatGroupData.ChatGroup.ChatGroupName</h2>
-    <h3>Users: </h3>
-    <ul class="messagesList">
-        @foreach (Guid userUuid in ChatGroupData.Users)
+
+        @if (ChatGroupDataExists())
         {
-            if (StateContainer.KnownUsers.ContainsKey(userUuid))
-            {
-                <li>@StateContainer.KnownUsers[userUuid].Name</li>
-            }
+            ChatGroupData ChatGroupData = StateContainer.ChatGroupsForUser[ChatGroupUuid];
+            <h1 class="card-header text-center">@ChatGroupData.ChatGroup.ChatGroupName</h1>
+            <div class="card-body">
+            <h3>Users: </h3>
+            <ul class="messagesList">
+                @foreach (Guid userUuid in ChatGroupData.Users)
+                {
+                    if (StateContainer.KnownUsers.ContainsKey(userUuid))
+                    {
+                        <li>@StateContainer.KnownUsers[userUuid].Name</li>
+                    }
+                }
+            </ul>
+
+            <div class="form-group">
+                <label>
+                    Message:
+                    <input @bind="messageInput" size="50" />
+                </label>
+            </div>
+
+            <button @onclick="(() => Send(ChatGroupData.ChatGroup.Uuid))" disabled="@(cannotSendMessage)">Send</button>
+            <h3>Messages: </h3>
+            <ul class="messagesList">
+                @foreach (var message in ChatGroupData.Messages)
+                {
+                    {
+                        <li>@message.CreatedOn | @message.UserName: @message.Message</li>
+                    }
+                }
+            </ul>
+        </div>
         }
-    </ul>
-
-    <div class="form-group">
-        <label>
-            Message:
-            <input @bind="messageInput" size="50" />
-        </label>
-    </div>
-
-    <button @onclick="(() => Send(ChatGroupData.ChatGroup.Uuid))" disabled="@(cannotSendMessage)">Send</button>
-    <h3>Messages: </h3>
-    <ul class="messagesList">
-        @foreach (var message in ChatGroupData.Messages)
+        else
         {
-            {
-                <li>@message.CreatedOn | @message.UserName: @message.Message</li>
-            }
+        <h2>Chat Group: @ChatGroupUuidStr does not exist or you are not authorized for this group</h2>
         }
-    </ul>
-
-    <hr>
-
-}
-else
-{
-    <h2>Chat Group: @ChatGroupUuidStr does not exist or you are not authorized for this group</h2>
-}
+            
+        </div>
+</div>
+        
 
 
 @code {
