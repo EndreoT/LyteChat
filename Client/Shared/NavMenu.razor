@@ -30,7 +30,7 @@
             string link = $"chatgroup/{kv.Key.ToString()}";
             <li class="nav-item px-3">
                 <NavLink class="nav-link" href=@link Match="NavLinkMatch.All">
-                    <span class="oi oi-list-rich" aria-hidden="true"></span> @kv.Value.ChatGroup.ChatGroupName
+                    <span class="oi oi-list" aria-hidden="true"></span> @kv.Value.ChatGroup.ChatGroupName
                 </NavLink>
             </li>
         }
