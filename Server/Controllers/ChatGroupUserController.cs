@@ -16,6 +16,7 @@ namespace LyteChat.Server.Controllers
 {
     [Authorize(Roles = Role.AuthenticatedUser)]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
     public class ChatGroupUserController : ControllerBase
     {
@@ -33,7 +34,14 @@ namespace LyteChat.Server.Controllers
             _authorizationService = authorizationService;
         }
 
-        // POST api/<ChatGroupUserController>
+        /// <summary>
+        /// Add user to a chat group
+        /// </summary>
+        /// <remarks>
+        /// POST api/{ChatGroupUserController}
+        /// </remarks>
+        /// <param name="chatgroup"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<ChatGroupUserResponse>> AddUserToChatGroupAsync([FromBody] ChatGroupUserDTO chatgroup)
         {
@@ -47,7 +55,14 @@ namespace LyteChat.Server.Controllers
             return Ok(await _chatGroupUserService.AddUserToChatGroupAsync(user, chatgroup.ChatGroupUuid));
         }
 
-        // DELETE api/<ChatGroupUserController>/{chatGroupUuid}
+        /// <summary>
+        /// Remove user from a chat group
+        /// </summary>
+        /// <remarks>
+        /// DELETE api/{ChatGroupUserController}/{chatGroupUuid}
+        /// </remarks>
+        /// <param name="chatGroupUuid"></param>
+        /// <returns></returns>
         [HttpDelete("{chatGroupUuid}")]
         public async Task<ActionResult<ChatGroupUserResponse>> RemoveUserFromChatGroupAsync(Guid chatGroupUuid)
         {

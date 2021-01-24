@@ -21,6 +21,7 @@ using System.Threading.Tasks;
 namespace LyteChat.Server.Controllers
 {
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
@@ -41,6 +42,10 @@ namespace LyteChat.Server.Controllers
             _chatGroupService = chatGroupService;
         }
 
+        /// <summary>
+        /// Login as an authenticated user
+        /// </summary>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -71,6 +76,10 @@ namespace LyteChat.Server.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// Login as an anonymous user
+        /// </summary>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -88,6 +97,10 @@ namespace LyteChat.Server.Controllers
             });
         }
 
+        /// <summary>
+        /// Register as a new authenticated user
+        /// </summary>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
