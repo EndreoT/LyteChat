@@ -17,6 +17,7 @@ namespace LyteChat.Server.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
     public class ChatGroupController : ControllerBase
     {
@@ -40,25 +41,64 @@ namespace LyteChat.Server.Controllers
             _authorizationService = authorizationService;
         }
 
-        [HttpGet]
         /// <summary>
         /// Get all chat groups
-        /// GET: api/<ChatGroupController>
         /// </summary>
+        /// <remarks>
+        /// GET: api/{ChatGroupController}
+        /// </remarks>
         /// <returns></returns>
+        [HttpGet]
         public async Task<IEnumerable<ChatGroupDTO>> ListChatGroups()
         {
             return await _chatGroupService.ListChatGroupsAsync();
         }
 
-
-        [HttpGet("{chatGroupUuid}/user")]
         /// <summary>
-        /// Get all users for the chat group. Uses resource based authorization
-        /// GET api/<ChatGroupController>/fa50df81-0158-4fda-9813-ddff9f70ba9e/user
+        /// Get chat group by uuid.
         /// </summary>
+        /// <remarks>
+        /// Uses resource based authorization <br/>
+        /// GET api/{ChatGroupController}/fa50df81-0158-4fda-9813-ddff9f70ba9e
+        /// </remarks>
         /// <param name="chatGroupUuid"></param>
         /// <returns></returns>
+        [HttpGet("{chatGroupUuid}")]
+        public async Task<ActionResult<ChatGroupDTO>> GetChatGroupByUuid(Guid chatGroupUuid)
+        {
+            string userEmail = User.FindFirstValue(ClaimTypes.Email);
+            User user = await _userManager.FindByEmailAsync(userEmail);
+            if (user == null)
+            {
+                return Forbid();
+            }
+
+            ChatGroupUser chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
+                user.Id, chatGroupUuid);
+
+            // Check if user is authorized to read users for the chat group
+            AuthorizationResult isAuthorized = await _authorizationService.AuthorizeAsync(
+                User,
+                chatGroupUser,
+                Operations.Create);
+            if (!isAuthorized.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return Ok(await _chatGroupService.GetByUuidAsync(chatGroupUuid));
+        }
+
+        /// <summary>
+        /// Get all users for the chat group.
+        /// </summary>
+        /// <remarks>
+        /// Uses resource based authorization <br/>
+        /// GET api/{ChatGroupController}/fa50df81-0158-4fda-9813-ddff9f70ba9e/user
+        /// </remarks>
+        /// <param name="chatGroupUuid"></param>
+        /// <returns></returns>
+        [HttpGet("{chatGroupUuid}/user")]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsersForChatGroup(Guid chatGroupUuid)
         {
             string userEmail = User.FindFirstValue(ClaimTypes.Email);
@@ -84,13 +124,16 @@ namespace LyteChat.Server.Controllers
             return Ok(await _chatGroupUserService.GetUsersForChatGroupAsync(chatGroupUuid));
         }
 
-        [HttpGet("{chatGroupUuid}/message")]
         /// <summary>
-        /// Get all messages for the chat group. Uses resource based authorization
-        /// GET: api/<ChatGroupController>/66f6cf51-4054-4440-9ebd-135ee0d5f73c/message
+        /// Get all messages for the chat group.
         /// </summary>
+        /// <remarks>
+        /// Uses resource based authorization <br/>
+        /// GET: api/{ChatGroupController}/66f6cf51-4054-4440-9ebd-135ee0d5f73c/message
+        /// </remarks>
         /// <param name="chatGroupUuid"></param>
         /// <returns></returns>
+        [HttpGet("{chatGroupUuid}/message")]
         public async Task<ActionResult<IEnumerable<ChatMessageDTO>>> ListMessagesForGroup(Guid chatGroupUuid)
         {
             string userEmail = User.FindFirstValue(ClaimTypes.Email);
@@ -117,6 +160,11 @@ namespace LyteChat.Server.Controllers
             return Ok(messages);
         }
 
+        /// <summary>
+        /// Create a new chat group
+        /// </summary>
+        /// <param name="chatGroupDTO"></param>
+        /// <returns></returns>
         [Authorize(Roles = Role.AuthenticatedUser)]
         [HttpPost]
         public async Task<ActionResult<ChatGroupResponse>> CreateChatGroup(ChatGroupDTO chatGroupDTO)

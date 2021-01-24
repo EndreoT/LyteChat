@@ -17,6 +17,7 @@ namespace LyteChat.Server.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
     public class ChatMessageController : ControllerBase
     {
@@ -42,13 +43,16 @@ namespace LyteChat.Server.Controllers
             _authorizationService = authorizationService;
         }
 
-        [HttpPost]
         /// <summary>
-        /// Create a chat message for the chat group. Uses resource based authorization
-        /// POST api/<ChatMessageController>
+        /// Create a chat message for the chat group.
         /// </summary>
+        /// <remarks>
+        /// Uses resource based authorization <br/>
+        /// POST api/{ChatMessageController}
+        /// </remarks>
         /// <param name="chatMessageDTO"></param>
         /// <returns></returns>
+        [HttpPost]
         public async Task<ActionResult<ChatMessageResponse>> CreateChat([FromBody] CreateChatMessageDTO chatMessageDTO)
         {
             string userEmail = User.FindFirstValue(ClaimTypes.Email);

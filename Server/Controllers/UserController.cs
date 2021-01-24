@@ -14,6 +14,7 @@ namespace LyteChat.Server.Controllers
 {
     [Authorize]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -34,7 +35,13 @@ namespace LyteChat.Server.Controllers
             _authorizationService = authorizationService;
         }
 
-        // GET: api/<UserController>
+        /// <summary>
+        /// Get all users
+        /// </summary>
+        /// <remarks>
+        /// GET api/{UserController}
+        /// </remarks>
+        /// <returns></returns>
         [Authorize(Roles = Role.AuthenticatedUser)]
         [HttpGet]
         public async Task<IEnumerable<UserDTO>> GetAllUsers()
@@ -42,14 +49,28 @@ namespace LyteChat.Server.Controllers
             return await _userService.GetAllUsersAsync();
         }
 
-        // GET api/<UserController>/fa50df81-0158-4fda-9813-ddff9f70ba9e
+        /// <summary>
+        /// Get user by uuid
+        /// </summary>
+        /// <remarks>
+        /// GET api/{UserController}/fa50df81-0158-4fda-9813-ddff9f70ba9e
+        /// </remarks>
+        /// <param name="userUuid"></param>
+        /// <returns></returns>
         [HttpGet("{userUuid}")]
         public async Task<UserDTO> GetUser(Guid userUuid)
         {
             return await _userService.GetByUuidAsync(userUuid);
         }
 
-        // GET api/<UserController>/fa50df81-0158-4fda-9813-ddff9f70ba9e/chatgroup
+        /// <summary>
+        /// Get chat groups for user
+        /// </summary>
+        /// <remarks>
+        /// GET api/{UserController}/fa50df81-0158-4fda-9813-ddff9f70ba9e/chatgroup
+        /// </remarks>
+        /// <param name="userUuid"></param>
+        /// <returns></returns>
         [HttpGet("{userUuid}/chatgroup")]
         public async Task<ActionResult<IEnumerable<ChatGroupDTO>>> GetChatGroupsForUser(Guid userUuid)
         {
