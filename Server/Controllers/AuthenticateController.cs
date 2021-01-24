@@ -1,4 +1,5 @@
 ﻿using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.ServiceInterface;
 using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,6 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using LyteChat.Server.Data.ServiceInterface;
 
 
 namespace LyteChat.Server.Controllers
@@ -30,8 +30,8 @@ namespace LyteChat.Server.Controllers
         private readonly IChatGroupService _chatGroupService;
 
         public AuthenticateController(
-            UserManager<User> userManager, 
-            IConfiguration configuration, 
+            UserManager<User> userManager,
+            IConfiguration configuration,
             IChatGroupUserService chatGroupUserService,
             IChatGroupService chatGroupService)
         {
