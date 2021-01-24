@@ -51,11 +51,13 @@ namespace LyteChat.Server.Services
         public async Task<ChatGroupDTO> GetAllChatAsync()
         {
             ChatGroup allChat = await _chatGroupRepository.GetAllChatAsync();
-            ChatGroupDTO chatGroupDTO = new ChatGroupDTO()
+
+            ChatGroupDTO chatGroupDTO = new ChatGroupDTO();
+            if (allChat != null)
             {
-                Uuid = allChat.Uuid,
-                ChatGroupName = allChat.ChatGroupName
-            };
+                chatGroupDTO.Uuid = allChat.Uuid;
+                chatGroupDTO.ChatGroupName = allChat.ChatGroupName;
+            }
             return chatGroupDTO;
         }
 

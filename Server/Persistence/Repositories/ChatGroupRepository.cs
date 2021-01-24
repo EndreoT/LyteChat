@@ -41,7 +41,7 @@ namespace LyteChat.Server.Persistence.Repositories
 
         public async Task<ChatGroup> GetAllChatAsync()
         {
-            return await FindByName("ALL_CHAT");
+            return await FindByName(ChatGroup.AllChat);
         }
 
         public async Task<ChatGroup> FindByName(string chatGroupName)

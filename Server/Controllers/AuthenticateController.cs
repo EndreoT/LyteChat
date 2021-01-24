@@ -15,6 +15,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using LyteChat.Server.Data.ServiceInterface;
 
 
 namespace LyteChat.Server.Controllers
@@ -24,14 +25,20 @@ namespace LyteChat.Server.Controllers
     public class AuthenticateController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
-        private readonly RoleManager<Role> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly IChatGroupUserService _chatGroupUserService;
+        private readonly IChatGroupService _chatGroupService;
 
-        public AuthenticateController(UserManager<User> userManager, RoleManager<Role> roleManager, IConfiguration configuration)
+        public AuthenticateController(
+            UserManager<User> userManager, 
+            IConfiguration configuration, 
+            IChatGroupUserService chatGroupUserService,
+            IChatGroupService chatGroupService)
         {
             _userManager = userManager;
-            _roleManager = roleManager;
             _configuration = configuration;
+            _chatGroupUserService = chatGroupUserService;
+            _chatGroupService = chatGroupService;
         }
 
         [AllowAnonymous]
@@ -112,6 +119,10 @@ namespace LyteChat.Server.Controllers
             {
                 return BadRequest(new RegisterResponse { ErrorList = createUserRes.Errors.ToList() });
             }
+
+            ChatGroupDTO allChat = await _chatGroupService.GetAllChatAsync();
+            //Add user to all chat
+            await _chatGroupUserService.AddUserToChatGroupAsync(user, allChat.Uuid);
 
             JwtSecurityToken token = await GetToken(user);
             return Ok(new RegisterResponse
