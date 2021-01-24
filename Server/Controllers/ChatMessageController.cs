@@ -47,6 +47,7 @@ namespace LyteChat.Server.Controllers
         /// Create a chat message for the chat group.
         /// </summary>
         /// <remarks>
+        /// Broadcasts the message to all users of the chat group <br/>
         /// Uses resource based authorization <br/>
         /// POST api/{ChatMessageController}
         /// </remarks>
@@ -83,8 +84,8 @@ namespace LyteChat.Server.Controllers
             };
             ChatMessageResponse createRes = await _chatMessageService.CreateChatMessageAsync(chatMessage);
 
-            // Broadcast message to all clients
-            await _chatHubContext.Clients.All.SendAsync("ReceiveMessage", createRes);
+            // Broadcast message to only clients who are members of the chat group
+            await _chatHubContext.Clients.Group(chatMessageDTO.ChatGroupUuid.ToString()).SendAsync("ReceiveMessage", createRes);
 
             return createRes;
         }

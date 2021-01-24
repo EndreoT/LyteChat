@@ -8,33 +8,37 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
 
 namespace LyteChat.Server.Hubs
 {
 
     [Authorize]
-    public class ChatHub : Hub, IChatHub
+    public class ChatHub : Hub
     {
         private readonly IChatMessageService _chatMessageService;
+        private readonly IChatGroupUserService _chatGroupUserService;
         private readonly UserManager<User> _userManager;
-        public ChatHub(IChatMessageService chatMessageService, UserManager<User> userManager)
+        public ChatHub(
+            IChatMessageService chatMessageService,
+            IChatGroupUserService chatGroupUserService,
+            UserManager<User> userManager)
         {
             _chatMessageService = chatMessageService;
+            _chatGroupUserService = chatGroupUserService;
             _userManager = userManager;
         }
 
         public override async Task OnConnectedAsync()
         {
-            //await Clients.Client(connectionId).SendAsync(
-            //    "WelcomeMessage",
-            //    $"Welcome to all chat, {connectionId}");
+            await AddUserToChatGroupsConnections();
             await base.OnConnectedAsync();
         }
 
         [Authorize(Policy = AuthPolicy.UserCanCreateChatMessage)]
         public async Task CreateMessage(CreateChatMessageDTO chatMessageDTO)
         {
-
             string userEmail = Context.UserIdentifier;
             User user = await _userManager.FindByEmailAsync(userEmail);
 
@@ -52,45 +56,32 @@ namespace LyteChat.Server.Hubs
         [Authorize(Roles = Role.Admin)]
         public async Task SendMessage(ChatMessageResponse chatMessageResponse)
         {
-            await Clients.All.SendAsync("ReceiveMessage", chatMessageResponse);
+            Guid chatGroupUuid = chatMessageResponse.ChatMessageDTO.ChatGroupUuid;
+            await Clients.Group(chatGroupUuid.ToString()).SendAsync("ReceiveMessage", chatMessageResponse);
         }
 
-        //public async Task AddToGroup(string groupName)
-        //{
-        //    await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        /// <summary>
+        /// Connect the user to each chat group
+        /// </summary>
+        /// <returns></returns>
+        private async Task AddUserToChatGroupsConnections()
+        {
+            User user = await _userManager.FindByEmailAsync(Context.UserIdentifier);
+            IEnumerable<ChatGroupDTO> chatGroups = await _chatGroupUserService.GetChatGroupsForUserAsync(user.Id);
+            foreach (ChatGroupDTO chatGroup in chatGroups)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, chatGroup.Uuid.ToString());
+            }
+        }
 
-        //    await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has joined the group {groupName}.");
-        //}
+        public async Task AddUserToChatGroupConnection(Guid chatGroupUuid)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, chatGroupUuid.ToString());
+        }
 
-        //public async Task RemoveFromGroup(string groupName)
-        //{
-        //    await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
-
-        //    await Clients.Group(groupName).SendAsync("Send", $"{Context.ConnectionId} has left the group {groupName}.");
-        //}
-
-        //public void GetMessagesForGroup(string groupUuid)
-        //{
-
-        //if (group != "ALL")
-        //{
-        //    await Groups.AddToGroupAsync(connectionId, group);
-        //}
-
-        //MessageObj messageObj = new MessageObj { User = user, MessageText = message, Group = group };
-        //await ClientReceiveMessages(new List<MessageObj> { messageObj }, group);
-        //}
-
-        //private async Task ClientReceiveMessages(IList<MessageObj> messages, string group)
-        //{
-        //    if (group == "ALL")
-        //    {
-        //        await Clients.All.SendAsync("ClientReceiveMessages", messages);
-        //    }
-        //    else
-        //    {
-        //        await Clients.Group(group).SendAsync("ClientReceiveMessages", messages);
-        //    }
-        //}
+        public async Task RemoveUserFromChatGroupConnection(Guid chatGroupUuid)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, chatGroupUuid.ToString());
+        }
     }
 }

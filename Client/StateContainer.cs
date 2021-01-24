@@ -76,16 +76,11 @@ namespace LyteChat.Client
                 }
             });
 
-            hubConnection.Closed += async (error) =>
+            hubConnection.Closed += (error) =>
             {
                 Console.WriteLine(error);
+                return Task.CompletedTask;
             };
-
-            //hubConnection.On<string>("WelcomeMessage", (string welcomeChat) =>
-            //{
-            //    messages.Add(welcomeChat);
-            //    StateHasChanged();
-            //});
 
             try
             {
@@ -115,9 +110,24 @@ namespace LyteChat.Client
 
         public async Task SendMessage(ChatMessageDTO chatMessage)
         {
+            await InvokeChatHubMethod(chatMessage, "CreateMessage");
+        }
+
+        public async Task AddUserToChatGroupConnection(Guid chatGroupUuid)
+        {
+            await InvokeChatHubMethod(chatGroupUuid, "AddUserToChatGroupConnection");
+        }
+
+        public async Task RemoveUserFromChatGroupConnection(Guid chatGroupUuid)
+        {
+            await InvokeChatHubMethod(chatGroupUuid, "RemoveUserFromChatGroupConnection");
+        }
+
+        private async Task InvokeChatHubMethod(object payload, string methodName)
+        {
             try
             {
-                await hubConnection.InvokeAsync("CreateMessage", chatMessage);
+                await hubConnection.InvokeAsync(methodName, payload);
             }
             catch (WebSocketException e)
             {
@@ -215,11 +225,13 @@ namespace LyteChat.Client
             {
                 response = await Http.PostAsJsonAsync(
                     $"/api/chatGroupUser", body);
+                await AddUserToChatGroupConnection(chatGroupUuid);
             }
             else
             {
                 response = await Http.DeleteAsync(
                     $"/api/chatGroupUser/{chatGroupUuid}");
+                await RemoveUserFromChatGroupConnection(chatGroupUuid);
             }
             try
             {
