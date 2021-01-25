@@ -78,7 +78,9 @@ namespace LyteChat.Client
 
             hubConnection.Closed += (error) =>
             {
+#if DEBUG
                 Console.WriteLine(error);
+#endif
                 return Task.CompletedTask;
             };
 
