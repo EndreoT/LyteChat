@@ -19,13 +19,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Reflection;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace LyteChat.Server
 {
