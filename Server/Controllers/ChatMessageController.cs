@@ -54,7 +54,7 @@ namespace LyteChat.Server.Controllers
         /// <param name="chatMessageDTO"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ActionResult<ChatMessageResponse>> CreateChat([FromBody] CreateChatMessageDTO chatMessageDTO)
+        public async Task<ActionResult<ChatMessageResponse>> CreateChatMessage([FromBody] CreateChatMessageDTO chatMessageDTO)
         {
             string userEmail = User.FindFirstValue(ClaimTypes.Email);
             User user = await _userManager.FindByEmailAsync(userEmail);
