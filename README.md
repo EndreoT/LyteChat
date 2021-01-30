@@ -5,7 +5,8 @@
 <h3>Website https://lytechat.azurewebsites.net/ </h3>
 <h3>REST API https://lytechat.azurewebsites.net/swagger/index.html </h3>
 
-<h3> DEMO </h3>
+<h3> Demo </h3>
+![demo](static/lytechat-example.gif)
 
 <h2>About </h2>
 <p> Real time secure web chat application. Includes Blazor web client and REST API. </p>
