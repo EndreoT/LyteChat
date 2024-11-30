@@ -79,11 +79,13 @@ namespace LearnBlazor.Server.Persistence.Context
             modelBuilder.Entity<Role>().HasData(
                 new Role
                 {
+                    Id = Guid.NewGuid(),
                     Name = "Visitor",
                     NormalizedName = "VISITOR"
                 },
-                new IdentityRole
+                new Role
                 {
+                    Id = Guid.NewGuid(),
                     Name = "Administrator",
                     NormalizedName = "ADMINISTRATOR"
                 });
