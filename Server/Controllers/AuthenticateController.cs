@@ -53,17 +53,17 @@ namespace LyteChat.Server.Controllers
         [Route("login")]
         public async Task<ActionResult<LoginResponse>> Login()
         {
-            if (!Request.Headers.ContainsKey("Authorization"))
+            if (!Request.Headers.TryGetValue("Authorization", out StringValues reqAuthHeader))
             {
                 return Unauthorized();
             }
-            StringValues reqAuthHeader = Request.Headers["Authorization"];
+
             AuthenticationHeaderValue authHeader = AuthenticationHeaderValue.Parse(reqAuthHeader);
             byte[] credentialBytes = Convert.FromBase64String(authHeader.Parameter);
             string[] credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
             string email = credentials[0];
             string password = credentials[1];
-            User user = await _userManager.FindByEmailAsync(email);
+            User? user = await _userManager.FindByEmailAsync(email);
             if (user != null && await _userManager.CheckPasswordAsync(user, password))
             {
                 JwtSecurityToken token = await GetToken(user);
@@ -86,7 +86,11 @@ namespace LyteChat.Server.Controllers
         [Route("login/anonymous")]
         public async Task<ActionResult<LoginResponse>> LoginAsAnonymous()
         {
-            var user = await _userManager.FindByEmailAsync(Data.Models.User.AnonymousUserEmail);
+            User? user = await _userManager.FindByEmailAsync(Data.Models.User.AnonymousUserEmail);
+            if (user is null)
+            {
+                return Problem(title: "Internal Server Error", statusCode: 500);
+            }
 
             JwtSecurityToken token = await GetToken(user);
             string tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
@@ -108,7 +112,7 @@ namespace LyteChat.Server.Controllers
         [Route("register")]
         public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterModel model)
         {
-            User userExists = await _userManager.FindByEmailAsync(model.Email);
+            User? userExists = await _userManager.FindByEmailAsync(model.Email);
             if (userExists != null)
             {
                 return BadRequest(new RegisterResponse { FailureMessage = "User already exists!" });

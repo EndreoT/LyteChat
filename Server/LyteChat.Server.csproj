@@ -2,9 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+   <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
@@ -20,18 +23,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.8.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Client\LyteChat.Client.csproj" />
     <ProjectReference Include="..\Shared\LyteChat.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Properties\PublishProfiles\" />
-    <Folder Include="Properties\ServiceDependencies\" />
   </ItemGroup>
 
 

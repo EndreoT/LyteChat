@@ -19,7 +19,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System;
 using System.IO;
 using System.Linq;
@@ -48,9 +47,8 @@ namespace LyteChat.Server
 #if DEBUG
             connectionStrId = "DEV";
 #endif
-            string connectionStr = Configuration.GetConnectionString(connectionStrId);
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(connectionStr));
+            string? connectionStr = Configuration.GetConnectionString(connectionStrId);
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionStr));
             services.AddMvc();
 
             services.AddIdentity<User, Role>()
@@ -85,7 +83,7 @@ namespace LyteChat.Server
 
                     // We have to hook the OnMessageReceived event in order to
                     // allow the JWT authentication handler to read the access
-                    // token from the query string when a WebSocket or 
+                    // token from the query string when a WebSocket or
                     // Server-Sent Events request comes in.
 
                     // Sending the access token in the query string is required due to
@@ -169,26 +167,27 @@ namespace LyteChat.Server
             // DB services
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+            // TODO add swagger back
             // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Version = "v1",
-                    Title = "Lyte Chat API",
-                    Description = "Real time chat application API",
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Tristan Endreo",
-                        Email = "endreotm@gmail.com",
-                        Url = new Uri("https://www.linkedin.com/in/tristan-endreo/"),
-                    }
-                });
-                // Set the comments path for the Swagger JSON and UI.
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-                c.IncludeXmlComments(xmlPath);
-            });
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo
+            //    {
+            //        Version = "v1",
+            //        Title = "Lyte Chat API",
+            //        Description = "Real time chat application API",
+            //        Contact = new OpenApiContact
+            //        {
+            //            Name = "Tristan Endreo",
+            //            Email = "endreotm@gmail.com",
+            //            Url = new Uri("https://www.linkedin.com/in/tristan-endreo/"),
+            //        }
+            //    });
+            //    // Set the comments path for the Swagger JSON and UI.
+            //    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            //    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            //    c.IncludeXmlComments(xmlPath);
+            //});
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -212,14 +211,15 @@ namespace LyteChat.Server
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
 
+            // TODO add swagger back
             // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger();
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "LyteChat API V1");
-            });
+            //app.UseSwagger();
+            //// Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            //// specifying the Swagger JSON endpoint.
+            //app.UseSwaggerUI(c =>
+            //{
+            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "LyteChat API V1");
+            //});
 
             app.UseRouting();
 
@@ -233,7 +233,6 @@ namespace LyteChat.Server
                 endpoints.MapHub<ChatHub>("/chathub");
                 endpoints.MapFallbackToFile("index.html");
             });
-
         }
     }
 }
