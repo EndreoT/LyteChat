@@ -1,17 +1,17 @@
-﻿using System;
+﻿using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using LearnBlazor.Server.Persistence.Context;
-using LearnBlazor.Server.Data.Models;
-using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
 
-namespace LearnBlazor.Server.Persistence.Repositories
+namespace LyteChat.Server.Persistence.Repositories
 {
-    public class ChatGroupUserRepository: BaseRepository, IChatGroupUserRepository
+    public class ChatGroupUserRepository : BaseRepository, IChatGroupUserRepository
     {
-        public ChatGroupUserRepository(AppDbContext context) : base(context){ }
+        public ChatGroupUserRepository(AppDbContext context) : base(context) { }
 
         public async Task<ChatGroupUser> GetByUuidAsync(Guid uuid)
         {

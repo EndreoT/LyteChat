@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
-namespace LearnBlazor.Server.Data.Models
+namespace LyteChat.Server.Data.Models
 {
-    public class ChatMessage: BaseModel
+    public class ChatMessage : BaseModel
     {
         public ChatMessage() : base() { }
         public long ChatMessageId { get; set; }
 
+        [Required]
         public string Message { get; set; }
 
         public Guid UserId { get; set; }

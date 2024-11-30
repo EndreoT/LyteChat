@@ -1,10 +1,11 @@
 ﻿@inherits LayoutComponentBase
 @using System.Threading
 @using System.Collections.Generic
-@using LearnBlazor.Shared.DataTransferObject
+@using LyteChat.Shared.DataTransferObject
 @inject StateContainer StateContainer
 @inject HttpClient Http
-@inject NavigationManager NavigationManager
+@inject JWTAuthenticationStateProvider TokenProvider
+
 
 <div class="page">
     <div class="sidebar">
@@ -12,25 +13,23 @@
     </div>
 
     <div class="main">
-        <div class="top-row px-4">
-            <div class="form-group">
-                <select @onchange="(eventArgs => SelectUser(eventArgs))">
-                    @foreach (KeyValuePair<Guid, UserDTO> kv in StateContainer.AllUsers)
-                    {
-                        <option value=@kv.Value.Uuid>@kv.Value.Name; @kv.Value.Uuid</option>
-                    }
-                </select>
-            </div>
-            <div class="content px-4">
-                @if (StateContainer.IsConnected)
-                {
-                    <label>Connected</label>
-                }
-                else
-                {
-                    <label>Not Connected</label>
-                }
-            </div>
+        <div class="container-fluid" style="background-color: #f7f7f7; border-bottom: 1px solid #d6d5d5;">
+            <AuthorizeView>
+                <Authorized>
+                    <div class="row">
+                        <div class="col-7"></div>
+                        <div class="col-2">
+                            Hello, @context.User.Identity.Name
+                        </div>
+                        <div class="col-1">
+                            <button class="btn btn-sm btn-outline-dark" @onclick="@(() => Logout())">Logout</button>
+                        </div>
+                        <div class="col-2">
+                            @StateContainer.ConnectionState()
+                        </div>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
         </div>
 
         <div class="content px-4">
@@ -40,17 +39,9 @@
 </div>
 
 @code{
-    public async Task SelectUser(ChangeEventArgs eventArgs)
+    public async Task Logout()
     {
-        bool parseSuccess = Guid.TryParse(eventArgs.Value.ToString(), out Guid guid);
-        if (parseSuccess)
-        {
-            UserDTO currentUser = StateContainer.AllUsers[guid];
-            await StateContainer.SetUser(currentUser);
-        }
-        else
-        {
-            //TODO
-        }
+        await TokenProvider.SetTokenAsync(null);
+        await StateContainer.RemoveStateOnLogout();
     }
 }

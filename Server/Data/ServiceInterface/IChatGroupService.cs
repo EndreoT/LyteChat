@@ -1,15 +1,16 @@
-﻿using System;
+﻿using LyteChat.Shared.Communication;
+using LyteChat.Shared.DataTransferObject;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Shared.DataTransferObject;
 
-namespace LearnBlazor.Server.Data.ServiceInterface
+namespace LyteChat.Server.Data.ServiceInterface
 {
-    public interface IChatGroupService: IServiceBase<ChatGroupDTO>
+    public interface IChatGroupService : IServiceBase<ChatGroupDTO>
     {
         public Task<IEnumerable<ChatGroupDTO>> ListChatGroupsAsync();
 
         public Task<ChatGroupDTO> GetAllChatAsync();
+
+        public Task<ChatGroupResponse> CreateChatGroupAsync(ChatGroupDTO chatGroupDTO);
     }
 }

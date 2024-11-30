@@ -1,16 +1,12 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using LyteChat.Server.Persistence;
+using LyteChat.Server.Persistence.Context;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using LearnBlazor.Server.Persistence;
-using LearnBlazor.Server.Persistence.Context;
 
-namespace LearnBlazor.Server
+namespace LyteChat.Server
 {
     public class Program
     {

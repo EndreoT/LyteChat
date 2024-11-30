@@ -1,12 +1,10 @@
-﻿using System;
+﻿using LyteChat.Server.Data.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Server.Data.Models;
 
-namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
+namespace LyteChat.Server.Data.RepositoryInterface.Repositories
 {
-    public interface IUserRepository: IBaseRepository<User>
+    public interface IUserRepository : IBaseRepository<User>
     {
         public Task<IEnumerable<User>> GetAllUsersAsync();
         public Task<User> GetAnonymousUserAsync();

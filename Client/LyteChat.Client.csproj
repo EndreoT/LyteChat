@@ -12,7 +12,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Shared\LearnBlazor.Shared.csproj" />
+    <ProjectReference Include="..\Shared\LyteChat.Shared.csproj" />
   </ItemGroup>
 
 </Project>

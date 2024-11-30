@@ -1,15 +1,15 @@
-﻿using System;
+﻿using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Shared.Communication;
+using LyteChat.Shared.DataTransferObject;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Server.Data.Models;
-using LearnBlazor.Server.Data.RepositoryInterface;
-using LearnBlazor.Server.Data.ServiceInterface;
-using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
-using LearnBlazor.Shared.DataTransferObject;
-using LearnBlazor.Shared.Communication;
 
-namespace LearnBlazor.Server.Services
+namespace LyteChat.Server.Services
 {
     public class ChatGroupUserService : ServiceBase, IChatGroupUserService
     {
@@ -25,6 +25,11 @@ namespace LearnBlazor.Server.Services
         public async Task<ChatGroupUser> GetByUuidAsync(Guid uuid)
         {
             return await _chatGroupUserRepository.GetByUuidAsync(uuid);
+        }
+
+        public async Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
+        {
+            return await _chatGroupUserRepository.GetByUserAndChatGroupAsync(userUuid, chatGroupUuid);
         }
 
         public async Task<IEnumerable<UserDTO>> GetUsersForChatGroupAsync(Guid chatGroupUuId)
@@ -67,16 +72,15 @@ namespace LearnBlazor.Server.Services
             return chatGroups;
         }
 
-        public async Task<ChatGroupUserResponse> AddUserToChatGroupAsync(ChatGroupUserDTO chatGroupUserDTO)
+        public async Task<ChatGroupUserResponse> AddUserToChatGroupAsync(User user, Guid chatGroupUuid)
         {
             try
             {
-                var (user, chatGroup, messageStr) = await VerifyUserAndChatGroupExist(
-                    chatGroupUserDTO.UserUuid, chatGroupUserDTO.ChatGroupUuid);
+                ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
 
-                if (messageStr != string.Empty)
+                if (chatGroup == null)
                 {
-                    return new ChatGroupUserResponse { ErrorMessage = messageStr };
+                    return new ChatGroupUserResponse { ErrorMessage = "Chat group does not exist" };
                 }
 
                 // Check if user is already member of chat group
@@ -84,7 +88,8 @@ namespace LearnBlazor.Server.Services
                     user.Id, chatGroup.ChatGroupId);
                 if (chatGroupUser != null)
                 {
-                    return new ChatGroupUserResponse { 
+                    return new ChatGroupUserResponse
+                    {
                         ErrorMessage = $"User {user.Id} is already a member of chat group {chatGroup.Uuid}"
                     };
                 }
@@ -100,13 +105,9 @@ namespace LearnBlazor.Server.Services
                 await _chatGroupUserRepository.AddUserToChatGroupAsync(saveChatGroupUser);
                 await _unitOfWork.CompleteAsync();
 
-                chatGroupUserDTO.Uuid = saveChatGroupUser.Uuid;
-                //ChatMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
-
                 return new ChatGroupUserResponse
                 {
                     Success = true,
-                    ChatGroupUserDTO = chatGroupUserDTO
                 };
             }
             catch (Exception ex)
@@ -116,18 +117,25 @@ namespace LearnBlazor.Server.Services
             }
         }
 
-        public async Task<ChatGroupUserResponse> RemoveUserFromChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
+        public async Task<ChatGroupUserResponse> RemoveUserFromChatGroupAsync(User user, Guid chatGroupUuid)
         {
             try
             {
+                ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
+
+                if (chatGroup == null)
+                {
+                    return new ChatGroupUserResponse { ErrorMessage = "Chat group does not exist" };
+                }
+
                 // Check if user is already member of chat group
                 ChatGroupUser chatGroupUser = await _chatGroupUserRepository.GetByUserAndChatGroupAsync(
-                    userUuid, chatGroupUuid);
+                    user.Id, chatGroupUuid);
                 if (chatGroupUser == null)
                 {
                     return new ChatGroupUserResponse
                     {
-                        ErrorMessage = $"User {userUuid} is not a member of chat group {chatGroupUuid}"
+                        ErrorMessage = $"User {user.Id} is not a member of chat group {chatGroupUuid}"
                     };
                 }
 

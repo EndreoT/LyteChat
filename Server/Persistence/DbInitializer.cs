@@ -1,15 +1,13 @@
-﻿using System;
+﻿using LyteChat.Server.Persistence.Context;
 using System.Linq;
-using LearnBlazor.Server.Data.Models;
-using LearnBlazor.Server.Persistence.Context;
 
-namespace LearnBlazor.Server.Persistence
+namespace LyteChat.Server.Persistence
 {
     public static class DbInitializer
     {
         public static void Initialize(AppDbContext context)
         {
-           context.Database.EnsureCreated();
+            context.Database.EnsureCreated();
 
             if (context.Users.Any())
             {

@@ -3,64 +3,89 @@
 @using Microsoft.AspNetCore.Components
 @using System.Collections.Generic
 @using Microsoft.AspNetCore.SignalR.Client
-@using LearnBlazor.Shared.DataTransferObject
-@using LearnBlazor.Shared.Communication
-@using LearnBlazor.Shared
-@using LearnBlazor.Client;
+@using System.Net.Http.Headers;
+@using LyteChat.Shared.DataTransferObject
+@using LyteChat.Shared.Communication
+@using LyteChat.Shared
+@using LyteChat.Client;
 @inject StateContainer StateContainer
 @inject HttpClient Http
+@inject JWTAuthenticationStateProvider TokenProvider
 @implements IDisposable
 
+<div class="container-fluid">
+    <div class="card bg-light mb-3">
+        @if (ChatGroupDataExists())
+        {
+            ChatGroupData chatGroupData = StateContainer.ChatGroupsForUser[ChatGroupUuid];
+            <h1 class="card-header text-center">@chatGroupData.ChatGroup.ChatGroupName</h1>
+            <div class="card-body">
 
-<div class="form-group">
-    <label>
-        Message:
-        <input @bind="messageInput" size="50" />
-    </label>
+                <button class="btn btn-outline-primary btn-sm" @onclick="e => CollapseUsers = !CollapseUsers">
+                    <h3 class="d-inline">Users</h3>&nbsp;<span>(@chatGroupData.Users.Count)</span>&nbsp;<span class="d-inline">(@( CollapseUsers ? "show" : "hide"))</span>
+                </button>
+                @if (!CollapseUsers)
+                {
+                    <ul class="list-group list-group-horizontal-sm">
+                        @foreach (UserDTO user in GetUsersAlphabetical(chatGroupData))
+                        {
+                            <li class="list-group-item list-group-item-action">@user.Name</li>
+                        }
+                    </ul>
+                }
+            </div>
+            <div class="card-body">
+
+                <EditForm @ref="createchatmessageform" Model="CreateChatMessage" OnValidSubmit="Send">
+                    <div class="form-group">
+                        <InputText class="form-control" @bind-Value="CreateChatMessage.MessageInput" />
+                        <ValidationMessage For="@(()=> CreateChatMessage.MessageInput)" />
+                    </div>
+
+                    <button disabled="@(cannotSendMessage)" type="submit" class="btn btn-outline-primary btn-sm">Send Message</button>
+                </EditForm>
+
+                <ul class="list-group">
+                    @foreach (ChatMessageDTO message in GetChatGroupMessagesReverseOrder(chatGroupData))
+                    {
+                        <li class="list-group-item list-group-item-action">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col"><span class="fw-bold">@message.UserName</span> | <span class="d-inline fw-light">@message.CreatedOn</span></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">@message.Message</div>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+        else
+        {
+            <h2>Chat Group: @ChatGroupUuidStr does not exist or you are not authorized for this group</h2>
+        }
+
+    </div>
 </div>
 
-@if (ChatGroupDataExists())
-{
-    ChatGroupData ChatGroupData = StateContainer.ChatGroupsForUser[ChatGroupUuid];
-    <h2>Chat Group Name: @ChatGroupData.ChatGroup.ChatGroupName</h2>
-    <h3>Users: </h3>
-    <ul class="messagesList">
-        @foreach (var userUuid in ChatGroupData.Users)
-        {
-            {
-                <li>@StateContainer.AllUsers[userUuid].Name</li>
-            }
-        }
-    </ul>
-
-    <button @onclick="(() => Send(ChatGroupData.ChatGroup.Uuid))" disabled="@(!StateContainer.IsConnected)">Send</button>
-    <h3>Messages: </h3>
-    <ul class="messagesList">
-        @foreach (var message in ChatGroupData.Messages)
-        {
-            {
-                <li>@message.UserName: @message.Message</li>
-            }
-        }
-    </ul>
-
-    <hr>
-
-}
-else
-{
-    <h2>Chat Group: @ChatGroupUuidStr does not exist</h2>
-}
 
 
 @code {
+    private class CreateMessageModel
+    {
+        public string MessageInput = "";
+    }
+
     [Parameter]
     public string ChatGroupUuidStr { get; set; }
+    private bool CollapseUsers { get; set; } = true;
     private Guid ChatGroupUuid { get; set; }
-    private ChatGroupData ChatGroupData;
 
-    private string userInput;
-    private string messageInput;
+    private EditForm createchatmessageform { get; set; }
+    private CreateMessageModel CreateChatMessage = new CreateMessageModel();
+    private bool cannotSendMessage => !(StateContainer.IsConnected && CreateChatMessage.MessageInput.Length != 0);
 
     protected override void OnParametersSet()
     {
@@ -68,21 +93,39 @@ else
         bool parseSuccess = Guid.TryParse(ChatGroupUuidStr, out Guid chatGroupUuid);
         ChatGroupUuid = chatGroupUuid;
     }
+    private List<UserDTO> GetUsersAlphabetical(ChatGroupData chatGroupData)
+    {
+        List<UserDTO> users = new List<UserDTO>();
+        foreach (Guid userUuid in chatGroupData.Users)
+        {
+            if (StateContainer.KnownUsers.ContainsKey(userUuid))
+            {
+                users.Add(StateContainer.KnownUsers[userUuid]);
+            }
+        }
+        return users.OrderBy(user => user.Name).ToList();
+    }
+
+    private List<ChatMessageDTO> GetChatGroupMessagesReverseOrder(ChatGroupData chatGroupData)
+    {
+        return Enumerable.Reverse(chatGroupData.Messages).ToList();
+    }
 
     private bool ChatGroupDataExists()
     {
         return StateContainer.ChatGroupsForUser.ContainsKey(ChatGroupUuid);
     }
 
-    public async Task Send(Guid chatGroupUuid)
+    private async Task Send()
     {
         ChatMessageDTO chatMessage = new ChatMessageDTO
         {
             UserUuid = StateContainer.CurrentUser.Uuid,
-            ChatGroupUuid = chatGroupUuid,
-            Message = messageInput
+            ChatGroupUuid = ChatGroupUuid,
+            Message = CreateChatMessage.MessageInput
         };
-        await StateContainer.hubConnection.SendAsync("CreateMessage", chatMessage);
+        await StateContainer.SendMessage(chatMessage);
+        CreateChatMessage.MessageInput = "";
     }
 
     public void Dispose()

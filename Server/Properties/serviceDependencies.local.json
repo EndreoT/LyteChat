@@ -1,8 +1,13 @@
 {
   "dependencies": {
+    "secrets1": {
+      "type": "secrets.user"
+    },
     "mssql1": {
-      "type": "mssql.local",
-      "connectionId": "LearnBlazorServerContextConnection"
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/lytechat-serverdbserver/databases/LyteChat.Server_db",
+      "type": "mssql.azure",
+      "connectionId": "DefaultConnection",
+      "secretStore": "LocalSecretsFile"
     }
   }
 }

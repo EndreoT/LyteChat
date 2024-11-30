@@ -1,19 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Concurrent;
+﻿//using AutoMapper;
+using LyteChat.Server.Data.Models;
+using LyteChat.Server.Data.RepositoryInterface;
+using LyteChat.Server.Data.RepositoryInterface.Repositories;
+using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Shared.DataTransferObject;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
-//using AutoMapper;
-using LearnBlazor.Server.Data.Models;
-using LearnBlazor.Server.Data.RepositoryInterface.Repositories;
-using LearnBlazor.Server.Data.ServiceInterface;
-using LearnBlazor.Server.Data.RepositoryInterface;
-using LearnBlazor.Shared.DataTransferObject;
-using LearnBlazor.Shared.Communication;
 
-
-namespace LearnBlazor.Server.Services
+namespace LyteChat.Server.Services
 {
     public class UserService : ServiceBase, IUserService
     {
@@ -57,10 +54,10 @@ namespace LearnBlazor.Server.Services
             User userQuery = await _userRepository
                 .GetAnonymousUserAsync();
             UserDTO user = new UserDTO
-                {
-                    Name = userQuery.UserName,
-                    Uuid = userQuery.Id
-                };
+            {
+                Name = userQuery.UserName,
+                Uuid = userQuery.Id
+            };
 
             //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
             return user;

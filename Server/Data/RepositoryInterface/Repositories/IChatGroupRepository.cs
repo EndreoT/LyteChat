@@ -1,16 +1,17 @@
-﻿using System;
+﻿using LyteChat.Server.Data.Models;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using LearnBlazor.Server.Data.Models;
 
-namespace LearnBlazor.Server.Data.RepositoryInterface.Repositories
+namespace LyteChat.Server.Data.RepositoryInterface.Repositories
 {
-    public interface IChatGroupRepository: IBaseRepository<ChatGroup>
+    public interface IChatGroupRepository : IBaseRepository<ChatGroup>
     {
         public Task<IEnumerable<ChatGroup>> ListChatGroupsAsync();
 
         public Task<ChatGroup> GetAllChatAsync();
 
+        public Task<ChatGroup> FindByName(string chatGroupName);
+
+        public Task AddChatGroupAsync(ChatGroup chatGroup);
     }
 }
