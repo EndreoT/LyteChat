@@ -17,14 +17,15 @@ namespace LyteChat.Server.Persistence.Repositories
             try
             {
                 return await _context.ChatMessages
-                    .Where(message => message.ChatGroup.Uuid.Equals(groupUuid))
+                    .Where(message => message.ChatGroup != null && message.ChatGroup.Uuid.Equals(groupUuid))
                     .Include(message => message.User)
                     .Include(message => message.ChatGroup)
                     .ToListAsync();
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
-                return null;
+                // TODO log and metric
+                return Enumerable.Empty<ChatMessage>();
             }
         }
 
@@ -33,7 +34,7 @@ namespace LyteChat.Server.Persistence.Repositories
             await _context.ChatMessages.AddAsync(chatMessage);
         }
 
-        public async Task<ChatMessage> GetByUuidAsync(Guid uuid)
+        public async Task<ChatMessage?> GetByUuidAsync(Guid uuid)
         {
             try
             {
@@ -44,6 +45,7 @@ namespace LyteChat.Server.Persistence.Repositories
             }
             catch (InvalidOperationException)
             {
+                // TODO log and metric
                 return null;
             }
         }

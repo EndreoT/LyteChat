@@ -1,6 +1,7 @@
 ﻿using LyteChat.Server.Auth;
 using LyteChat.Server.Data.Models;
 using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Server.Extensions;
 using LyteChat.Shared.Communication;
 using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.Authorization;
@@ -45,8 +46,8 @@ namespace LyteChat.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<ChatGroupUserResponse>> AddUserToChatGroupAsync([FromBody] ChatGroupUserDTO chatgroup)
         {
-            string userEmail = User.FindFirstValue(ClaimTypes.Email);
-            User user = await _userManager.FindByEmailAsync(userEmail);
+            string userEmail = User.GetUserEmail();
+            User? user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
                 return Forbid();
@@ -66,14 +67,14 @@ namespace LyteChat.Server.Controllers
         [HttpDelete("{chatGroupUuid}")]
         public async Task<ActionResult<ChatGroupUserResponse>> RemoveUserFromChatGroupAsync(Guid chatGroupUuid)
         {
-            string userEmail = User.FindFirstValue(ClaimTypes.Email);
-            User user = await _userManager.FindByEmailAsync(userEmail);
+            string userEmail = User.GetUserEmail();
+            User? user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
                 return Forbid();
             }
 
-            ChatGroupUser chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
+            ChatGroupUser? chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
                 user.Id, chatGroupUuid);
 
             // Check if user is authorized to remove user from the chat group

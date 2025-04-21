@@ -67,7 +67,7 @@ namespace LyteChat.Client
                 }
                 else
                 {
-                    ChatMessageDTO chatMessage = chatMessageRes.ChatMessageDTO;
+                    ChatMessageDTO? chatMessage = chatMessageRes.ChatMessageDTO;
                     if (chatMessage != null && ChatGroupsForUser.ContainsKey(chatMessage.ChatGroupUuid))
                     {
                         ChatGroupsForUser[chatMessage.ChatGroupUuid].Messages.Add(chatMessage);

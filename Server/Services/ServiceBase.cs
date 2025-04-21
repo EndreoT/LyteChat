@@ -13,23 +13,19 @@ namespace LyteChat.Server.Services
         protected readonly IChatGroupRepository _chatGroupRepository;
         protected readonly IChatGroupUserRepository _chatGroupUserRepository;
         protected readonly IUnitOfWork _unitOfWork;
-        //private readonly IMapper _mapper;
 
         public ServiceBase(
             IChatMessageRepository chatMessageRepository,
             IUserRepository userRepository,
             IChatGroupRepository chatGroupRepository,
             IChatGroupUserRepository chatGroupUserRepository,
-            IUnitOfWork unitOfWork
-            //IMapper mapper,
-            )
+            IUnitOfWork unitOfWork)
         {
             _chatMessageRepository = chatMessageRepository;
             _userRepository = userRepository;
             _chatGroupRepository = chatGroupRepository;
             _chatGroupUserRepository = chatGroupUserRepository;
             _unitOfWork = unitOfWork;
-            //_mapper = mapper;
         }
 
         protected string ResourceNotFoundMessage(string resourceName, Guid resourceUuid)
@@ -37,12 +33,12 @@ namespace LyteChat.Server.Services
             return $"{resourceName} with UUID {resourceUuid} does not exist";
         }
 
-        protected async Task<Tuple<User, ChatGroup, string>> VerifyUserAndChatGroupExist(
+        protected async Task<Tuple<User?, ChatGroup?, string>> VerifyUserAndChatGroupExist(
             Guid userUuid, Guid chatGroupUuid)
         {
 
-            User user = null;
-            ChatGroup chatGroup = null;
+            User? user = null;
+            ChatGroup? chatGroup = null;
             string messageStr = string.Empty;
 
             try
@@ -63,7 +59,7 @@ namespace LyteChat.Server.Services
                 // Do some logging stuff
                 messageStr = $"An error occurred when saving the message: {ex.Message}";
             }
-            Tuple<User, ChatGroup, string> res = new Tuple<User, ChatGroup, string>(user, chatGroup, messageStr);
+            Tuple<User?, ChatGroup?, string> res = new(user, chatGroup, messageStr);
 
             return res;
         }

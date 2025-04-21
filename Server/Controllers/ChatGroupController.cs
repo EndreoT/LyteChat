@@ -1,6 +1,7 @@
 ﻿using LyteChat.Server.Auth;
 using LyteChat.Server.Data.Models;
 using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Server.Extensions;
 using LyteChat.Shared.Communication;
 using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.Authorization;
@@ -66,14 +67,14 @@ namespace LyteChat.Server.Controllers
         [HttpGet("{chatGroupUuid}")]
         public async Task<ActionResult<ChatGroupDTO>> GetChatGroupByUuid(Guid chatGroupUuid)
         {
-            string userEmail = User.FindFirstValue(ClaimTypes.Email);
-            User user = await _userManager.FindByEmailAsync(userEmail);
+            string userEmail = User.GetUserEmail();
+            User? user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
                 return Forbid();
             }
 
-            ChatGroupUser chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
+            ChatGroupUser? chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
                 user.Id, chatGroupUuid);
 
             // Check if user is authorized to read users for the chat group
@@ -101,14 +102,14 @@ namespace LyteChat.Server.Controllers
         [HttpGet("{chatGroupUuid}/user")]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsersForChatGroup(Guid chatGroupUuid)
         {
-            string userEmail = User.FindFirstValue(ClaimTypes.Email);
-            User user = await _userManager.FindByEmailAsync(userEmail);
+            string userEmail = User.GetUserEmail();
+            User? user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
                 return Forbid();
             }
 
-            ChatGroupUser chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
+            ChatGroupUser? chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
                 user.Id, chatGroupUuid);
 
             // Check if user is authorized to read users for the chat group
@@ -136,14 +137,14 @@ namespace LyteChat.Server.Controllers
         [HttpGet("{chatGroupUuid}/message")]
         public async Task<ActionResult<IEnumerable<ChatMessageDTO>>> ListMessagesForGroup(Guid chatGroupUuid)
         {
-            string userEmail = User.FindFirstValue(ClaimTypes.Email);
-            User user = await _userManager.FindByEmailAsync(userEmail);
+            string userEmail = User.GetUserEmail();
+            User? user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
                 return Forbid();
             }
 
-            ChatGroupUser chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
+            ChatGroupUser? chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
                 user.Id, chatGroupUuid);
 
             // Check if user is authorized to read users for the chat group
@@ -169,8 +170,8 @@ namespace LyteChat.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<ChatGroupResponse>> CreateChatGroup(ChatGroupDTO chatGroupDTO)
         {
-            string userEmail = User.FindFirstValue(ClaimTypes.Email);
-            User user = await _userManager.FindByEmailAsync(userEmail);
+            string userEmail = User.GetUserEmail();
+            User? user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
                 return Forbid();

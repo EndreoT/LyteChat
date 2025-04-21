@@ -17,7 +17,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace LyteChat.Server.Controllers
 {
     [Route("api/[controller]")]
@@ -30,6 +29,8 @@ namespace LyteChat.Server.Controllers
         private readonly IChatGroupUserService _chatGroupUserService;
         private readonly IChatGroupService _chatGroupService;
 
+        private readonly SigningCredentials _signingCredentials;
+
         public AuthenticateController(
             UserManager<User> userManager,
             IConfiguration configuration,
@@ -40,6 +41,16 @@ namespace LyteChat.Server.Controllers
             _configuration = configuration;
             _chatGroupUserService = chatGroupUserService;
             _chatGroupService = chatGroupService;
+
+            string? configSigningKey = _configuration["JWT:Secret"];
+            if (string.IsNullOrEmpty(configSigningKey))
+            {
+                throw new ArgumentException("JWT signing key is not configured");
+            }
+
+            SymmetricSecurityKey authSigningKey = new(Encoding.UTF8.GetBytes(configSigningKey));
+
+            _signingCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256);
         }
 
         /// <summary>
@@ -58,7 +69,17 @@ namespace LyteChat.Server.Controllers
                 return Unauthorized();
             }
 
-            AuthenticationHeaderValue authHeader = AuthenticationHeaderValue.Parse(reqAuthHeader);
+            string? x= reqAuthHeader[0];
+            if (string.IsNullOrEmpty(x))
+            {
+                return Unauthorized();
+            }
+
+            AuthenticationHeaderValue authHeader = AuthenticationHeaderValue.Parse(x);
+            if (authHeader.Parameter is null)
+            {
+                return Unauthorized();
+            }
             byte[] credentialBytes = Convert.FromBase64String(authHeader.Parameter);
             string[] credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
             string email = credentials[0];
@@ -66,7 +87,7 @@ namespace LyteChat.Server.Controllers
             User? user = await _userManager.FindByEmailAsync(email);
             if (user != null && await _userManager.CheckPasswordAsync(user, password))
             {
-                JwtSecurityToken token = await GetToken(user);
+                JwtSecurityToken token = await GenerateTokenAsync(user);
                 return Ok(new LoginResponse
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -92,7 +113,7 @@ namespace LyteChat.Server.Controllers
                 return Problem(title: "Internal Server Error", statusCode: 500);
             }
 
-            JwtSecurityToken token = await GetToken(user);
+            JwtSecurityToken token = await GenerateTokenAsync(user);
             string tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
             return Ok(new LoginResponse
             {
@@ -141,7 +162,7 @@ namespace LyteChat.Server.Controllers
             //Add user to all chat
             await _chatGroupUserService.AddUserToChatGroupAsync(user, allChat.Uuid);
 
-            JwtSecurityToken token = await GetToken(user);
+            JwtSecurityToken token = await GenerateTokenAsync(user);
             return Ok(new RegisterResponse
             {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
@@ -149,32 +170,34 @@ namespace LyteChat.Server.Controllers
             });
         }
 
-        private async Task<JwtSecurityToken> GetToken(User user)
+        private async Task<JwtSecurityToken> GenerateTokenAsync(User user)
         {
-            var userRoles = await _userManager.GetRolesAsync(user);
+            IList<string> userRoles = await _userManager.GetRolesAsync(user);
 
-            var authClaims = new List<Claim>
+            if (user.Email is null || user.UserName is null)
             {
+                throw new ArgumentException("User email or username is null");
+            }
+
+            List<Claim> authClaims =
+            [
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.UserName),
                 new Claim(ClaimTypes.NameIdentifier , user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
+            ];
 
             foreach (var userRole in userRoles)
             {
                 authClaims.Add(new Claim(ClaimTypes.Role, userRole));
             }
 
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-            var token = new JwtSecurityToken(
+            JwtSecurityToken token = new(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
                 expires: DateTime.Now.AddHours(3),
                 claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                );
+                signingCredentials: _signingCredentials);
 
             return token;
         }

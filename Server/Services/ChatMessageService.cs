@@ -22,14 +22,17 @@ namespace LyteChat.Server.Services
             IChatGroupRepository chatGroupRepository,
             IChatGroupUserRepository chatGroupUserRepository,
             IUnitOfWork unitOfWork
-            //IMapper mapper,
             ) : base(chatMessageRepository, userRepository, chatGroupRepository, chatGroupUserRepository, unitOfWork)
         {
         }
 
-        public async Task<ChatMessageDTO> GetByUuidAsync(Guid uuid)
+        public async Task<ChatMessageDTO?> GetByUuidAsync(Guid uuid)
         {
-            ChatMessage message = await _chatMessageRepository.GetByUuidAsync(uuid);
+            ChatMessage? message = await _chatMessageRepository.GetByUuidAsync(uuid);
+            if (message is null || message.User is null || message.ChatGroup is null)
+            {
+                return null;
+            }
             ChatMessageDTO messageDTO = new ChatMessageDTO()
             {
                 Uuid = message.Uuid,
@@ -47,24 +50,28 @@ namespace LyteChat.Server.Services
             IEnumerable<ChatMessage> messageQuery = await _chatMessageRepository
                 .ListMessagesForGroupAsync(groupUuid);
             IEnumerable<ChatMessageDTO> messages = messageQuery
+                .Where(message => message.User != null && message.ChatGroup != null)
                 .Select(message => new ChatMessageDTO
                 {
                     Uuid = message.Uuid,
-                    UserUuid = message.User.Id,
+                    UserUuid = message.User!.Id,
                     UserName = message.User.UserName,
                     Message = message.Message,
                     CreatedOn = message.CreatedOn,
-                    ChatGroupUuid = message.ChatGroup.Uuid,
+                    ChatGroupUuid = message.ChatGroup!.Uuid,
                     ChatGroupName = message.ChatGroup.ChatGroupName
                 });
 
-            //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
             return messages;
         }
 
         public async Task<IEnumerable<ChatMessageDTO>> ListMessagesForAllChatGroupAsync()
         {
-            ChatGroup allChat = await _chatGroupRepository.GetAllChatAsync();
+            ChatGroup? allChat = await _chatGroupRepository.GetAllChatAsync();
+            if (allChat == null)
+            {
+                return Enumerable.Empty<ChatMessageDTO>();
+            }
             IEnumerable<ChatMessageDTO> messages = await ListMessagesForGroupAsync(allChat.Uuid);
 
             return messages;
@@ -78,7 +85,7 @@ namespace LyteChat.Server.Services
             {
                 User user = chatMessage.User;
                 Guid chatGroupUuid = chatMessage.ChatGroupUuid;
-                ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
+                ChatGroup? chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
                 if (chatGroup == null)
                 {
                     string messageStr = ResourceNotFoundMessage("ChatGroup", chatGroupUuid);
@@ -107,14 +114,12 @@ namespace LyteChat.Server.Services
                     UserUuid = saveChatMessage.User.Id
                 };
 
-                //ChatMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
-
                 chatMessageResponse.Success = true;
                 chatMessageResponse.ChatMessageDTO = chatMessageDTO;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Do some logging stuff
+                // TODO log and metric
                 chatMessageResponse.ErrorMessage = "An error occurred when saving the message";
             }
             return chatMessageResponse;

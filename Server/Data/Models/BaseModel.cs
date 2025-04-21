@@ -6,6 +6,7 @@ namespace LyteChat.Server.Data.Models
     public abstract class BaseModel
     {
         public Guid Uuid { get; set; }
+
         [Required]
         public DateTime? CreatedOn { get; set; }
 

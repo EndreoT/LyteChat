@@ -13,13 +13,13 @@ using System.Threading.Tasks;
 
 namespace LyteChat.Server.Hubs
 {
-
     [Authorize]
     public class ChatHub : Hub
     {
         private readonly IChatMessageService _chatMessageService;
         private readonly IChatGroupUserService _chatGroupUserService;
         private readonly UserManager<User> _userManager;
+
         public ChatHub(
             IChatMessageService chatMessageService,
             IChatGroupUserService chatGroupUserService,
@@ -39,8 +39,16 @@ namespace LyteChat.Server.Hubs
         [Authorize(Policy = AuthPolicy.UserCanCreateChatMessage)]
         public async Task CreateMessage(CreateChatMessageDTO chatMessageDTO)
         {
-            string userEmail = Context.UserIdentifier;
-            User user = await _userManager.FindByEmailAsync(userEmail);
+            string? userEmail = Context.UserIdentifier;
+            if (userEmail is null)
+            {
+                throw new ArgumentNullException(nameof(userEmail), "User email is null");
+            }
+            User? user = await _userManager.FindByEmailAsync(userEmail);
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user), "User is null");
+            }
 
             CreateChatMessage chatMessage = new CreateChatMessage
             {
@@ -56,7 +64,12 @@ namespace LyteChat.Server.Hubs
         [Authorize(Roles = Role.Admin)]
         public async Task SendMessage(ChatMessageResponse chatMessageResponse)
         {
-            Guid chatGroupUuid = chatMessageResponse.ChatMessageDTO.ChatGroupUuid;
+            ChatMessageDTO? chatMessageDTO = chatMessageResponse.ChatMessageDTO;
+            if (chatMessageDTO is null)
+            {
+                throw new ArgumentNullException(nameof(chatMessageDTO), "Chat message is null");
+            }
+            Guid chatGroupUuid = chatMessageDTO.ChatGroupUuid;
             await Clients.Group(chatGroupUuid.ToString()).SendAsync("ReceiveMessage", chatMessageResponse);
         }
 
@@ -66,7 +79,17 @@ namespace LyteChat.Server.Hubs
         /// <returns></returns>
         private async Task AddUserToChatGroupsConnections()
         {
-            User user = await _userManager.FindByEmailAsync(Context.UserIdentifier);
+            string? userEmail = Context.UserIdentifier;
+            if (userEmail is null)
+            {
+                throw new ArgumentNullException(nameof(userEmail), "User email is null");
+            }
+            User? user = await _userManager.FindByEmailAsync(userEmail);
+            if (user is null)
+            {
+                throw new ArgumentNullException(nameof(user), "User is null");
+            }
+
             IEnumerable<ChatGroupDTO> chatGroups = await _chatGroupUserService.GetChatGroupsForUserAsync(user.Id);
             foreach (ChatGroupDTO chatGroup in chatGroups)
             {

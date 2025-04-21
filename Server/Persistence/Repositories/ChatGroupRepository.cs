@@ -13,7 +13,7 @@ namespace LyteChat.Server.Persistence.Repositories
     {
         public ChatGroupRepository(AppDbContext context) : base(context) { }
 
-        public async Task<ChatGroup> GetByUuidAsync(Guid uuid)
+        public async Task<ChatGroup?> GetByUuidAsync(Guid uuid)
         {
             try
             {
@@ -21,8 +21,9 @@ namespace LyteChat.Server.Persistence.Repositories
                     .ChatGroups
                     .Where(chatGroup => chatGroup.Uuid.Equals(uuid)).SingleAsync();
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
+                // TODO log and metric
                 return null;
             }
         }
@@ -35,16 +36,17 @@ namespace LyteChat.Server.Persistence.Repositories
             }
             catch (InvalidOperationException)
             {
-                return null;
+                // TODO log and metric
+                return Enumerable.Empty<ChatGroup>();
             }
         }
 
-        public async Task<ChatGroup> GetAllChatAsync()
+        public async Task<ChatGroup?> GetAllChatAsync()
         {
             return await FindByName(ChatGroup.AllChat);
         }
 
-        public async Task<ChatGroup> FindByName(string chatGroupName)
+        public async Task<ChatGroup?> FindByName(string chatGroupName)
         {
             try
             {
@@ -52,8 +54,9 @@ namespace LyteChat.Server.Persistence.Repositories
                    .Where(chatGroup => chatGroup.ChatGroupName.Equals(chatGroupName))
                    .SingleAsync();
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
+                // TODO log and metric
                 return null;
             }
         }

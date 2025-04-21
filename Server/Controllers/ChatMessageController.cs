@@ -2,6 +2,7 @@
 using LyteChat.Server.Data.Communication;
 using LyteChat.Server.Data.Models;
 using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Server.Extensions;
 using LyteChat.Server.Hubs;
 using LyteChat.Shared.Communication;
 using LyteChat.Shared.DataTransferObject;
@@ -56,14 +57,14 @@ namespace LyteChat.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<ChatMessageResponse>> CreateChatMessage([FromBody] CreateChatMessageDTO chatMessageDTO)
         {
-            string userEmail = User.FindFirstValue(ClaimTypes.Email);
-            User user = await _userManager.FindByEmailAsync(userEmail);
+            string userEmail = User.GetUserEmail();
+            User? user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null)
             {
                 return NotFound(new ChatMessageResponse { Success = false, ErrorMessage = "User does not exist" });
             }
 
-            ChatGroupUser chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
+            ChatGroupUser? chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
                 user.Id, chatMessageDTO.ChatGroupUuid);
 
             // Check if user is authorized to create chat messages for the chat group

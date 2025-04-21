@@ -8,9 +8,9 @@ namespace LyteChat.Server.Data.RepositoryInterface.Repositories
     {
         public Task<IEnumerable<ChatGroup>> ListChatGroupsAsync();
 
-        public Task<ChatGroup> GetAllChatAsync();
+        public Task<ChatGroup?> GetAllChatAsync();
 
-        public Task<ChatGroup> FindByName(string chatGroupName);
+        public Task<ChatGroup?> FindByName(string chatGroupName);
 
         public Task AddChatGroupAsync(ChatGroup chatGroup);
     }

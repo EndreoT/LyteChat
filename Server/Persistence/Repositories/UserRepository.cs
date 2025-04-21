@@ -21,35 +21,38 @@ namespace LyteChat.Server.Persistence.Repositories
             }
             catch (InvalidOperationException)
             {
-                return Array.Empty<User>();
+                return Enumerable.Empty<User>();
             }
         }
 
-        public async Task<User> GetAnonymousUserAsync()
+        public async Task<User?> GetAnonymousUserAsync()
         {
             try
             {
                 return await _context.Users
-                    .Where(user => user.UserName.Equals("Anonymous"))
+                    .Where(user => string.Equals("Anonymous", user.UserName))
                     .SingleAsync();
             }
             catch (InvalidOperationException)
             {
+                // TODO log and metric
                 return null;
             }
         }
 
-        public async Task<User> GetByUuidAsync(Guid uuid)
+        public async Task<User?> GetByUuidAsync(Guid uuid)
         {
             try
             {
                 return await _context
                     .Users
-                    .Where(user => user.Id.Equals(uuid)).SingleAsync();
+                    .Where(user => user.Id.Equals(uuid))
+                    .SingleAsync();
 
             }
             catch (InvalidOperationException)
             {
+                // TODO log and metric
                 return null;
             }
         }

@@ -56,46 +56,56 @@ namespace LyteChat.Server.Persistence.Context
                     Name = Role.AuthenticatedUser,
                     NormalizedName = Role.AuthenticatedUser.ToUpper()
                 }
-
             };
             modelBuilder.Entity<Role>().HasData(roles);
 
             var hasher = new PasswordHasher<User>();
-            var users = new User[]
+            List<User> users = new() { };
+
+            User user1 = new()
             {
-                new User {
-                     Id=Guid.NewGuid(),
-                     UserName = "Admin",
-                     NormalizedUserName = "Admin".ToUpper(),
-                     Email = "admin@email.com",
-                     NormalizedEmail = "admin@email.com".ToUpper(),
-                     PasswordHash = hasher.HashPassword(null, "pass$1"),
-                 },
-                 new User {
-                     Id=Guid.NewGuid(),
-                     UserName = "Anonymous",
-                     NormalizedUserName = "Anonymous".ToUpper(),
-                     Email = User.AnonymousUserEmail,
-                     NormalizedEmail = User.AnonymousUserEmail.ToUpper(),
-                     PasswordHash = hasher.HashPassword(null, "pass$2"),
-                 },
-                 new User {
-                     Id=Guid.NewGuid(),
-                     UserName = "Bob" ,
-                     NormalizedUserName = "Bob".ToUpper(),
-                     Email = "bob@email.com",
-                     NormalizedEmail = "bob@email.com".ToUpper(),
-                     PasswordHash = hasher.HashPassword(null, "pass$3"),
-                 },
-                 new User {
-                     Id=Guid.NewGuid(),
-                     UserName = "Alice",
-                     NormalizedUserName = "Alice".ToUpper(),
-                     Email = "alice@email.com",
-                     NormalizedEmail = "alice@email.com".ToUpper(),
-                     PasswordHash = hasher.HashPassword(null, "pass$4"),
-                 }
+                Id = Guid.NewGuid(),
+                UserName = "Admin",
+                NormalizedUserName = "Admin".ToUpper(),
+                Email = "admin@email.com",
+                NormalizedEmail = "admin@email.com".ToUpper(),
             };
+            user1.PasswordHash = hasher.HashPassword(user1, "pass$1");
+            users.Add(user1);
+
+            User user2 = new()
+            {
+                Id = Guid.NewGuid(),
+                UserName = "Anonymous",
+                NormalizedUserName = "Anonymous".ToUpper(),
+                Email = User.AnonymousUserEmail,
+                NormalizedEmail = User.AnonymousUserEmail.ToUpper(),
+            };
+            user2.PasswordHash = hasher.HashPassword(user2, "pass$2");
+            users.Add(user2);
+
+            User user3 = new()
+            {
+                Id = Guid.NewGuid(),
+                UserName = "Bob",
+                NormalizedUserName = "Bob".ToUpper(),
+                Email = "bob@email.com",
+                NormalizedEmail = "bob@email.com".ToUpper(),
+            };
+            user3.PasswordHash = hasher.HashPassword(user3, "pass$3");
+            users.Add(user3);
+
+            User user4 = new()
+            {
+                Id = Guid.NewGuid(),
+                UserName = "Alice",
+                NormalizedUserName = "Alice".ToUpper(),
+                Email = "alice@email.com",
+                NormalizedEmail = "alice@email.com".ToUpper(),
+            };
+            user4.PasswordHash = hasher.HashPassword(user4, "pass$4");
+            users.Add(user4);
+
             modelBuilder.Entity<User>().HasData(users);
 
             List<IdentityUserRole<Guid>> userRoles = new List<IdentityUserRole<Guid>>();
@@ -130,21 +140,21 @@ namespace LyteChat.Server.Persistence.Context
                  new ChatGroup{ChatGroupId=3, ChatGroupName="third chat group"},
             };
 
-            var chatGroupUsers = from user in users select new ChatGroupUser { UserId = user.Id, ChatGroupId = 1 };
+            var chatGroupUsers = users.Select(user => new ChatGroupUser { UserId = user.Id, ChatGroupId = 1});
 
             var chatMessages = new ChatMessage[]
             {
                  new ChatMessage{
-                     ChatMessageId = 1,
-                     Message="first message",
-                     UserId = users[0].Id,
-                     ChatGroupId = chatGroups[0].ChatGroupId
+                    ChatMessageId = 1,
+                    Message="first message",
+                    UserId = users[0].Id,
+                    ChatGroupId = chatGroups[0].ChatGroupId
                  },
                  new ChatMessage{
-                     ChatMessageId = 2,
-                     Message="second message",
-                     UserId = users[1].Id,
-                     ChatGroupId = chatGroups[1].ChatGroupId
+                    ChatMessageId = 2,
+                    Message="second message",
+                    UserId = users[1].Id,
+                    ChatGroupId = chatGroups[1].ChatGroupId
                  },
            };
 

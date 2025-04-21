@@ -19,12 +19,15 @@ namespace LyteChat.Server.Services
            IChatGroupRepository chatGroupRepository,
            IChatGroupUserRepository chatGroupUserRepository,
            IUnitOfWork unitOfWork
-           //IMapper mapper,
            ) : base(chatMessageRepository, userRepository, chatGroupRepository, chatGroupUserRepository, unitOfWork) { }
 
-        public async Task<ChatGroupDTO> GetByUuidAsync(Guid uuid)
+        public async Task<ChatGroupDTO?> GetByUuidAsync(Guid uuid)
         {
-            ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(uuid);
+            ChatGroup? chatGroup = await _chatGroupRepository.GetByUuidAsync(uuid);
+            if (chatGroup == null)
+            {
+                return null;
+            }
             ChatGroupDTO chatGroupDTO = new ChatGroupDTO()
             {
                 Uuid = chatGroup.Uuid,
@@ -44,27 +47,29 @@ namespace LyteChat.Server.Services
                     CreatedOn = chatGroup.CreatedOn
                 });
 
-            //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
             return chatGroupDTOList;
         }
 
         public async Task<ChatGroupDTO> GetAllChatAsync()
         {
-            ChatGroup allChat = await _chatGroupRepository.GetAllChatAsync();
-
-            ChatGroupDTO chatGroupDTO = new ChatGroupDTO();
-            if (allChat != null)
+            ChatGroup? allChat = await _chatGroupRepository.GetAllChatAsync();
+            if (allChat == null)
             {
-                chatGroupDTO.Uuid = allChat.Uuid;
-                chatGroupDTO.ChatGroupName = allChat.ChatGroupName;
+                throw new Exception("All chat group not found");
             }
+
+            ChatGroupDTO chatGroupDTO = new()
+            {
+                Uuid = allChat.Uuid,
+                ChatGroupName = allChat.ChatGroupName
+            };
             return chatGroupDTO;
         }
 
         public async Task<ChatGroupResponse> CreateChatGroupAsync(ChatGroupDTO chatGroupDTO)
         {
-            ChatGroupResponse chatGroupResponse = new ChatGroupResponse();
-            ChatGroup chatGroup = await _chatGroupRepository.FindByName(chatGroupDTO.ChatGroupName);
+            ChatGroupResponse chatGroupResponse = new();
+            ChatGroup? chatGroup = await _chatGroupRepository.FindByName(chatGroupDTO.ChatGroupName);
             if (chatGroup != null)
             {
                 chatGroupResponse.Success = false;
@@ -84,13 +89,12 @@ namespace LyteChat.Server.Services
                 chatGroupDTO.Uuid = saveChatGroup.Uuid;
                 chatGroupDTO.CreatedOn = saveChatGroup.CreatedOn;
 
-                //ChatMessageDTO messageResource = _mapper.Map<Message, FromMessageDTO>(message);
-
                 chatGroupResponse.Success = true;
                 chatGroupResponse.ChatGroupDTO = chatGroupDTO;
             }
-            catch (Exception e)
+            catch (Exception)
             {
+                // TODO log and metric
                 chatGroupResponse.ErrorMessage = "An error occurred when saving the chat group";
             }
 

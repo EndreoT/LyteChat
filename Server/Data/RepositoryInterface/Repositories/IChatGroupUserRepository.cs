@@ -13,9 +13,9 @@ namespace LyteChat.Server.Data.RepositoryInterface.Repositories
 
         public Task AddUserToChatGroupAsync(ChatGroupUser chatGroupUser);
 
-        public Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userId, long ChatGroupId);
+        public Task<ChatGroupUser?> GetByUserAndChatGroupAsync(Guid userId, long ChatGroupId);
 
-        public Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userId, Guid chatGroupUuid);
+        public Task<ChatGroupUser?> GetByUserAndChatGroupAsync(Guid userId, Guid chatGroupUuid);
 
         public void RemoveUserFromChatGroup(ChatGroupUser chatGroupUser);
     }

@@ -1,4 +1,5 @@
 ﻿using LyteChat.Server.Data.Models;
+using LyteChat.Server.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
@@ -41,8 +42,8 @@ namespace LyteChat.Server.Auth
                 return Task.CompletedTask;
             }
 
-            Claim userEmail = context.User.FindFirst(ClaimTypes.Email);
-            User user = await _userManager.FindByEmailAsync(userEmail.Value.ToString());
+            string userEmail = context.User.GetUserEmail();
+            User? user = await _userManager.FindByEmailAsync(userEmail);
 
             if (user != null && resource.UserId.Equals(user.Id))
             {

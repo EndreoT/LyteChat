@@ -13,16 +13,18 @@ namespace LyteChat.Server.Persistence.Repositories
     {
         public ChatGroupUserRepository(AppDbContext context) : base(context) { }
 
-        public async Task<ChatGroupUser> GetByUuidAsync(Guid uuid)
+        public async Task<ChatGroupUser?> GetByUuidAsync(Guid uuid)
         {
             try
             {
                 return await _context
                     .ChatGroupUsers
-                    .Where(chatGroupUser => chatGroupUser.Uuid.Equals(uuid)).SingleAsync();
+                    .Where(chatGroupUser => chatGroupUser.Uuid.Equals(uuid))
+                    .SingleAsync();
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
+                // TODO log and metric
                 return null;
             }
         }
@@ -32,13 +34,15 @@ namespace LyteChat.Server.Persistence.Repositories
             try
             {
                 IEnumerable<User> users = await _context.ChatGroupUsers
-                    .Where(cgu => cgu.ChatGroupId == chatGroupId)
-                    .Select(cgu => cgu.User).ToListAsync();
+                    .Where(cgu => cgu.ChatGroupId == chatGroupId && cgu.User != null)
+                    .Select(cgu => cgu.User!)
+                    .ToListAsync();
                 return users;
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
-                return null;
+                // TODO log and metric
+                return Enumerable.Empty<User>();
             }
         }
 
@@ -47,47 +51,49 @@ namespace LyteChat.Server.Persistence.Repositories
             try
             {
                 IEnumerable<ChatGroup> chatGroups = await _context.ChatGroupUsers
-                    .Where(cgu => cgu.UserId == UserId)
-                    .Select(cgu => cgu.ChatGroup).ToListAsync();
+                    .Where(cgu => cgu.UserId == UserId && cgu.ChatGroup != null)
+                    .Select(cgu => cgu.ChatGroup!)
+                    .ToListAsync();
                 return chatGroups;
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
-                return null;
+                // TODO log and metric
+                return Enumerable.Empty<ChatGroup>();
             }
         }
-        public async Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userId, long ChatGroupId)
+        public async Task<ChatGroupUser?> GetByUserAndChatGroupAsync(Guid userId, long ChatGroupId)
         {
             try
             {
                 return await _context
                     .ChatGroupUsers
-                    .Where(
-                        chatGroupUser => chatGroupUser.UserId.Equals(userId) && chatGroupUser.ChatGroupId.Equals(ChatGroupId))
+                    .Where(chatGroupUser => chatGroupUser.UserId.Equals(userId) && chatGroupUser.ChatGroupId.Equals(ChatGroupId))
                     .Include(chatGroupUser => chatGroupUser.User)
                     .Include(chatGroupUser => chatGroupUser.ChatGroup)
                     .SingleAsync();
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
+                // TODO log and metric
                 return null;
             }
         }
 
-        public async Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
+        public async Task<ChatGroupUser?> GetByUserAndChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
         {
             try
             {
                 return await _context
                     .ChatGroupUsers
-                    .Where(
-                        chatGroupUser => chatGroupUser.User.Id.Equals(userUuid) && chatGroupUser.ChatGroup.Uuid.Equals(chatGroupUuid))
+                    .Where(chatGroupUser => chatGroupUser.User != null && chatGroupUser.User.Id.Equals(userUuid) && chatGroupUser.ChatGroup != null && chatGroupUser.ChatGroup.Uuid.Equals(chatGroupUuid))
                     .Include(chatGroupUser => chatGroupUser.User)
                     .Include(chatGroupUser => chatGroupUser.ChatGroup)
                     .SingleAsync();
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
+                // TODO log and metric
                 return null;
             }
         }

@@ -13,10 +13,10 @@ namespace LyteChat.Server.Data.Models
         public long ChatGroupId { get; set; }
 
         [Required]
-        public string ChatGroupName { get; set; }
+        public required string ChatGroupName { get; set; }
 
-        public ICollection<ChatMessage> Messages { get; set; }
+        public  ICollection<ChatMessage> Messages { get; set; }= new List<ChatMessage>();
 
-        public ICollection<ChatGroupUser> ChatGroupUsers { get; set; }
+        public ICollection<ChatGroupUser> ChatGroupUsers { get; set; } = new List<ChatGroupUser>();
     }
 }

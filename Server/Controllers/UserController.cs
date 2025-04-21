@@ -1,5 +1,6 @@
 ﻿using LyteChat.Server.Data.Models;
 using LyteChat.Server.Data.ServiceInterface;
+using LyteChat.Server.Extensions;
 using LyteChat.Shared.DataTransferObject;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -58,7 +59,7 @@ namespace LyteChat.Server.Controllers
         /// <param name="userUuid"></param>
         /// <returns></returns>
         [HttpGet("{userUuid}")]
-        public async Task<UserDTO> GetUser(Guid userUuid)
+        public async Task<UserDTO?> GetUser(Guid userUuid)
         {
             return await _userService.GetByUuidAsync(userUuid);
         }
@@ -74,8 +75,8 @@ namespace LyteChat.Server.Controllers
         [HttpGet("{userUuid}/chatgroup")]
         public async Task<ActionResult<IEnumerable<ChatGroupDTO>>> GetChatGroupsForUser(Guid userUuid)
         {
-            string userEmail = User.FindFirstValue(ClaimTypes.Email);
-            User user = await _userManager.FindByEmailAsync(userEmail);
+            string userEmail = User.GetUserEmail();
+            User? user = await _userManager.FindByEmailAsync(userEmail);
             if (user == null || user.Id != userUuid)
             {
                 return Forbid();

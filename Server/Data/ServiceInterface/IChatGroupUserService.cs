@@ -10,7 +10,7 @@ namespace LyteChat.Server.Data.ServiceInterface
 {
     public interface IChatGroupUserService : IServiceBase<ChatGroupUser>
     {
-        public Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userUuid, Guid chatGroupUuid);
+        public Task<ChatGroupUser?> GetByUserAndChatGroupAsync(Guid userUuid, Guid chatGroupUuid);
 
         public Task<IEnumerable<UserDTO>> GetUsersForChatGroupAsync(Guid chatGroupUuid);
 

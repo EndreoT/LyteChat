@@ -36,7 +36,12 @@ namespace LyteChat.Server
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            SecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Secret"]));
+            string? jwtSecret = Configuration["JWT:Secret"];
+            if (string.IsNullOrEmpty(jwtSecret))
+            {
+                throw new ArgumentException("JWT signing key is not configured");
+            }
+            SecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -128,8 +133,6 @@ namespace LyteChat.Server
                 });
 
             services.AddSignalR();
-            // Change to use email as the user identifier for SignalR
-            services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();
 
             // Authorization services
             services

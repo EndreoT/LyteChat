@@ -20,13 +20,13 @@ namespace LyteChat.Server.Services
             IChatGroupRepository chatGroupRepository,
             IChatGroupUserRepository chatGroupUserRepository,
             IUnitOfWork unitOfWork
-            //IMapper mapper,
             ) : base(chatMessageRepository, userRepository, chatGroupRepository, chatGroupUserRepository, unitOfWork) { }
 
         public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
         {
-            IEnumerable<User> userQuery = await _userRepository
-                .GetAllUsersAsync();
+            IEnumerable<User> userQuery = await _userRepository.GetAllUsersAsync();
+
+
             IEnumerable<UserDTO> users = userQuery
                 .Select(user => new UserDTO
                 {
@@ -34,14 +34,17 @@ namespace LyteChat.Server.Services
                     Name = user.UserName
                 });
 
-            //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
             return users;
         }
 
-        public async Task<UserDTO> GetByUuidAsync(Guid uuid)
+        public async Task<UserDTO?> GetByUuidAsync(Guid uuid)
         {
-            User user = await _userRepository.GetByUuidAsync(uuid);
-            UserDTO userDTO = new UserDTO()
+            User? user = await _userRepository.GetByUuidAsync(uuid);
+            if (user == null)
+            {
+                return null;
+            }
+            UserDTO userDTO = new ()
             {
                 Uuid = user.Id,
                 Name = user.UserName
@@ -51,15 +54,18 @@ namespace LyteChat.Server.Services
 
         public async Task<UserDTO> GetAnonymousUserAsync()
         {
-            User userQuery = await _userRepository
-                .GetAnonymousUserAsync();
+            User? userQuery = await _userRepository.GetAnonymousUserAsync();
+            if (userQuery == null)
+            {
+                throw new Exception("Anonymous user not found");
+            }
+
             UserDTO user = new UserDTO
             {
                 Name = userQuery.UserName,
                 Uuid = userQuery.Id
             };
 
-            //IEnumerable<FromMessageDTO> resources = _mapper.Map<IEnumerable<Message>, IEnumerable<FromMessageDTO>>(messages);
             return user;
         }
     }

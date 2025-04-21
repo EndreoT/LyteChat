@@ -2,6 +2,6 @@
 {
     public class UserDTO : BaseDTO
     {
-        public string Name { get; set; }
+        public required string Name { get; init; }
     }
 }

@@ -22,19 +22,19 @@ namespace LyteChat.Server.Services
            //IMapper mapper,
            ) : base(chatMessageRepository, userRepository, chatGroupRepository, chatGroupUserRepository, unitOfWork) { }
 
-        public async Task<ChatGroupUser> GetByUuidAsync(Guid uuid)
+        public async Task<ChatGroupUser?> GetByUuidAsync(Guid uuid)
         {
             return await _chatGroupUserRepository.GetByUuidAsync(uuid);
         }
 
-        public async Task<ChatGroupUser> GetByUserAndChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
+        public async Task<ChatGroupUser?> GetByUserAndChatGroupAsync(Guid userUuid, Guid chatGroupUuid)
         {
             return await _chatGroupUserRepository.GetByUserAndChatGroupAsync(userUuid, chatGroupUuid);
         }
 
         public async Task<IEnumerable<UserDTO>> GetUsersForChatGroupAsync(Guid chatGroupUuId)
         {
-            ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuId);
+            ChatGroup? chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuId);
             if (chatGroup == null)
             {
                 return Array.Empty<UserDTO>();
@@ -54,7 +54,7 @@ namespace LyteChat.Server.Services
 
         public async Task<IEnumerable<ChatGroupDTO>> GetChatGroupsForUserAsync(Guid userUuid)
         {
-            User user = await _userRepository.GetByUuidAsync(userUuid);
+            User? user = await _userRepository.GetByUuidAsync(userUuid);
             if (user == null)
             {
                 return Array.Empty<ChatGroupDTO>();
@@ -76,7 +76,7 @@ namespace LyteChat.Server.Services
         {
             try
             {
-                ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
+                ChatGroup? chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
 
                 if (chatGroup == null)
                 {
@@ -84,8 +84,7 @@ namespace LyteChat.Server.Services
                 }
 
                 // Check if user is already member of chat group
-                ChatGroupUser chatGroupUser = await _chatGroupUserRepository.GetByUserAndChatGroupAsync(
-                    user.Id, chatGroup.ChatGroupId);
+                ChatGroupUser? chatGroupUser = await _chatGroupUserRepository.GetByUserAndChatGroupAsync(user.Id, chatGroup.ChatGroupId);
                 if (chatGroupUser != null)
                 {
                     return new ChatGroupUserResponse
@@ -121,7 +120,7 @@ namespace LyteChat.Server.Services
         {
             try
             {
-                ChatGroup chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
+                ChatGroup? chatGroup = await _chatGroupRepository.GetByUuidAsync(chatGroupUuid);
 
                 if (chatGroup == null)
                 {
@@ -129,8 +128,7 @@ namespace LyteChat.Server.Services
                 }
 
                 // Check if user is already member of chat group
-                ChatGroupUser chatGroupUser = await _chatGroupUserRepository.GetByUserAndChatGroupAsync(
-                    user.Id, chatGroupUuid);
+                ChatGroupUser? chatGroupUser = await _chatGroupUserRepository.GetByUserAndChatGroupAsync(user.Id, chatGroupUuid);
                 if (chatGroupUser == null)
                 {
                     return new ChatGroupUserResponse

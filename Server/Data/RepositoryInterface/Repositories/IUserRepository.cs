@@ -7,6 +7,6 @@ namespace LyteChat.Server.Data.RepositoryInterface.Repositories
     public interface IUserRepository : IBaseRepository<User>
     {
         public Task<IEnumerable<User>> GetAllUsersAsync();
-        public Task<User> GetAnonymousUserAsync();
+        public Task<User?> GetAnonymousUserAsync();
     }
 }

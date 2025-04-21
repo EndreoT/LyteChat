@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using LyteChat.Server.Extensions;
+using System;
 
 namespace LyteChat.Server.Auth
 {
@@ -31,28 +33,33 @@ namespace LyteChat.Server.Auth
         /// <param name="requirement"></param>
         /// <param name="resource"></param>
         /// <returns></returns>
-        protected override async Task<Task> HandleRequirementAsync(AuthorizationHandlerContext context,
+        protected override async Task HandleRequirementAsync(
+            AuthorizationHandlerContext context,
             UserCanCreateChatMessageRequirement requirement,
             HubInvocationContext resource)
         {
             if (context.User == null)
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            Claim userEmail = resource.Context.User.FindFirst(ClaimTypes.Email);
-            User user = await _userManager.FindByEmailAsync(userEmail.Value.ToString());
-            if (user == null)
+            ClaimsPrincipal? claimsPrincipal = resource.Context.User ?? throw new ArgumentException("ClaimsPrincipal is null");
+            User? user = await _userManager.FindByEmailAsync(claimsPrincipal.GetUserEmail());
+            if (user is null)
             {
-                return Task.CompletedTask;
+                return;
             }
             if (resource.HubMethodArguments.Count == 0)
             {
-                return Task.CompletedTask;
+                return;
             }
-            CreateChatMessageDTO chatMessageDTO = resource.HubMethodArguments[0] as CreateChatMessageDTO;
 
-            ChatGroupUser chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
+            if (resource.HubMethodArguments[0] is not CreateChatMessageDTO chatMessageDTO)
+            {
+                return;
+            }
+
+            ChatGroupUser? chatGroupUser = await _chatGroupUserService.GetByUserAndChatGroupAsync(
                 user.Id, chatMessageDTO.ChatGroupUuid);
 
             if (user != null && chatGroupUser != null && chatGroupUser.UserId.Equals(user.Id))
@@ -61,7 +68,7 @@ namespace LyteChat.Server.Auth
                 context.Succeed(requirement);
             }
 
-            return Task.CompletedTask;
+            return;
         }
     }
 }
